@@ -1,0 +1,28 @@
+{
+  "name": "openclaw-empathy-anchor",
+  "version": "1.0.0",
+  "description": "OpenClaw.ai fork with empathy-anchor skill for youth mental health support - privacy-first offline AI",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test/empathy-anchor.test.js",
+    "demo": "node examples/demo.js"
+  },
+  "keywords": [
+    "mental-health",
+    "empathy",
+    "youth-support",
+    "offline-ai",
+    "privacy-first",
+    "openclaw"
+  ],
+  "author": "MiMindMendinc",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
