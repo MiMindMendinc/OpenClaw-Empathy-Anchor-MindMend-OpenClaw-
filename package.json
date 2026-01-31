@@ -1,0 +1,15 @@
+{
+  "name": "openclaw-empathy-anchor-mindmend",
+  "version": "1.0.0",
+  "description": "Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan. Privacy-first tools for families.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["openclaw", "empathy", "mental-health", "youth", "michigan", "privacy", "offline-first"],
+  "author": "MiMindMendinc",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
