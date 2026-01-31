@@ -7,6 +7,15 @@
 
 /**
  * Michigan mental health resources
+ * 
+ * Comprehensive list of Michigan-specific mental health support resources
+ * including crisis hotlines, support organizations, and peer support services.
+ * 
+ * @type {Object}
+ * @property {Object} suicide988 - 988 Suicide & Crisis Lifeline (national, 24/7)
+ * @property {Object} namiMichigan - National Alliance on Mental Illness Michigan chapter
+ * @property {Object} crisisTextLine - Text-based crisis support
+ * @property {Object} teenLine - Peer support specifically for teens
  */
 const MICHIGAN_RESOURCES = {
   suicide988: {
@@ -36,6 +45,13 @@ const MICHIGAN_RESOURCES = {
 
 /**
  * Keywords that suggest emotional distress or need for support
+ * 
+ * Used for pattern matching in emotional content analysis to identify when
+ * users may benefit from empathetic validation and resource suggestions.
+ * Matching is case-insensitive. These keywords indicate moderate emotional
+ * distress that warrants supportive resources but not immediate crisis intervention.
+ * 
+ * @type {string[]}
  */
 const DISTRESS_KEYWORDS = [
   'anxious', 'anxiety', 'worried', 'stress', 'stressed',
@@ -48,6 +64,13 @@ const DISTRESS_KEYWORDS = [
 
 /**
  * Crisis keywords that require immediate resource sharing
+ * 
+ * These keywords indicate severe emotional distress or immediate risk and trigger
+ * urgent crisis resource presentation (988, Crisis Text Line) with emphasis on
+ * immediate availability. Crisis keywords take precedence over distress keywords
+ * in the response urgency hierarchy. Matching is case-insensitive.
+ * 
+ * @type {string[]}
  */
 const CRISIS_KEYWORDS = [
   'suicide', 'suicidal', 'kill myself', 'want to die', 'end my life',
@@ -56,6 +79,13 @@ const CRISIS_KEYWORDS = [
 
 /**
  * Empathetic validation phrases
+ * 
+ * Youth-appropriate, non-judgmental phrases for emotional validation.
+ * One phrase is randomly selected when generating empathy responses to
+ * acknowledge and normalize users' feelings. Designed to create a safe,
+ * supportive environment for young people to express emotions.
+ * 
+ * @type {string[]}
  */
 const VALIDATION_PHRASES = [
   "It's completely okay to feel that way",
