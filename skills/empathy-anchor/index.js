@@ -21,7 +21,7 @@ class EmpathyAnchor {
       sadness: ['sad', 'depressed', 'down', 'unhappy', 'hopeless', 'lonely', 'empty'],
       anger: ['angry', 'mad', 'frustrated', 'annoyed', 'upset', 'furious'],
       fear: ['terrified', 'frightened', 'fearful', 'scared', 'afraid'],
-      overwhelm: ['overwhelmed', 'too much', 'can\'t handle', 'drowning', 'stuck'],
+      overwhelm: ['overwhelmed', 'too much', 'cannot handle', 'drowning', 'stuck'],
       crisis: ['suicide', 'suicidal', 'kill myself', 'end it all', 'want it all to end', 'want to die', 'better off dead', 'no point', "don't want to live", 'hurt myself', 'self-harm', 'cut myself', 'end my life', 'take my life']
     };
 
@@ -231,15 +231,15 @@ class EmpathyAnchor {
    */
   generateSupportiveResponse(emotionData) {
     if (emotionData.isCrisis) {
-      return 'Your life has value, and you deserve support right now. Please don\'t face this alone.';
+      return `Your life has value, and you deserve support right now. Please don't face this alone.`;
     }
 
     if (emotionData.emotions.length === 0) {
-      return 'I\'m here to listen and support you. Would you like to share more about what\'s on your mind?';
+      return `I'm here to listen and support you. Would you like to share more about what's on your mind?`;
     }
 
     const emotionList = emotionData.emotions.join(', ');
-    return `I understand you\'re experiencing feelings of ${emotionList}. These emotions are valid, and it\'s important to acknowledge them. Would you like to talk more about what you\'re going through?`;
+    return `I understand you're experiencing feelings of ${emotionList}. These emotions are valid, and it's important to acknowledge them. Would you like to talk more about what you're going through?`;
   }
 
   /**

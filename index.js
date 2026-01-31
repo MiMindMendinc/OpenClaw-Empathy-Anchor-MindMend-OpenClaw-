@@ -34,7 +34,7 @@ class OpenClaw {
   chat(message, aiResponse = null) {
     if (!message || message.trim() === '') {
       return {
-        response: 'I\'m here to listen. Please share what\'s on your mind.',
+        response: `I'm here to listen. Please share what's on your mind.`,
         metadata: { error: 'Empty input' }
       };
     }
