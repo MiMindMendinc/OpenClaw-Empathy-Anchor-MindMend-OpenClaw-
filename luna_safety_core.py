@@ -153,7 +153,7 @@ def scan_message(text: str) -> Dict[str, Any]:
             "error": str(e),
             "input": text[:50] + "..." if text else "empty"
         })
-        return {'is_flagged': False, 'score': 0, 'matches': [], 'categories': {}}
+        raise
 
     except Exception as e:
         logger.error({"event": "scan_message", "error": str(e)})
