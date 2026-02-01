@@ -19,7 +19,7 @@ import sys
 import logging
 import re
 from math import radians, sin, cos, sqrt, atan2
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from threading import Thread
 from typing import Dict, Any
 import os
@@ -457,7 +457,7 @@ def generate_token():
 
         payload = {
             'user': user_id,
-            'exp': datetime.utcnow() + timedelta(days=1)
+            'exp': datetime.now(timezone.utc) + timedelta(days=1)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
@@ -507,7 +507,8 @@ class TestLunaSafetyCore(unittest.TestCase):
     def test_token_generation(self):
         """Test JWT token generation."""
         with app.test_request_context('/auth_kid?user_id=test'):
-            response = generate_token()
+            response_tuple = generate_token()
+            response = response_tuple[0]  # Extract response from tuple
             self.assertIn('token', response.json)
             self.assertIsInstance(response.json['token'], str)
 
