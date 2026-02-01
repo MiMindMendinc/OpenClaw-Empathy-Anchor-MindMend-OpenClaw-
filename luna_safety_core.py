@@ -387,8 +387,8 @@ def check_incoming():
 
         if flag1['is_flagged'] or flag2['toxic']:
             alert_msg = (
-                f"Suspicious chat: '{text[:100]}...' "
-                f"(Danger: {flag1['score']:.2f}, Toxicity: {flag2['polarity']:.2f})"
+                "Suspicious chat activity detected. "
+                f"(Danger score: {flag1['score']:.2f}, Toxicity: {flag2['polarity']:.2f})"
             )
             status = send_alert_async(parent_token, alert_msg)
             return jsonify({
