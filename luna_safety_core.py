@@ -446,14 +446,19 @@ def generate_token():
     Generate JWT authentication token.
     
     Query params:
-        user_id: User identifier (default: 'child_default')
+        user_id: User identifier (required)
         
     Returns:
         JSON with JWT token
     """
     try:
-        user_id = request.args.get('user_id', 'child_default')
+        # Simple API key check to prevent unauthorized token generation
+        api_key = request.headers.get('X-API-Key')
+        expected_api_key = os.environ.get('AUTH_KID_API_KEY')
+        if not expected_api_key or api_key != expected_api_key:
+            abort(401, 'Unauthorized')
 
+        user_id = request.args.get('user_id')
         if not user_id:
             abort(400, 'Missing user_id')
 
