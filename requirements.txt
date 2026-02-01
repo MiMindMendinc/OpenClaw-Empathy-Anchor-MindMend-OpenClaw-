@@ -1,0 +1,7 @@
+flask==3.0.0
+pyjwt==2.8.0
+firebase-admin==6.3.0
+spacy==3.7.2
+spacytextblob==4.0.0
+flask-limiter==3.5.0
+python-dotenv==1.0.0
