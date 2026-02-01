@@ -276,11 +276,13 @@ def is_out_of_bounds(
 
     except ValueError as e:
         logger.error({"event": "geofence", "error": str(e)})
-        return False
+        # Fail-safe: if coordinates are invalid, treat location as out of bounds
+        return True
 
     except Exception as e:
         logger.error({"event": "geofence", "error": str(e)})
-        return False
+        # Fail-safe: on unexpected errors, treat location as out of bounds
+        return True
 
 
 # 4. Send Alert: Async Firebase with mock fallback, rate limited
