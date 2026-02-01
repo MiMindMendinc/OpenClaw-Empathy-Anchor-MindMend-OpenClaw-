@@ -6,6 +6,26 @@ A Node.js-based fork of OpenClaw.ai featuring a core 'empathy-anchor' skill that
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
+[![CI/CD](https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-/actions/workflows/ci.yml/badge.svg)](https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-/actions)
+
+---
+
+## 🚀 **NEW: MindMend Super AI - Unified App**
+
+**We've built a complete unified application!** This repository now includes:
+
+- **🛡️ MindMend Guardian**: Child safety monitoring with geofencing and alerts
+- **💙 Eve AI**: Mental health empathy support with crisis detection
+- **⚓ OpenClaw Empathy Anchor**: Original empathy skill (below)
+- **🌙 Night Mode**: Bedtime routines and calming support
+- **🔌 Full REST API**: Flask backend with JWT auth, offline mode
+
+**📖 [View Super AI Documentation →](./README_SUPER_AI.md)**  
+**🚀 [Installation Guide →](./INSTALL.md)**  
+**🔌 [API Reference →](./API_REFERENCE.md)**
+
+---
 
 ## 🌟 Features
 
