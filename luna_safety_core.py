@@ -540,10 +540,11 @@ class TestLunaSafetyCore(unittest.TestCase):
 
     def test_toxicity_false_positive_reduction(self):
         """Test that mild negative sentiment with few entities is not flagged."""
-        if nlp:
-            # Mild negative sentiment with only 1-2 entities should not be toxic
-            result = toxicity_score("I saw two people at the park and felt a bit tired")
-            self.assertFalse(result['toxic'], "Mild negative sentiment with few entities should not be toxic")
+        if nlp is None:
+            self.skipTest("spaCy not available - cannot test toxicity false positive reduction")
+        # Mild negative sentiment with only 1-2 entities should not be toxic
+        result = toxicity_score("I saw two people at the park and felt a bit tired")
+        self.assertFalse(result['toxic'], "Mild negative sentiment with few entities should not be toxic")
 
     def test_geofence_inside(self):
         """Test location inside safe zone."""
