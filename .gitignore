@@ -137,3 +137,9 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# OpenClaw specific
+.openclaw/
+*.reference
+package-lock.json
+pnpm-lock.yaml

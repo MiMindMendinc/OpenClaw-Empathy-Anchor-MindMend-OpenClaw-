@@ -1,0 +1,43 @@
+{
+  "gateway": {
+    "enabled": true,
+    "port": 18790,
+    "bind": "loopback"
+  },
+  "skills": {
+    "load": {
+      "extraDirs": [
+        "./skills/empathy-anchor"
+      ],
+      "watch": true
+    }
+  },
+  "channels": {
+    "whatsapp": {
+      "enabled": false
+    },
+    "telegram": {
+      "enabled": false
+    }
+  },
+  "privacy": {
+    "mode": "strict",
+    "dataRetention": "local",
+    "analytics": false
+  },
+  "empathyAnchor": {
+    "enabled": true,
+    "mode": "youth_support",
+    "crisisDetection": true,
+    "resources": {
+      "national": {
+        "988": "Suicide & Crisis Lifeline",
+        "741741": "Crisis Text Line (text HOME)",
+        "trevorProject": "1-866-488-7386 (LGBTQ+ Youth)"
+      },
+      "michigan": {
+        "crisisLine": "1-844-464-3274"
+      }
+    }
+  }
+}

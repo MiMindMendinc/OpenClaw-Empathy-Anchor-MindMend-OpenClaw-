@@ -1,3 +1,4 @@
+
 # OpenClaw Empathy Anchor - MindMend
 
 Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan. Privacy-first tools for families in Owosso.
@@ -191,3 +192,221 @@ Special thanks to the OpenClaw.ai community for creating an open-source framewor
 ---
 
 **Remember: You are not alone. Your feelings are valid. Help is available.**
+## About
+
+This repository integrates the [OpenClaw](https://github.com/openclaw/openclaw) personal AI assistant with a custom **Empathy Anchor** skill designed specifically for youth mental health support. It provides:
+
+- 🧠 **Compassionate AI**: Responses infused with emotional intelligence and empathy
+- 🔒 **Privacy-First**: Local-first architecture, data stays on your device
+- 🆘 **Crisis Awareness**: Automatic detection and response to mental health crises
+- 👥 **Youth-Centered**: Age-appropriate language and understanding
+- 📱 **Multi-Channel**: Works with WhatsApp, Telegram, Discord, and more
+
+## Prerequisites
+
+- **Node.js** 22 or higher
+- **npm** or **pnpm**
+- An API key from [Anthropic](https://anthropic.com) (recommended) or [OpenAI](https://openai.com)
+
+## Quick Start
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw.git
+cd OpenClaw-Empathy-Anchor-MindMend-OpenClaw-
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Install OpenClaw CLI
+```bash
+npm run install-openclaw
+```
+
+### 4. Configure Environment
+Copy the example environment file and add your API keys:
+```bash
+cp .env.example .env
+# Edit .env and add your ANTHROPIC_API_KEY or OPENAI_API_KEY
+```
+
+### 5. Run Setup Wizard
+```bash
+npm run setup
+```
+
+The OpenClaw onboarding wizard will guide you through:
+- Choosing your AI model provider
+- Configuring channels (WhatsApp, Telegram, etc.)
+- Setting up your workspace
+- Loading the Empathy Anchor skill
+
+### 6. Start the Assistant
+```bash
+npm start
+```
+
+Or use OpenClaw directly:
+```bash
+openclaw gateway
+```
+
+## Empathy Anchor Skill
+
+The **Empathy Anchor** is the core skill that provides compassionate, youth-focused mental health support.
+
+### Features
+
+- ✅ **Active Listening**: Validates feelings and experiences
+- ✅ **Emotional Safety**: Non-judgmental, supportive responses
+- ✅ **Crisis Detection**: Recognizes signs of distress and provides resources
+- ✅ **Privacy**: All conversations stay private and local
+- ✅ **Resource Awareness**: Knows when to provide hotline numbers and professional help
+
+See [skills/empathy-anchor/SKILL.md](./skills/empathy-anchor/SKILL.md) for detailed documentation.
+
+### Crisis Resources
+
+The skill provides these resources when needed:
+
+**National:**
+- 988 Suicide & Crisis Lifeline (call or text)
+- Crisis Text Line: Text HOME to 741741
+- Trevor Project (LGBTQ+ Youth): 1-866-488-7386
+
+**Michigan:**
+- Michigan Crisis & Access Line: 1-844-464-3274
+
+## Configuration
+
+The repository includes:
+- `openclaw.config.json` - OpenClaw configuration with Empathy Anchor enabled
+- `.env.example` - Environment variables template
+- `skills/empathy-anchor/` - Custom skill directory
+
+### Customizing the Skill
+
+Edit `openclaw.config.json` to adjust:
+- Crisis detection sensitivity
+- Response templates
+- Resource lists
+- Privacy settings
+
+## Architecture
+
+This integration works by:
+
+1. **Using OpenClaw as a dependency**: The full OpenClaw assistant framework
+2. **Custom Skills**: The Empathy Anchor skill in `./skills/empathy-anchor/`
+3. **Configuration Override**: Custom config that enables empathy-focused features
+4. **Local-First**: Data and conversations stay on your device
+
+```
+┌─────────────────────────────────────────────┐
+│         Your Application (index.js)         │
+│  - Loads OpenClaw                          │
+│  - Applies Empathy Anchor configuration    │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│         OpenClaw Core Framework             │
+│  - Gateway (communication hub)             │
+│  - Agent (AI processing)                   │
+│  - Skills Loader                           │
+│  - Channels (WhatsApp, Telegram, etc.)     │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│       Custom Empathy Anchor Skill           │
+│  - Emotional intelligence guidelines       │
+│  - Crisis detection & response             │
+│  - Youth-appropriate communication         │
+│  - Resource provision                      │
+└─────────────────────────────────────────────┘
+```
+
+## Development
+
+### Project Structure
+```
+.
+├── index.js                   # Main entry point
+├── package.json              # Dependencies and scripts
+├── openclaw.config.json      # OpenClaw configuration
+├── .env.example              # Environment template
+├── skills/
+│   └── empathy-anchor/       # Custom empathy skill
+│       └── SKILL.md          # Skill documentation
+└── README.md                 # This file
+```
+
+### Available Scripts
+
+- `npm start` - Start the assistant
+- `npm run setup` - Run OpenClaw onboarding wizard
+- `npm run install-openclaw` - Install OpenClaw CLI globally
+- `npm run dev` - Start in development mode
+
+## OpenClaw Integration
+
+This repository integrates with [OpenClaw](https://github.com/openclaw/openclaw), which provides:
+
+- 🌐 **Gateway**: Communication hub for all channels
+- 🤖 **Agent**: AI processing and conversation management
+- 🔌 **Skills System**: Extensible skill loader
+- 📡 **Channels**: WhatsApp, Telegram, Discord, Slack, and more
+- 🎨 **Canvas**: Visual content rendering
+- 💾 **Memory**: Conversation history and context
+
+For full OpenClaw documentation, visit [docs.openclaw.ai](https://docs.openclaw.ai).
+
+## Privacy & Ethics
+
+This project prioritizes:
+
+- **Privacy**: Data stays local, no unnecessary cloud services
+- **Safety**: Crisis detection and appropriate resource provision
+- **Ethics**: AI should support, not replace, human connection
+- **Transparency**: Open source, auditable code
+- **Youth Protection**: Age-appropriate, safe interactions
+
+## Support & Contribution
+
+This project is developed by Michigan MindMend Inc. to support youth mental health in Owosso and beyond.
+
+### Get Help
+- Try Eve demo: https://kid-helper-ai.replit.app
+- OpenClaw docs: https://docs.openclaw.ai
+- OpenClaw Discord: https://discord.gg/clawd
+
+### Donate
+Support mental health initiatives in Michigan:
+- GoFundMe: https://gofund.me/42b8334bd
+- Cash App: https://cash.app/$MichiganMindMendinc
+
+### Developer
+By Lyle Perrien II, Michigan MindMend Inc.
+
+## License
+
+MIT License - See [LICENSE](./LICENSE) file for details.
+
+This project uses [OpenClaw](https://github.com/openclaw/openclaw) which is also MIT licensed.
+
+## Important Disclaimers
+
+⚠️ **This AI assistant is NOT a replacement for professional mental health care.**
+
+- Always seek professional help for serious mental health concerns
+- In emergencies, call 911 or go to your nearest emergency room
+- Crisis resources are provided, but the AI cannot provide therapy
+- Parents/guardians should supervise youth usage
+
+## Acknowledgments
+
+- **OpenClaw Team**: For the incredible open-source AI assistant framework
+- **Michigan Community**: For supporting youth mental health initiatives
+- **Mental Health Professionals**: For guidance on ethical AI in mental health support

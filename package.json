@@ -11,5 +11,28 @@
   "license": "ISC",
   "engines": {
     "node": ">=18.0.0"
+  "description": "Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "install-openclaw": "npm install -g openclaw@latest",
+    "setup": "openclaw onboard",
+    "dev": "openclaw dev"
+  },
+  "keywords": [
+    "openclaw",
+    "ai",
+    "mental-health",
+    "empathy",
+    "youth-support"
+  ],
+  "author": "Lyle Perrien II, Michigan MindMend Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "openclaw": "^2026.1.30"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
