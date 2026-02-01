@@ -92,7 +92,7 @@ except Exception as e:
 # Expanded danger keywords (grooming red flags - sourced from anti-exploitation DBs; categorized for weighting)
 DANGER_CATEGORIES = {
     'grooming': [
-        'sweetie', 'pretty', 'meetup', 'alone', 'send pic', 'trust me', 'age',
+        'pretty', 'meetup', 'alone', 'send pic', 'trust me', 'age',
         'secret', 'hotel', 'come over', 'buy you', 'love you', 'private', 'touch',
         'kiss', 'baby', 'cutie', 'dm me', 'nude', 'sext'
     ],
