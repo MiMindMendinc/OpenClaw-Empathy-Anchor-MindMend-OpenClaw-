@@ -36,19 +36,19 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import unittest
 
+# Setup structured logging - JSON for easy monitoring in prod (must be before using logger)
+logging.basicConfig(
+    level=logging.INFO,
+    format='{"time": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}'
+)
+logger = logging.getLogger(__name__)
+
 # Secure secrets from .env - NO HARDCODING!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
     logger.critical("SECRET_KEY environment variable is not set; refusing to start with insecure default.")
     raise SystemExit(1)
 FIREBASE_CRED_PATH = os.environ.get('FIREBASE_CRED_PATH', 'serviceAccountKey.json')
-
-# Setup structured logging - JSON for easy monitoring in prod
-logging.basicConfig(
-    level=logging.INFO,
-    format='{"time": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}'
-)
-logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -473,7 +473,7 @@ def generate_token():
     Generate JWT authentication token.
     
     Query params:
-        user_id: User identifier (default: 'child_default')
+        user_id (required): User identifier
         
     Returns:
         JSON with JWT token
