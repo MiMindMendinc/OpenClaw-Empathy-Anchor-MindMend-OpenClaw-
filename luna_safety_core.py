@@ -515,11 +515,11 @@ class TestLunaSafetyCore(unittest.TestCase):
 
     def test_token_generation(self):
         """Test JWT token generation."""
-        with app.test_request_context('/auth_kid?user_id=test'):
-            response_tuple = generate_token()
-            response = response_tuple[0]  # Extract response from tuple
-            self.assertIn('token', response.json)
-            self.assertIsInstance(response.json['token'], str)
+        with app.test_client() as client:
+            response = client.get('/auth_kid?user_id=test')
+            data = response.get_json()
+            self.assertIn('token', data)
+            self.assertIsInstance(data['token'], str)
 
     def test_alert_mock(self):
         """Test alert dispatching."""
