@@ -41,11 +41,13 @@ The Luna Safety Core module provides enterprise-grade safety features for youth 
    # Edit .env and add your SECRET_KEY and FIREBASE_CRED_PATH
    ```
 
-4. **Generate a secure secret key**:
+4. **Generate a secure secret key** (REQUIRED):
    ```bash
    python -c "import secrets; print(secrets.token_hex(32))"
    ```
    Add the output to your `.env` file as `SECRET_KEY`.
+   
+   **⚠️ CRITICAL**: The application will refuse to start without a valid SECRET_KEY. Never use the default placeholder value in production.
 
 5. **Set up Firebase** (optional for testing):
    - Download your Firebase service account key JSON file
@@ -54,13 +56,27 @@ The Luna Safety Core module provides enterprise-grade safety features for youth 
 
 ## Running the Module
 
-### Start the Server
+### Development Mode
 
+**Start the server** (binds to all interfaces - use only for development):
 ```bash
+export FLASK_DEBUG=true
 python luna_safety_core.py
 ```
 
 The API server will start on `http://0.0.0.0:5000`
+
+### Production Mode
+
+**⚠️ WARNING**: Do NOT use Flask's built-in development server for production. Use gunicorn instead:
+
+```bash
+export FLASK_DEBUG=false
+# Production deployment with gunicorn:
+gunicorn -w 4 -b 0.0.0.0:5000 luna_safety_core:app
+```
+
+When run directly with `python luna_safety_core.py` and `FLASK_DEBUG=false`, the server binds only to `127.0.0.1` for security.
 
 ### Run Tests
 
@@ -82,7 +98,15 @@ python -m unittest luna_safety_core.py
 
 Generates a JWT token for authentication (valid for 24 hours).
 
+**⚠️ SECURITY WARNING**: This endpoint is currently unauthenticated and allows anyone to generate tokens for any user_id. This is a **critical security vulnerability** for production use. Before deploying to production:
+1. Implement proper authentication (API keys, parent credentials, or OAuth)
+2. Validate that the requesting party is authorized to generate tokens for the specified user_id
+3. Consider implementing additional token claims (audience, issuer) for enhanced security
+
 **Rate limit**: 5 requests/minute
+
+**Query Parameters**:
+- `user_id` (required): User identifier
 
 **Response**:
 ```json
@@ -138,12 +162,14 @@ Authorization: Bearer <token>
       "toxic": true,
       "polarity": -0.4,
       "entity_count": 2,
-      "bad_entities": ["PERSON", "LOC"]
+      "detected_entities": ["PERSON", "LOC"]
     }
   },
   "status": "Alert dispatching..."
 }
 ```
+
+**Note on Privacy**: Alert messages sent to parents are generalized and do not include the actual message content or specific details to protect the child's privacy. Logs also redact sensitive information.
 
 ### 3. Check Location
 
@@ -218,15 +244,25 @@ Keyword detection uses weighted scoring (1.5x per match) for severity assessment
 ## Security Features
 
 1. **JWT Authentication**: All protected endpoints require valid JWT tokens
-2. **Rate Limiting**: 
+2. **SECRET_KEY Validation**: Application refuses to start without a secure SECRET_KEY
+3. **Rate Limiting**: 
    - `/auth_kid`: 5/minute
    - `/check_chat`: 10/minute
    - `/check_location`: 20/minute
    - Global: 200/day, 50/hour
-3. **Input Validation**: All inputs validated and sanitized
-4. **Structured Logging**: JSON logs with event tracking
-5. **Environment Secrets**: No hardcoded credentials
-6. **Graceful Degradation**: Continues operation if spaCy or Firebase unavailable
+4. **Input Validation**: 
+   - All inputs validated and sanitized
+   - Maximum message size: 10KB (prevents DoS attacks)
+   - JSON Content-Type validation
+5. **Privacy Protection**:
+   - Sensitive data redacted from logs (categories, entities)
+   - Alert messages generalized (no personal data exposed)
+   - Location coordinates omitted from alerts
+6. **Structured Logging**: JSON logs with event tracking (without sensitive data)
+7. **Environment Secrets**: No hardcoded credentials
+8. **Graceful Degradation**: Continues operation if spaCy or Firebase unavailable
+9. **Secure Host Binding**: Binds to localhost when debug mode is disabled
+10. **Improved Toxicity Detection**: Nuanced thresholds reduce false positives
 
 ## Testing
 

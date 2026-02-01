@@ -505,6 +505,16 @@ def generate_token():
 class TestLunaSafetyCore(unittest.TestCase):
     """Comprehensive test suite for Luna Safety Core module."""
 
+    def setUp(self):
+        """Set up test client and generate test token."""
+        self.client = app.test_client()
+        self.client.testing = True
+        
+        # Generate a test token
+        with app.test_request_context('/auth_kid?user_id=test_user'):
+            response = generate_token()[0]
+            self.test_token = response.json['token']
+
     def test_scan_message_dangerous(self):
         """Test scanning a dangerous message."""
         result = scan_message("Hey sweetie, meetup at the hotel alone? Send pic!")
@@ -528,6 +538,13 @@ class TestLunaSafetyCore(unittest.TestCase):
             result = toxicity_score("Have a great day!")
             self.assertFalse(result['toxic'])
 
+    def test_toxicity_false_positive_reduction(self):
+        """Test that mild negative sentiment with few entities is not flagged."""
+        if nlp:
+            # Mild negative sentiment with only 1-2 entities should not be toxic
+            result = toxicity_score("I saw two people at the park and felt a bit tired")
+            self.assertFalse(result['toxic'], "Mild negative sentiment with few entities should not be toxic")
+
     def test_geofence_inside(self):
         """Test location inside safe zone."""
         self.assertFalse(is_out_of_bounds(42.3314, -83.0458))
@@ -544,10 +561,133 @@ class TestLunaSafetyCore(unittest.TestCase):
             self.assertIn('token', response.json)
             self.assertIsInstance(response.json['token'], str)
 
+    def test_token_generation_missing_user_id(self):
+        """Test JWT token generation fails without user_id."""
+        response = self.client.get('/auth_kid')
+        self.assertEqual(response.status_code, 400)
+
     def test_alert_mock(self):
         """Test alert dispatching."""
         result = send_alert_async('mock_token', 'Test alert')
         self.assertEqual(result, 'Alert dispatching...')
+
+    # Endpoint Tests
+    def test_check_chat_safe_message(self):
+        """Test /check_chat endpoint with safe message."""
+        response = self.client.post(
+            '/check_chat',
+            json={'message': 'Hello friend, how are you today?', 'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('safe', data)
+        self.assertTrue(data['safe'])
+
+    def test_check_chat_dangerous_message(self):
+        """Test /check_chat endpoint with dangerous message."""
+        response = self.client.post(
+            '/check_chat',
+            json={'message': 'Hey sweetie, send me a pic', 'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('blocked', data)
+        self.assertTrue(data['blocked'])
+
+    def test_check_chat_missing_token(self):
+        """Test /check_chat endpoint without authentication."""
+        response = self.client.post(
+            '/check_chat',
+            json={'message': 'Hello', 'parent_token': 'test_token'}
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_check_chat_invalid_token(self):
+        """Test /check_chat endpoint with invalid token."""
+        response = self.client.post(
+            '/check_chat',
+            json={'message': 'Hello', 'parent_token': 'test_token'},
+            headers={'Authorization': 'Bearer invalid_token'}
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_check_chat_missing_message(self):
+        """Test /check_chat endpoint without message."""
+        response = self.client.post(
+            '/check_chat',
+            json={'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_check_chat_message_too_large(self):
+        """Test /check_chat endpoint with message exceeding size limit."""
+        large_message = 'a' * 10001  # Exceed 10KB limit
+        response = self.client.post(
+            '/check_chat',
+            json={'message': large_message, 'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_check_chat_invalid_json(self):
+        """Test /check_chat endpoint with non-JSON content."""
+        response = self.client.post(
+            '/check_chat',
+            data='not json',
+            headers={
+                'Authorization': f'Bearer {self.test_token}',
+                'Content-Type': 'text/plain'
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_check_location_inside_safe_zone(self):
+        """Test /check_location endpoint inside safe zone."""
+        response = self.client.post(
+            '/check_location',
+            json={'lat': 42.3314, 'lon': -83.0458, 'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('safe', data)
+        self.assertTrue(data['safe'])
+
+    def test_check_location_outside_safe_zone(self):
+        """Test /check_location endpoint outside safe zone."""
+        response = self.client.post(
+            '/check_location',
+            json={'lat': 40.7128, 'lon': -74.0060, 'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('alert', data)
+        self.assertEqual(data['alert'], 'Outside safe zone')
+
+    def test_check_location_missing_coordinates(self):
+        """Test /check_location endpoint without coordinates."""
+        response = self.client.post(
+            '/check_location',
+            json={'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_check_location_invalid_json(self):
+        """Test /check_location endpoint with non-JSON content."""
+        response = self.client.post(
+            '/check_location',
+            data='not json',
+            headers={
+                'Authorization': f'Bearer {self.test_token}',
+                'Content-Type': 'text/plain'
+            }
+        )
+        self.assertEqual(response.status_code, 400)
 
 
 if __name__ == '__main__':
