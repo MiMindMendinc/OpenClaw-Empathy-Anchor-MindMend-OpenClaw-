@@ -85,7 +85,7 @@ The skill checks for offline mode through:
 
 When offline mode is detected, responses include a privacy notice: "🔒 Privacy Mode: Your conversation is staying private"
 
-This is especially important for youth AI users in Owosso and across Michigan who need assurance that their conversations remain confidential.
+This is especially important for youth AI users in Owosso and across Michigan who need assurance that their conversations remain confidential. When running offline on a Raspberry Pi or similar device, no data is sent to the cloud, ensuring complete privacy.
 
 ## 🧪 Testing
 
