@@ -1,3 +1,6 @@
+# OpenClaw Empathy Anchor - MindMend
+
+Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan. Privacy-first tools for families.
 
 # OpenClaw Empathy Anchor - MindMend
 
@@ -10,6 +13,7 @@ The Empathy Anchor skill is a youth-focused mental health support tool that:
 - **Validates emotions** - Acknowledges and normalizes what young people are feeling
 - **Triggers on all messages** - Provides compassionate support throughout conversations
 - **Suggests Michigan resources** - Connects youth to NAMI Michigan, 988 Suicide & Crisis Lifeline, and other local support
+- **Privacy-first** - Detects offline mode and respects user privacy
 - **Privacy-first** - Detects offline mode and respects user privacy (especially important for youth in Owosso)
 - **Youth-appropriate** - Uses language and approaches designed for young people
 
@@ -74,6 +78,9 @@ The skill analyzes messages for:
 - **Text**: "HELLO" to 741741
 - **Available**: 24/7
 
+#### Teen Line
+- **Call**: 1-800-TLC-TEEN (852-8336)
+- **Services**: Peer support for teens
 #### Emergency
 - **Call**: 911
 - **When**: Immediate danger or life-threatening emergency
@@ -84,6 +91,7 @@ The skill checks for offline mode through:
 - Context system flags (`context.system.offlineMode`, `context.system.offline`, `context.system.networkStatus`)
 - Environment variable (`OFFLINE_MODE=true`)
 
+When offline mode is detected, responses include a privacy notice.
 When offline mode is detected, responses include a privacy notice: "🔒 Privacy Mode: Your conversation is staying private"
 
 This is especially important for youth AI users in Owosso and across Michigan who need assurance that their conversations remain confidential.
