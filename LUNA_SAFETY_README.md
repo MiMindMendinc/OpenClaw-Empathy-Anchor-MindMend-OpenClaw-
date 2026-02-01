@@ -293,7 +293,7 @@ MIT License - See LICENSE file
 ## Support
 
 For questions or issues:
-- Email: support@mimindmendinc.com
+- Email: support@michiganmindmend.com
 - GitHub: https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-
 
 ---
