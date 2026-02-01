@@ -300,7 +300,10 @@ def send_alert_async(parent_token: str, alert_msg: str) -> str:
         Status message
     """
     def _send():
-        if not firebase_admin._apps:
+        try:
+            # Ensure Firebase default app is initialized using public API
+            firebase_admin.get_app()
+        except ValueError:
             logger.warning({"event": "mock_alert", "message": alert_msg})
             return 'Mock alert sent'
 
