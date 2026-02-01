@@ -129,12 +129,14 @@ def scan_message(text: str) -> Dict[str, Any]:
             cat: [m for m in matches if m in [w.lower() for w in words]]
             for cat, words in DANGER_CATEGORIES.items()
         }
+        # Log only aggregate information (counts) to avoid leaking specific sensitive keywords
+        category_counts = {cat: len(words) for cat, words in categories.items()}
 
         logger.info({
             "event": "scan_message",
             "input_length": len(text),
             "matches": count,
-            "categories": categories
+            "category_counts": category_counts
         })
 
         # Weighted for severity
