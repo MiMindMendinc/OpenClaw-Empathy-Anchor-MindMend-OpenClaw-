@@ -13,7 +13,7 @@ The Luna Safety Core module provides enterprise-grade safety features for youth 
 - 📍 **Geofencing**: Location tracking with configurable safe zones
 - 🔔 **Async Alerts**: Non-blocking Firebase Cloud Messaging to parents
 - 🔐 **Secure Auth**: JWT token verification for all API endpoints
-- 🛡️ **Rate Limiting**: DDoS protection and abuse prevention
+- 🛡️ **Rate Limiting**: Request throttling and abuse prevention
 - 📊 **Structured Logging**: JSON logs for production monitoring
 
 ## Installation
