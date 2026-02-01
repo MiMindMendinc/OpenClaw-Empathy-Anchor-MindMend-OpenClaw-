@@ -393,7 +393,7 @@ def check_incoming():
                 'reason': 'potential threat',
                 'details': {'danger': flag1, 'toxicity': flag2},
                 'status': status
-            }), 200
+            }), 403
 
         return jsonify({'safe': True}), 200
 
