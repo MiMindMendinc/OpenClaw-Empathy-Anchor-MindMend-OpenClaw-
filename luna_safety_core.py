@@ -19,9 +19,10 @@ import sys
 import logging
 import re
 import string  # Import at module level for efficiency
+import uuid  # For request ID generation
 from math import radians, sin, cos, sqrt, atan2
 from datetime import datetime, timedelta, timezone
-from threading import Thread
+from threading import Thread, Lock
 from typing import Dict, Any, Optional, Tuple
 import os
 from dotenv import load_dotenv
@@ -378,7 +379,7 @@ def is_out_of_bounds(
 
 
 # 4. Send Alert: Async Firebase with mock fallback, rate limited
-# Simple circuit breaker state tracking
+# Thread-safe circuit breaker state tracking
 _alert_circuit_breaker = {
     'failure_count': 0,
     'last_failure_time': None,
@@ -386,11 +387,13 @@ _alert_circuit_breaker = {
     'threshold': 5,  # Open circuit after 5 failures
     'timeout': 60  # Reset after 60 seconds
 }
+_circuit_breaker_lock = Lock()  # Thread safety for circuit breaker state
 
 
 def send_alert_async(parent_token: str, alert_msg: str) -> str:
     """
     Send alert asynchronously via Firebase Cloud Messaging with circuit breaker pattern.
+    Thread-safe implementation for concurrent requests.
     
     Args:
         parent_token: Firebase device token
@@ -399,22 +402,25 @@ def send_alert_async(parent_token: str, alert_msg: str) -> str:
     Returns:
         Status message
     """
-    # Check circuit breaker status
-    if _alert_circuit_breaker['is_open']:
-        time_since_failure = (datetime.now(timezone.utc) - _alert_circuit_breaker['last_failure_time']).total_seconds()
-        if time_since_failure < _alert_circuit_breaker['timeout']:
-            logger.warning({
-                "event": "alert_circuit_open",
-                "message": "Alert circuit breaker is open, using fallback",
-                "retry_in": _alert_circuit_breaker['timeout'] - time_since_failure
-            })
-            # Still return success to not block the API, but alert won't be sent
-            return 'Alert queued (circuit breaker open)'
-        else:
-            # Reset circuit breaker
-            _alert_circuit_breaker['is_open'] = False
-            _alert_circuit_breaker['failure_count'] = 0
-            logger.info({"event": "alert_circuit_reset", "message": "Circuit breaker reset"})
+    # Check circuit breaker status (thread-safe)
+    with _circuit_breaker_lock:
+        if _alert_circuit_breaker['is_open']:
+            # Check if last_failure_time is set before computing time difference
+            if _alert_circuit_breaker['last_failure_time'] is not None:
+                time_since_failure = (datetime.now(timezone.utc) - _alert_circuit_breaker['last_failure_time']).total_seconds()
+                if time_since_failure < _alert_circuit_breaker['timeout']:
+                    logger.warning({
+                        "event": "alert_circuit_open",
+                        "message": "Alert circuit breaker is open, using fallback",
+                        "retry_in": _alert_circuit_breaker['timeout'] - time_since_failure
+                    })
+                    # Still return success to not block the API, but alert won't be sent
+                    return 'Alert queued (circuit breaker open)'
+                else:
+                    # Reset circuit breaker after timeout
+                    _alert_circuit_breaker['is_open'] = False
+                    _alert_circuit_breaker['failure_count'] = 0
+                    logger.info({"event": "alert_circuit_reset", "message": "Circuit breaker reset"})
     
     def _send() -> None:
         """Internal function to send alert in background thread with error tracking."""
@@ -430,28 +436,30 @@ def send_alert_async(parent_token: str, alert_msg: str) -> str:
         try:
             response = messaging.send(message)
             logger.info({"event": "alert_sent", "response": response})
-            # Reset failure count on success
-            _alert_circuit_breaker['failure_count'] = 0
+            # Reset failure count on success (thread-safe)
+            with _circuit_breaker_lock:
+                _alert_circuit_breaker['failure_count'] = 0
 
         except Exception as e:
-            # Track failures for circuit breaker
-            _alert_circuit_breaker['failure_count'] += 1
-            _alert_circuit_breaker['last_failure_time'] = datetime.now(timezone.utc)
-            
-            if _alert_circuit_breaker['failure_count'] >= _alert_circuit_breaker['threshold']:
-                _alert_circuit_breaker['is_open'] = True
+            # Track failures for circuit breaker (thread-safe)
+            with _circuit_breaker_lock:
+                _alert_circuit_breaker['failure_count'] += 1
+                _alert_circuit_breaker['last_failure_time'] = datetime.now(timezone.utc)
+                
+                if _alert_circuit_breaker['failure_count'] >= _alert_circuit_breaker['threshold']:
+                    _alert_circuit_breaker['is_open'] = True
+                    logger.error({
+                        "event": "alert_circuit_opened",
+                        "error": "Too many alert failures, opening circuit breaker",
+                        "failure_count": _alert_circuit_breaker['failure_count']
+                    })
+                
                 logger.error({
-                    "event": "alert_circuit_opened",
-                    "error": "Too many alert failures, opening circuit breaker",
+                    "event": "alert_failed",
+                    "error": str(e),
+                    "error_type": type(e).__name__,
                     "failure_count": _alert_circuit_breaker['failure_count']
                 })
-            
-            logger.error({
-                "event": "alert_failed",
-                "error": str(e),
-                "error_type": type(e).__name__,
-                "failure_count": _alert_circuit_breaker['failure_count']
-            })
 
     # Use daemon thread to prevent hanging on app shutdown
     thread = Thread(target=_send, daemon=True)
@@ -507,7 +515,6 @@ def check_incoming() -> Tuple[Response, int]:
     Returns:
         JSON with blocked/safe status and details
     """
-    import uuid
     request_id = str(uuid.uuid4())[:8]
     start_time = datetime.now(timezone.utc)
     
@@ -628,7 +635,6 @@ def track_location() -> Tuple[Response, int]:
     Returns:
         JSON with alert/safe status
     """
-    import uuid
     request_id = str(uuid.uuid4())[:8]
     start_time = datetime.now(timezone.utc)
     
@@ -741,7 +747,6 @@ def generate_token() -> Tuple[Response, int]:
     Returns:
         JSON with JWT token
     """
-    import uuid
     request_id = str(uuid.uuid4())[:8]
     start_time = datetime.now(timezone.utc)
     
