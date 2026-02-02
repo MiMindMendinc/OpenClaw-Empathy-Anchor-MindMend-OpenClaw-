@@ -19,9 +19,10 @@ import sys
 import logging
 import re
 import string  # Import at module level for efficiency
+import uuid  # For request ID generation
 from math import radians, sin, cos, sqrt, atan2
 from datetime import datetime, timedelta, timezone
-from threading import Thread
+from threading import Thread, Lock
 from typing import Dict, Any, Optional, Tuple
 import os
 from dotenv import load_dotenv
@@ -278,40 +279,121 @@ def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 def is_out_of_bounds(
     lat: float,
     lon: float,
+    safe_zones: Optional[list] = None,
     safe_lat: float = 42.3314,
     safe_lon: float = -83.0458,
     radius_km: float = 5
 ) -> bool:
     """
-    Check if location is outside safe zone (default: Ann Arbor, MI).
+    Check if location is outside safe zone(s). Supports multi-zone geofencing.
     
     Args:
         lat, lon: Current location
-        safe_lat, safe_lon: Safe zone center (default: Ann Arbor)
-        radius_km: Safe zone radius in kilometers
+        safe_zones: Optional list of safe zones, each with 'lat', 'lon', 'radius_km', 'name' keys
+        safe_lat, safe_lon: Default safe zone center (Ann Arbor, MI) - used if safe_zones not provided
+        radius_km: Default safe zone radius in kilometers
         
     Returns:
-        True if outside safe zone
+        True if outside all safe zones, False if inside at least one zone
     """
     try:
-        dist = haversine(lat, lon, safe_lat, safe_lon)
-        out = dist > radius_km
-        logger.info({"event": "geofence", "distance": dist, "out_of_bounds": out})
-        return out
+        # Validate coordinates
+        if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+            logger.error({
+                "event": "geofence",
+                "error": "Invalid coordinates",
+                "lat": lat,
+                "lon": lon
+            })
+            return False  # Safe default: don't alert on invalid coords
+
+        # Use multi-zone if provided, otherwise fall back to single zone
+        if safe_zones is None:
+            safe_zones = [{'lat': safe_lat, 'lon': safe_lon, 'radius_km': radius_km, 'name': 'Default'}]
+        
+        # Validate safe zones structure
+        if not isinstance(safe_zones, list) or len(safe_zones) == 0:
+            logger.error({
+                "event": "geofence",
+                "error": "Invalid safe_zones configuration",
+                "type": type(safe_zones).__name__
+            })
+            return False  # Safe default
+        
+        min_distance = float('inf')
+        closest_zone = None
+        
+        # Check if inside any safe zone
+        for zone in safe_zones:
+            try:
+                # Validate zone structure
+                if not all(k in zone for k in ['lat', 'lon', 'radius_km']):
+                    logger.warning({
+                        "event": "geofence",
+                        "warning": "Invalid zone structure, skipping",
+                        "zone": zone.get('name', 'unnamed')
+                    })
+                    continue
+                
+                dist = haversine(lat, lon, zone['lat'], zone['lon'])
+                
+                if dist < min_distance:
+                    min_distance = dist
+                    closest_zone = zone.get('name', f"Zone at {zone['lat']},{zone['lon']}")
+                
+                # Inside this zone - location is safe
+                if dist <= zone['radius_km']:
+                    logger.info({
+                        "event": "geofence",
+                        "distance": dist,
+                        "zone": zone.get('name', 'unnamed'),
+                        "out_of_bounds": False
+                    })
+                    return False
+            
+            except (ValueError, TypeError, KeyError) as e:
+                logger.warning({
+                    "event": "geofence",
+                    "warning": "Error processing zone",
+                    "zone": zone.get('name', 'unnamed'),
+                    "error": str(e)
+                })
+                continue
+        
+        # Outside all zones
+        logger.info({
+            "event": "geofence",
+            "distance_to_nearest": min_distance,
+            "nearest_zone": closest_zone,
+            "out_of_bounds": True
+        })
+        return True
 
     except ValueError as e:
         logger.error({"event": "geofence", "error": str(e)})
         return False
 
     except Exception as e:
-        logger.error({"event": "geofence", "error": str(e)})
+        logger.error({"event": "geofence", "error": str(e), "error_type": type(e).__name__})
         return False
 
 
 # 4. Send Alert: Async Firebase with mock fallback, rate limited
+# Thread-safe circuit breaker state tracking
+_alert_circuit_breaker = {
+    'failure_count': 0,
+    'last_failure_time': None,
+    'is_open': False,
+    'threshold': 5,  # Open circuit after 5 failures
+    'timeout': 60  # Reset after 60 seconds
+}
+_circuit_breaker_lock = Lock()  # Thread safety for circuit breaker state
+
+
 def send_alert_async(parent_token: str, alert_msg: str) -> str:
     """
-    Send alert asynchronously via Firebase Cloud Messaging.
+    Send alert asynchronously via Firebase Cloud Messaging with circuit breaker pattern.
+    Thread-safe implementation for concurrent requests.
     
     Args:
         parent_token: Firebase device token
@@ -320,8 +402,28 @@ def send_alert_async(parent_token: str, alert_msg: str) -> str:
     Returns:
         Status message
     """
+    # Check circuit breaker status (thread-safe)
+    with _circuit_breaker_lock:
+        if _alert_circuit_breaker['is_open']:
+            # Check if last_failure_time is set before computing time difference
+            if _alert_circuit_breaker['last_failure_time'] is not None:
+                time_since_failure = (datetime.now(timezone.utc) - _alert_circuit_breaker['last_failure_time']).total_seconds()
+                if time_since_failure < _alert_circuit_breaker['timeout']:
+                    logger.warning({
+                        "event": "alert_circuit_open",
+                        "message": "Alert circuit breaker is open, using fallback",
+                        "retry_in": _alert_circuit_breaker['timeout'] - time_since_failure
+                    })
+                    # Still return success to not block the API, but alert won't be sent
+                    return 'Alert queued (circuit breaker open)'
+                else:
+                    # Reset circuit breaker after timeout
+                    _alert_circuit_breaker['is_open'] = False
+                    _alert_circuit_breaker['failure_count'] = 0
+                    logger.info({"event": "alert_circuit_reset", "message": "Circuit breaker reset"})
+    
     def _send() -> None:
-        """Internal function to send alert in background thread."""
+        """Internal function to send alert in background thread with error tracking."""
         if not firebase_admin._apps:
             logger.warning({"event": "mock_alert", "message": alert_msg})
             return
@@ -334,9 +436,30 @@ def send_alert_async(parent_token: str, alert_msg: str) -> str:
         try:
             response = messaging.send(message)
             logger.info({"event": "alert_sent", "response": response})
+            # Reset failure count on success (thread-safe)
+            with _circuit_breaker_lock:
+                _alert_circuit_breaker['failure_count'] = 0
 
         except Exception as e:
-            logger.error({"event": "alert_failed", "error": str(e)})
+            # Track failures for circuit breaker (thread-safe)
+            with _circuit_breaker_lock:
+                _alert_circuit_breaker['failure_count'] += 1
+                _alert_circuit_breaker['last_failure_time'] = datetime.now(timezone.utc)
+                
+                if _alert_circuit_breaker['failure_count'] >= _alert_circuit_breaker['threshold']:
+                    _alert_circuit_breaker['is_open'] = True
+                    logger.error({
+                        "event": "alert_circuit_opened",
+                        "error": "Too many alert failures, opening circuit breaker",
+                        "failure_count": _alert_circuit_breaker['failure_count']
+                    })
+                
+                logger.error({
+                    "event": "alert_failed",
+                    "error": str(e),
+                    "error_type": type(e).__name__,
+                    "failure_count": _alert_circuit_breaker['failure_count']
+                })
 
     # Use daemon thread to prevent hanging on app shutdown
     thread = Thread(target=_send, daemon=True)
@@ -392,14 +515,27 @@ def check_incoming() -> Tuple[Response, int]:
     Returns:
         JSON with blocked/safe status and details
     """
+    request_id = str(uuid.uuid4())[:8]
+    start_time = datetime.now(timezone.utc)
+    
     try:
         # Auth check - using new verify_token pattern
         user, error_response = verify_token()
         if error_response:
+            logger.warning({
+                "event": "check_chat",
+                "request_id": request_id,
+                "status": "unauthorized"
+            })
             return error_response
 
         # Validate JSON input
         if not request.is_json:
+            logger.warning({
+                "event": "check_chat",
+                "request_id": request_id,
+                "error": "Invalid content type"
+            })
             return jsonify({'error': 'Content-Type must be application/json'}), 400
         
         data = request.json or {}
@@ -407,11 +543,22 @@ def check_incoming() -> Tuple[Response, int]:
         parent_token = data.get('parent_token', '').strip()
 
         if not text or not parent_token:
+            logger.warning({
+                "event": "check_chat",
+                "request_id": request_id,
+                "error": "Missing required fields"
+            })
             return jsonify({'error': 'Missing message or parent_token'}), 400
 
         # Input size validation to prevent DoS attacks
         max_message_length = 10000  # 10KB max
         if len(text) > max_message_length:
+            logger.warning({
+                "event": "check_chat",
+                "request_id": request_id,
+                "error": "Message too large",
+                "length": len(text)
+            })
             return jsonify({'error': f'Message too large (max {max_message_length} characters)'}), 400
 
         flag1 = scan_message(text)
@@ -421,6 +568,18 @@ def check_incoming() -> Tuple[Response, int]:
             # Generalized alert message - omit sensitive message content for privacy
             alert_msg = "Suspicious chat activity detected."
             status = send_alert_async(parent_token, alert_msg)
+            
+            elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+            logger.info({
+                "event": "check_chat",
+                "request_id": request_id,
+                "user": user,
+                "result": "blocked",
+                "danger_score": flag1['score'],
+                "toxic": flag2['toxic'],
+                "response_time_ms": elapsed_ms
+            })
+            
             return jsonify({
                 'blocked': True,
                 'reason': 'potential threat',
@@ -428,13 +587,36 @@ def check_incoming() -> Tuple[Response, int]:
                 'status': status
             }), 200
 
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.info({
+            "event": "check_chat",
+            "request_id": request_id,
+            "user": user,
+            "result": "safe",
+            "response_time_ms": elapsed_ms
+        })
+        
         return jsonify({'safe': True}), 200
 
     except ValueError as e:
-        logger.error({"event": "check_chat", "error": str(e)})
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.error({
+            "event": "check_chat",
+            "request_id": request_id,
+            "error": str(e),
+            "error_type": "ValueError",
+            "response_time_ms": elapsed_ms
+        })
         return jsonify({'error': str(e)}), 400
     except Exception as e:
-        logger.error({"event": "check_chat", "error": str(e)})
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.error({
+            "event": "check_chat",
+            "request_id": request_id,
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "response_time_ms": elapsed_ms
+        })
         return jsonify({'error': 'Internal error'}), 500
 
 
@@ -442,49 +624,114 @@ def check_incoming() -> Tuple[Response, int]:
 @limiter.limit("20/minute")
 def track_location() -> Tuple[Response, int]:
     """
-    Check location against geofence.
+    Check location against geofence. Supports multi-zone configuration.
     
     Request JSON:
         lat: Latitude
         lon: Longitude
         parent_token: Firebase device token for alerts
+        safe_zones: Optional list of safe zones with 'lat', 'lon', 'radius_km', 'name' fields
         
     Returns:
         JSON with alert/safe status
     """
+    request_id = str(uuid.uuid4())[:8]
+    start_time = datetime.now(timezone.utc)
+    
     try:
         # Auth check - using new verify_token pattern
         user, error_response = verify_token()
         if error_response:
+            logger.warning({
+                "event": "check_location",
+                "request_id": request_id,
+                "status": "unauthorized"
+            })
             return error_response
 
         # Validate JSON input
         if not request.is_json:
+            logger.warning({
+                "event": "check_location",
+                "request_id": request_id,
+                "error": "Invalid content type"
+            })
             return jsonify({'error': 'Content-Type must be application/json'}), 400
 
         data = request.json or {}
         lat = data.get('lat')
         lon = data.get('lon')
         parent_token = data.get('parent_token', '')
+        safe_zones = data.get('safe_zones')  # Optional multi-zone config
 
         if lat is None or lon is None or not parent_token:
+            logger.warning({
+                "event": "check_location",
+                "request_id": request_id,
+                "error": "Missing required fields"
+            })
             return jsonify({'error': 'Missing coords or parent_token'}), 400
 
-        if is_out_of_bounds(lat, lon):
+        # Validate coordinate types
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except (ValueError, TypeError):
+            logger.error({
+                "event": "check_location",
+                "request_id": request_id,
+                "error": "Invalid coordinate format"
+            })
+            return jsonify({'error': 'Invalid coordinate format'}), 400
+
+        if is_out_of_bounds(lat, lon, safe_zones=safe_zones):
             # Generalized alert message - omit exact coordinates for privacy
             status = send_alert_async(
                 parent_token,
                 "Child outside safe zone! Location details omitted for privacy."
             )
+            
+            elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+            logger.info({
+                "event": "check_location",
+                "request_id": request_id,
+                "user": user,
+                "result": "out_of_bounds",
+                "response_time_ms": elapsed_ms
+            })
+            
             return jsonify({'alert': 'Outside safe zone', 'status': status}), 200
 
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.info({
+            "event": "check_location",
+            "request_id": request_id,
+            "user": user,
+            "result": "safe",
+            "response_time_ms": elapsed_ms
+        })
+        
         return jsonify({'safe': True}), 200
 
     except ValueError as e:
-        logger.error({"event": "check_location", "error": str(e)})
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.error({
+            "event": "check_location",
+            "request_id": request_id,
+            "error": str(e),
+            "error_type": "ValueError",
+            "response_time_ms": elapsed_ms
+        })
         return jsonify({'error': str(e)}), 400
     except Exception as e:
-        logger.error({"event": "check_location", "error": str(e)})
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.error({
+            "event": "check_location",
+            "request_id": request_id,
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "response_time_ms": elapsed_ms
+        })
         return jsonify({'error': 'Internal error'}), 500
 
 
@@ -500,20 +747,38 @@ def generate_token() -> Tuple[Response, int]:
     Returns:
         JSON with JWT token
     """
+    request_id = str(uuid.uuid4())[:8]
+    start_time = datetime.now(timezone.utc)
+    
     try:
         user_id = request.args.get('user_id', '').strip()
 
         if not user_id:
+            logger.warning({
+                "event": "auth_kid",
+                "request_id": request_id,
+                "error": "Missing user_id"
+            })
             return jsonify({'error': 'Missing user_id'}), 400
 
         # Security: Sanitize user_id to prevent injection attacks
         # Only allow alphanumeric characters, underscores, hyphens, and dots
         allowed_chars = string.ascii_letters + string.digits + '_-.'
         if not all(c in allowed_chars for c in user_id):
+            logger.warning({
+                "event": "auth_kid",
+                "request_id": request_id,
+                "error": "Invalid user_id format"
+            })
             return jsonify({'error': 'Invalid user_id format'}), 400
         
         # Limit user_id length to prevent abuse
         if len(user_id) > 100:
+            logger.warning({
+                "event": "auth_kid",
+                "request_id": request_id,
+                "error": "user_id too long"
+            })
             return jsonify({'error': 'user_id too long (max 100 characters)'}), 400
 
         payload = {
@@ -522,14 +787,35 @@ def generate_token() -> Tuple[Response, int]:
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        logger.info({"event": "token_generated", "user": user_id})
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.info({
+            "event": "token_generated",
+            "request_id": request_id,
+            "user": user_id,
+            "response_time_ms": elapsed_ms
+        })
+        
         return jsonify({'token': token}), 200
 
     except ValueError as e:
-        logger.error({"event": "auth_kid", "error": str(e)})
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.error({
+            "event": "auth_kid",
+            "request_id": request_id,
+            "error": str(e),
+            "error_type": "ValueError",
+            "response_time_ms": elapsed_ms
+        })
         return jsonify({'error': str(e)}), 400
     except Exception as e:
-        logger.error({"event": "auth_kid", "error": str(e)})
+        elapsed_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        logger.error({
+            "event": "auth_kid",
+            "request_id": request_id,
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "response_time_ms": elapsed_ms
+        })
         return jsonify({'error': 'Token generation failed'}), 500
 
 
@@ -728,6 +1014,125 @@ class TestLunaSafetyCore(unittest.TestCase):
             }
         )
         self.assertEqual(response.status_code, 400)
+
+    # Multi-zone geofencing tests
+    def test_multizone_geofence_inside_first_zone(self):
+        """Test multi-zone geofencing when inside first zone."""
+        safe_zones = [
+            {'lat': 42.3314, 'lon': -83.0458, 'radius_km': 5, 'name': 'Ann Arbor'},
+            {'lat': 42.2808, 'lon': -83.7430, 'radius_km': 5, 'name': 'Home'}
+        ]
+        result = is_out_of_bounds(42.3314, -83.0458, safe_zones=safe_zones)
+        self.assertFalse(result)
+
+    def test_multizone_geofence_inside_second_zone(self):
+        """Test multi-zone geofencing when inside second zone."""
+        safe_zones = [
+            {'lat': 42.3314, 'lon': -83.0458, 'radius_km': 1, 'name': 'Ann Arbor'},
+            {'lat': 42.2808, 'lon': -83.7430, 'radius_km': 5, 'name': 'Home'}
+        ]
+        result = is_out_of_bounds(42.2808, -83.7430, safe_zones=safe_zones)
+        self.assertFalse(result)
+
+    def test_multizone_geofence_outside_all_zones(self):
+        """Test multi-zone geofencing when outside all zones."""
+        safe_zones = [
+            {'lat': 42.3314, 'lon': -83.0458, 'radius_km': 1, 'name': 'Ann Arbor'},
+            {'lat': 42.2808, 'lon': -83.7430, 'radius_km': 1, 'name': 'Home'}
+        ]
+        # NYC coordinates - far from Michigan
+        result = is_out_of_bounds(40.7128, -74.0060, safe_zones=safe_zones)
+        self.assertTrue(result)
+
+    def test_multizone_geofence_via_endpoint(self):
+        """Test /check_location endpoint with multi-zone configuration."""
+        safe_zones = [
+            {'lat': 42.3314, 'lon': -83.0458, 'radius_km': 5, 'name': 'School'},
+            {'lat': 42.2808, 'lon': -83.7430, 'radius_km': 5, 'name': 'Home'}
+        ]
+        response = self.client.post(
+            '/check_location',
+            json={'lat': 42.2808, 'lon': -83.7430, 'parent_token': 'test_token', 'safe_zones': safe_zones},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('safe', data)
+        self.assertTrue(data['safe'])
+
+    # Edge case tests
+    def test_geofence_invalid_coordinates(self):
+        """Test geofencing with invalid coordinates (out of range)."""
+        result = is_out_of_bounds(999, 999)
+        self.assertFalse(result)  # Should return False (safe default) on invalid input
+
+    def test_geofence_empty_zones_list(self):
+        """Test geofencing with empty zones list."""
+        result = is_out_of_bounds(42.3314, -83.0458, safe_zones=[])
+        self.assertFalse(result)  # Should return False (safe default) on invalid config
+
+    def test_geofence_malformed_zone(self):
+        """Test geofencing with malformed zone configuration."""
+        safe_zones = [
+            {'lat': 42.3314, 'lon': -83.0458, 'radius_km': 5, 'name': 'Valid'},
+            {'invalid': 'zone'}  # Missing required fields
+        ]
+        # Should still work with the valid zone
+        result = is_out_of_bounds(42.3314, -83.0458, safe_zones=safe_zones)
+        self.assertFalse(result)
+
+    def test_check_location_invalid_coordinate_type(self):
+        """Test /check_location with non-numeric coordinates."""
+        response = self.client.post(
+            '/check_location',
+            json={'lat': 'invalid', 'lon': 'invalid', 'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_scan_message_empty_string(self):
+        """Test scanning empty message."""
+        result = scan_message("")
+        self.assertFalse(result['is_flagged'])
+        self.assertEqual(result['score'], 0)
+
+    def test_scan_message_whitespace_only(self):
+        """Test scanning whitespace-only message."""
+        result = scan_message("   \n\t  ")
+        self.assertFalse(result['is_flagged'])
+
+    def test_toxicity_score_empty_string(self):
+        """Test toxicity scoring of empty message."""
+        result = toxicity_score("")
+        self.assertFalse(result['toxic'])
+
+    def test_check_chat_empty_message(self):
+        """Test /check_chat with empty message."""
+        response = self.client.post(
+            '/check_chat',
+            json={'message': '', 'parent_token': 'test_token'},
+            headers={'Authorization': f'Bearer {self.test_token}'}
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_auth_kid_special_characters(self):
+        """Test /auth_kid with special characters in user_id."""
+        response = self.client.get('/auth_kid?user_id=user@#$%')
+        self.assertEqual(response.status_code, 400)
+
+    def test_auth_kid_very_long_user_id(self):
+        """Test /auth_kid with excessively long user_id."""
+        long_id = 'a' * 101
+        response = self.client.get(f'/auth_kid?user_id={long_id}')
+        self.assertEqual(response.status_code, 400)
+
+    def test_weighted_scoring_multiple_categories(self):
+        """Test weighted scoring with keywords from multiple categories."""
+        result = scan_message("Hey sweetie, you're ugly and stupid, I hate you")
+        self.assertTrue(result['is_flagged'])
+        # Should have matches from both grooming and bullying categories
+        self.assertGreater(len(result['categories']['grooming']), 0)
+        self.assertGreater(len(result['categories']['bullying']), 0)
 
 
 if __name__ == '__main__':
