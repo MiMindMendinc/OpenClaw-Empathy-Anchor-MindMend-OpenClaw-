@@ -435,7 +435,13 @@ def track_location():
                 parent_token,
                 f"Child outside safe zone! Loc: {lat}, {lon}"
             )
-            return jsonify({'alert': 'Outside safe zone', 'status': status}), 200
+            return jsonify({
+                'alert': 'Outside safe zone',
+                'blocked': True,
+                'reason': 'Outside safe zone',
+                'details': {'lat': lat, 'lon': lon},
+                'status': status
+            }), 200
 
         return jsonify({'safe': True}), 200
 
