@@ -18,23 +18,24 @@ Dependencies: flask, jwt, firebase-admin, spacy, spacytextblob, flask-limiter
 import sys
 import logging
 import re
+import string  # Import at module level for efficiency
 from math import radians, sin, cos, sqrt, atan2
 from datetime import datetime, timedelta, timezone
 from threading import Thread
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Tuple
 import os
 from dotenv import load_dotenv
 
 load_dotenv()  # Load env vars for secrets
 
 import jwt
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, Response
 import firebase_admin
 from firebase_admin import credentials, messaging
 import spacy
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import unittest
+
 # Note: spacytextblob adds .blob attribute to spaCy Doc objects via pipeline
 
 # Setup structured logging - JSON for easy monitoring in prod (must be before using logger)
@@ -79,8 +80,16 @@ except Exception as e:
     })
 
 # Mock function for Firebase messaging (module level for proper scoping)
-def messaging_send_mock(message):
-    """Mock Firebase messaging when Firebase is not available."""
+def messaging_send_mock(message) -> str:
+    """
+    Mock Firebase messaging when Firebase is not available.
+    
+    Args:
+        message: Firebase message object
+        
+    Returns:
+        Status string
+    """
     logger.warning({"event": "mock_alert", "message": message.notification.body})
     return 'Mock alert sent'
 
@@ -311,10 +320,11 @@ def send_alert_async(parent_token: str, alert_msg: str) -> str:
     Returns:
         Status message
     """
-    def _send():
+    def _send() -> None:
+        """Internal function to send alert in background thread."""
         if not firebase_admin._apps:
             logger.warning({"event": "mock_alert", "message": alert_msg})
-            return 'Mock alert sent'
+            return
 
         message = messaging.Message(
             notification=messaging.Notification(title='Luna Alert!', body=alert_msg),
@@ -324,18 +334,18 @@ def send_alert_async(parent_token: str, alert_msg: str) -> str:
         try:
             response = messaging.send(message)
             logger.info({"event": "alert_sent", "response": response})
-            return 'Alert sent'
 
         except Exception as e:
             logger.error({"event": "alert_failed", "error": str(e)})
-            return f'Push failed: {str(e)}'
 
-    Thread(target=_send).start()
+    # Use daemon thread to prevent hanging on app shutdown
+    thread = Thread(target=_send, daemon=True)
+    thread.start()
     return 'Alert dispatching...'
 
 
 # JWT Token Verification Middleware  
-def verify_token():
+def verify_token() -> Tuple[Optional[str], Optional[Tuple[Response, int]]]:
     """
     Verify JWT token from Authorization header.
     
@@ -357,6 +367,11 @@ def verify_token():
     except jwt.InvalidTokenError:
         return None, (jsonify({'error': 'Invalid token'}), 401)
 
+    except KeyError:
+        # Token doesn't contain 'user' field
+        logger.error({"event": "token_verify", "error": "Missing user field in token"})
+        return None, (jsonify({'error': 'Invalid token format'}), 401)
+
     except Exception as e:
         logger.error({"event": "token_verify", "error": str(e)})
         return None, (jsonify({'error': 'Token verification failed'}), 500)
@@ -366,7 +381,7 @@ def verify_token():
 
 @app.route('/check_chat', methods=['POST'])
 @limiter.limit("10/minute")  # Rate limit to prevent spam
-def check_incoming():
+def check_incoming() -> Tuple[Response, int]:
     """
     Check incoming chat message for threats.
     
@@ -425,7 +440,7 @@ def check_incoming():
 
 @app.route('/check_location', methods=['POST'])
 @limiter.limit("20/minute")
-def track_location():
+def track_location() -> Tuple[Response, int]:
     """
     Check location against geofence.
     
@@ -475,7 +490,7 @@ def track_location():
 
 @app.route('/auth_kid', methods=['GET'])
 @limiter.limit("5/minute")
-def generate_token():
+def generate_token() -> Tuple[Response, int]:
     """
     Generate JWT authentication token.
     
@@ -493,7 +508,6 @@ def generate_token():
 
         # Security: Sanitize user_id to prevent injection attacks
         # Only allow alphanumeric characters, underscores, hyphens, and dots
-        import string
         allowed_chars = string.ascii_letters + string.digits + '_-.'
         if not all(c in allowed_chars for c in user_id):
             return jsonify({'error': 'Invalid user_id format'}), 400
@@ -517,6 +531,10 @@ def generate_token():
     except Exception as e:
         logger.error({"event": "auth_kid", "error": str(e)})
         return jsonify({'error': 'Token generation failed'}), 500
+
+
+# Import unittest here for test class to avoid polluting main module namespace
+import unittest
 
 
 # Expanded Test Suite with unittest (run with python -m unittest luna_safety_core.py)
