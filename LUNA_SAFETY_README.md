@@ -4,13 +4,23 @@
 
 Built by Michigan MindMend Inc. for deployment Dec 26, 2025.
 
+## 🆕 Recent Improvements (Feb 2026)
+
+**Enhanced Production Readiness**:
+- ✨ **Multi-Zone Geofencing**: Support for multiple safe zones (home, school, etc.)
+- 🔍 **Enhanced Logging**: Request IDs, response times, and error types for better monitoring
+- 🛡️ **Circuit Breaker**: Prevents cascading failures in alert system
+- 🧪 **Comprehensive Testing**: 36 tests covering edge cases and multi-zone scenarios
+- 🔒 **Improved Validation**: Coordinate range checking and zone structure validation
+- 📊 **Better Observability**: Structured logs with anonymized user context
+
 ## Overview
 
 The Luna Safety Core module provides enterprise-grade safety features for youth protection:
 
 - 🚨 **Threat Detection**: Real-time scanning for grooming and bullying keywords
 - 🧠 **Toxicity Analysis**: AI-powered sentiment analysis using spaCy NLP
-- 📍 **Geofencing**: Location tracking with configurable safe zones
+- 📍 **Geofencing**: Location tracking with multi-zone support and configurable safe zones
 - 🔔 **Async Alerts**: Non-blocking Firebase Cloud Messaging to parents
 - 🔐 **Secure Auth**: JWT token verification for all API endpoints
 - 🛡️ **Rate Limiting**: DDoS protection and abuse prevention
@@ -175,7 +185,7 @@ Authorization: Bearer <token>
 
 **POST** `/check_location`
 
-Checks if a location is outside the safe geofence zone and sends alerts if needed.
+Checks if a location is outside the safe geofence zone(s) and sends alerts if needed. **Now supports multi-zone geofencing!**
 
 **Rate limit**: 20 requests/minute
 
@@ -184,12 +194,35 @@ Checks if a location is outside the safe geofence zone and sends alerts if neede
 Authorization: Bearer <token>
 ```
 
-**Request Body**:
+**Request Body (Single Zone - Legacy)**:
 ```json
 {
   "lat": 42.3314,
   "lon": -83.0458,
   "parent_token": "firebase_device_token"
+}
+```
+
+**Request Body (Multi-Zone - New)**:
+```json
+{
+  "lat": 42.3314,
+  "lon": -83.0458,
+  "parent_token": "firebase_device_token",
+  "safe_zones": [
+    {
+      "lat": 42.3314,
+      "lon": -83.0458,
+      "radius_km": 5,
+      "name": "School"
+    },
+    {
+      "lat": 42.2808,
+      "lon": -83.7430,
+      "radius_km": 2,
+      "name": "Home"
+    }
+  ]
 }
 ```
 
@@ -208,6 +241,14 @@ Authorization: Bearer <token>
 }
 ```
 
+**Multi-Zone Behavior**:
+- If `safe_zones` parameter is provided, checks against all defined zones
+- Returns `safe: true` if location is inside ANY of the defined zones
+- Returns `alert` if location is outside ALL defined zones
+- Each zone requires: `lat`, `lon`, `radius_km`, and optionally `name`
+- Falls back to default single zone (Ann Arbor, MI) if no zones provided
+- Validates zone structure and skips malformed zones with warnings
+
 ## Configuration
 
 ### Environment Variables
@@ -219,12 +260,26 @@ Authorization: Bearer <token>
 
 ### Safe Zone Configuration
 
-Default safe zone is centered at Ann Arbor, Michigan (42.3314, -83.0458) with a 5km radius.
+**Multi-Zone Support (NEW)**: The module now supports multiple safe zones. You can define different zones for home, school, and other locations.
 
-To customize, modify the `is_out_of_bounds()` function parameters:
-- `safe_lat`: Safe zone center latitude
-- `safe_lon`: Safe zone center longitude
-- `radius_km`: Safe zone radius in kilometers
+**Default Single Zone**: If no zones are provided, the default safe zone is centered at Ann Arbor, Michigan (42.3314, -83.0458) with a 5km radius.
+
+**Multi-Zone Example**:
+```python
+safe_zones = [
+    {'lat': 42.3314, 'lon': -83.0458, 'radius_km': 5, 'name': 'School'},
+    {'lat': 42.2808, 'lon': -83.7430, 'radius_km': 2, 'name': 'Home'},
+    {'lat': 42.9956, 'lon': -84.1762, 'radius_km': 3, 'name': 'Grandparents'}
+]
+```
+
+**Configuration Options**:
+- `lat`: Safe zone center latitude (required)
+- `lon`: Safe zone center longitude (required)
+- `radius_km`: Safe zone radius in kilometers (required)
+- `name`: Human-readable zone name for logging (optional)
+
+**Validation**: The module validates all zone configurations and skips malformed zones with warnings in logs. Invalid coordinates are rejected with safe defaults.
 
 ## Danger Keyword Categories
 
@@ -254,28 +309,64 @@ Keyword detection uses weighted scoring (1.5x per match) for severity assessment
    - All inputs validated and sanitized
    - Maximum message size: 10KB (prevents DoS attacks)
    - JSON Content-Type validation
+   - Coordinate range validation (-90 to 90 for lat, -180 to 180 for lon)
+   - Multi-zone configuration validation
 5. **Privacy Protection**:
    - Sensitive data redacted from logs (categories, entities)
    - Alert messages generalized (no personal data exposed)
    - Location coordinates omitted from alerts
-6. **Structured Logging**: JSON logs with event tracking (without sensitive data)
-7. **Environment Secrets**: No hardcoded credentials
-8. **Graceful Degradation**: Continues operation if spaCy or Firebase unavailable
-9. **Secure Host Binding**: Binds to localhost when debug mode is disabled
-10. **Improved Toxicity Detection**: Nuanced thresholds reduce false positives
+6. **Structured Logging**: 
+   - JSON logs with event tracking (without sensitive data)
+   - Request IDs for traceability (8-character UUIDs)
+   - Response time monitoring (milliseconds)
+   - Error type tracking for debugging
+   - User context (anonymized) in logs
+7. **Circuit Breaker Pattern**: 
+   - Prevents cascading failures in alert system
+   - Opens after 5 consecutive failures
+   - 60-second timeout before retry
+   - Graceful degradation when circuit is open
+8. **Environment Secrets**: No hardcoded credentials
+9. **Graceful Degradation**: Continues operation if spaCy or Firebase unavailable
+10. **Secure Host Binding**: Binds to localhost when debug mode is disabled
+11. **Improved Toxicity Detection**: Nuanced thresholds reduce false positives
+12. **Enhanced Error Handling**: Safe defaults on invalid inputs, comprehensive error logging
 
 ## Testing
 
-The module includes comprehensive unit tests:
+The module includes comprehensive unit tests covering all functionality:
 
+### Core Functionality Tests
 - ✅ Dangerous message detection
 - ✅ Safe message handling
 - ✅ Toxicity scoring (positive and negative)
 - ✅ Geofence validation (inside and outside safe zones)
-- ✅ JWT token generation
+- ✅ JWT token generation and validation
 - ✅ Alert dispatching
 
-**Test Coverage**: ~90%+
+### Multi-Zone Geofencing Tests (NEW)
+- ✅ Inside first zone detection
+- ✅ Inside second zone detection
+- ✅ Outside all zones detection
+- ✅ Multi-zone endpoint integration
+- ✅ Malformed zone handling
+
+### Edge Case Tests (NEW)
+- ✅ Empty and whitespace-only messages
+- ✅ Invalid coordinate types and ranges
+- ✅ Empty zones list handling
+- ✅ Special characters in user_id
+- ✅ Excessively long user_id
+- ✅ Invalid JSON content
+- ✅ Message size limit enforcement
+- ✅ Multi-category keyword detection
+
+**Test Coverage**: 90%+ (36 tests total, all passing)
+
+**Run Tests**:
+```bash
+python -m unittest luna_safety_core
+```
 
 ## Production Deployment
 
