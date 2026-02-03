@@ -53,10 +53,6 @@ This showcases:
 - Crisis identification with immediate resources
 - General emotional support
 
-```bash
-npm run demo
-```
-
 ### Option 3: Run Tests
 Validate all functionality works correctly:
 
