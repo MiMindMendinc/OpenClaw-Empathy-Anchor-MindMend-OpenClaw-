@@ -5,7 +5,7 @@
 A Node.js-based fork of OpenClaw.ai featuring a core 'empathy-anchor' skill that wraps all responses in compassionate language designed specifically for youth mental health support. Built with privacy as a priority, this tool operates offline to ensure conversations remain confidential and secure.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen.svg)](https://nodejs.org/)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![CI/CD](https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-/actions/workflows/ci.yml/badge.svg)](https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-/actions)
 
@@ -51,8 +51,9 @@ cd OpenClaw-Empathy-Anchor-MindMend-OpenClaw-
 
 ### Requirements
 
-- Node.js 14.0.0 or higher
-- No internet connection required (privacy-first offline mode)
+- **Node.js 22.0.0 or higher** (required by OpenClaw dependency)
+- npm (comes with Node.js)
+- No internet connection required for basic features (privacy-first offline mode)
 
 ### Running the Interactive Chat
 
@@ -94,7 +95,7 @@ The Empathy Anchor skill is a youth-focused mental health support tool that:
 
 ### Prerequisites
 
-- Node.js 18.0.0 or higher
+- **Node.js 22.0.0 or higher** (required by OpenClaw dependency)
 - npm (comes with Node.js)
 
 ### Setup
@@ -106,6 +107,8 @@ The Empathy Anchor skill is a youth-focused mental health support tool that:
    ```
 
 2. **Install dependencies**
+
+   > **Note**: You may see security warnings about vulnerabilities in transitive dependencies (via `openclaw` -> `node-llama-cpp` -> `cmake-js` -> `tar`). These are inherited from the OpenClaw package and do not affect the core empathy-anchor functionality which runs independently.
    ```bash
    npm install
    ```
@@ -494,7 +497,7 @@ The Empathy Anchor skill is a youth-focused mental health support tool that:
 
 ### Prerequisites
 
-- Node.js 18.0.0 or higher
+- **Node.js 22.0.0 or higher** (required by OpenClaw dependency)
 - npm (comes with Node.js)
 
 ### Setup
@@ -681,9 +684,11 @@ This repository integrates the [OpenClaw](https://github.com/openclaw/openclaw) 
 
 ## Prerequisites
 
-- **Node.js** 22 or higher
+- **Node.js 22.0.0 or higher** (required by OpenClaw dependency)
 - **npm** or **pnpm**
 - An API key from [Anthropic](https://anthropic.com) (recommended) or [OpenAI](https://openai.com)
+
+> **Note**: The OpenClaw CLI commands (`npm run setup`, `npm run dev`, `npm run install-openclaw`) require Node.js 22.0.0 or higher. The basic empathy-anchor functionality (`npm start`, `npm test`) works with this version.
 
 ## Quick Start
 
