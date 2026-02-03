@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "node test/empathy-anchor.test.js",
+    "demo": "node demo.js",
     "install-openclaw": "npm install -g openclaw@latest",
     "setup": "openclaw onboard",
     "dev": "openclaw dev"
@@ -29,6 +30,6 @@
     "openclaw": "^2026.1.30"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   }
 }
