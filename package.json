@@ -1,63 +1,15 @@
 {
-  "name": "openclaw-empathy-anchor",
+  "name": "kid-helper-ai",
   "version": "1.0.0",
-  "description": "OpenClaw.ai fork with empathy-anchor skill for youth mental health support - privacy-first offline AI",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "node test/empathy-anchor.test.js",
-    "demo": "node examples/demo.js"
+  "description": "Telegram bot with empathy + OpenAI",
+  "main": "app.js",
+  "start,node.js" {
+    "start": "node app.js"
   },
-  "keywords": [
-    "mental-health",
-    "empathy",
-    "youth-support",
-    "offline-ai",
-    "privacy-first",
-    "openclaw"
-  ],
-  "author": "MiMindMendinc",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-.git"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  "name": "openclaw-empathy-anchor-mindmend",
-  "version": "1.0.0",
-  "description": "Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan. Privacy-first tools for families.",
-  "main": "index.js",
-  "scripts": {
-    "test": "node --test tests/*.test.js"
-  },
-  "keywords": ["openclaw", "empathy", "mental-health", "youth", "michigan", "privacy", "offline-first"],
-  "author": "MiMindMendinc",
-  "license": "ISC",
-  "engines": {
-    "node": ">=18.0.0"
-  "description": "Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "install-openclaw": "npm install -g openclaw@latest",
-    "setup": "openclaw onboard",
-    "dev": "openclaw dev"
-  },
-  "keywords": [
-    "openclaw",
-    "ai",
-    "mental-health",
-    "empathy",
-    "youth-support"
-  ],
-  "author": "Lyle Perrien II, Michigan MindMend Inc.",
-  "license": "MIT",
+  "author": "p_perrien",
   "dependencies": {
-    "openclaw": "^2026.1.30"
-  },
-  "engines": {
-    "node": ">=22"
+    "dotenv": "^16.4.5",
+    "openai": "^4.0.0",
+    "telegraf": "^4.16.3"
   }
 }
