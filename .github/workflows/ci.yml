@@ -1,0 +1,7 @@
+on:
+  push:
+    branches:
+      - main
+permissions:
+  security-events: read  # Fix for SARIF upload to Security tab
+# ... (other original contents remain here)

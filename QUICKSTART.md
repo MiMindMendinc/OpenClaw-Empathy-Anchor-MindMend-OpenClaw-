@@ -1,5 +1,28 @@
 # Quick Start Guide
 
+## Prerequisites
+
+- **Node.js 22.0.0 or higher** (required by OpenClaw dependency)
+- npm (comes with Node.js)
+
+Check your version: `node --version`
+
+If you need to upgrade, visit [nodejs.org](https://nodejs.org/)
+
+## Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-.git
+cd OpenClaw-Empathy-Anchor-MindMend-OpenClaw-
+
+# 2. Install dependencies
+npm install
+
+# 3. Verify installation
+npm test
+```
+
 ## Running OpenClaw Empathy Anchor
 
 ### Option 1: Interactive Chat Mode
@@ -18,11 +41,17 @@ OpenClaw: [Compassionate response with emotion validation and resources]
 Type `exit` to quit.
 
 ### Option 2: Run Demo Examples
-See 5 example scenarios demonstrating different emotional states and crisis detection:
+See example scenarios demonstrating emotion detection, crisis handling, and resource provision:
 
 ```bash
 npm run demo
 ```
+
+This showcases:
+- Anxiety detection and support
+- Sadness validation
+- Crisis identification with immediate resources
+- General emotional support
 
 ### Option 3: Run Tests
 Validate all functionality works correctly:
