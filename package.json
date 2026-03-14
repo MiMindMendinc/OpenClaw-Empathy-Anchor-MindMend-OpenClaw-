@@ -1,18 +1,4 @@
 {
-<<<<<<< HEAD
-  "name": "kid-helper-ai",
-  "version": "1.0.0",
-  "description": "Telegram bot with empathy + OpenAI",
-  "main": "app.js",
-  "start,node.js" {
-    "start": "node app.js"
-  },
-  "author": "p_perrien",
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "openai": "^4.0.0",
-    "telegraf": "^4.16.3"
-=======
   "name": "openclaw-empathy-anchor-mindmend",
   "version": "1.0.0",
   "description": "Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan. Privacy-first tools for families.",
@@ -45,6 +31,5 @@
   },
   "engines": {
     "node": ">=22.0.0"
->>>>>>> 3ef6c861b8f2584d1e3d3e515b2cdacf0cab8876
   }
 }

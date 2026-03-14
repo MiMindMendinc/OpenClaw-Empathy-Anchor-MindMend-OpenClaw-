@@ -1,0 +1,38 @@
+services:
+  empathy-anchor:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./data/journals:/app/data/journals
+    environment:
+      - OFFLINE_MODE=true
+      - FLASK_ENV=production
+    security_opt:
+      - no-new-privileges
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '0.5'
+    restart: unless-stopped
+
+  # Optional Ollama service for local LLM inference
+  # Uncomment to enable local AI models
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ./models:/root/.ollama
+  #   environment:
+  #     - OLLAMA_HOST=0.0.0.0
+  #   security_opt:
+  #     - no-new-privileges
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 2g
+  #         cpus: '1.0'
+  #   restart: unless-stopped
