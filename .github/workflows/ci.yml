@@ -1,7 +1,39 @@
+name: CI
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
 permissions:
-  security-events: read  # Fix for SARIF upload to Security tab
-# ... (other original contents remain here)
+  contents: read
+
+jobs:
+  node-tests:
+    name: Node.js tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Smoke test CLI import
+        run: node -e "const OpenClaw=require('./index'); const app=new OpenClaw(); const result=app.chat('I feel anxious today'); if (!result.response || !result.metadata) process.exit(1); console.log('Smoke test passed');"
