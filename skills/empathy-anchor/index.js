@@ -9,16 +9,43 @@
 
 const crypto = require('node:crypto');
 
+const MICHIGAN_RESOURCES = Object.freeze({
+  suicide988: {
+    name: '988 Suicide & Crisis Lifeline',
+    contact: 'Call or Text 988',
+    availability: '24/7',
+    description: 'Free, confidential crisis support in the United States.',
+  },
+  crisisTextLine: {
+    name: 'Crisis Text Line',
+    contact: 'Text HOME to 741741',
+    availability: '24/7',
+    description: 'Free crisis support by text message.',
+  },
+  namiMichigan: {
+    name: 'NAMI Michigan',
+    helpline: '1-800-950-NAMI',
+    website: 'https://namimi.org',
+    description: 'Michigan mental health education, advocacy, and support resources.',
+  },
+  teenLine: {
+    name: 'Teen Line',
+    contact: 'Text TEEN to 839863',
+    website: 'https://www.teenline.org',
+    description: 'Teen-to-teen support and youth mental health resources.',
+  },
+});
+
 const DEFAULT_RESOURCES = Object.freeze({
   crisis: {
-    name: '988 Suicide & Crisis Lifeline',
-    number: 'Call or text 988',
-    description: 'Free, confidential support 24/7 in the United States.',
+    name: MICHIGAN_RESOURCES.suicide988.name,
+    number: MICHIGAN_RESOURCES.suicide988.contact,
+    description: MICHIGAN_RESOURCES.suicide988.description,
   },
   text: {
-    name: 'Crisis Text Line',
-    number: 'Text HOME to 741741',
-    description: 'Free, 24/7 crisis support by text.',
+    name: MICHIGAN_RESOURCES.crisisTextLine.name,
+    number: MICHIGAN_RESOURCES.crisisTextLine.contact,
+    description: MICHIGAN_RESOURCES.crisisTextLine.description,
   },
   general: {
     name: 'SAMHSA National Helpline',
@@ -36,7 +63,7 @@ const EMOTION_PATTERNS = Object.freeze({
   bullying: [/\b(bullied|bullying|harassed|picked on|threatened)\b/i],
   crisis: [
     /\b(i\s+want\s+to\s+die|kill\s+myself|end\s+my\s+life|take\s+my\s+life)\b/i,
-    /\b(suicidal|self\s*harm|hurt\s+myself|cut\s+myself|better\s+off\s+dead)\b/i,
+    /\b(suicidal|self\s*harm|hurt\s+myself|cut\s+myself|better\s+off\s+dead|end\s+it\s+all)\b/i,
   ],
 });
 
@@ -71,6 +98,113 @@ function pickDeterministic(items, seed) {
   return items[index];
 }
 
+function analyzeEmotionalContent(text) {
+  const input = String(text || '');
+  const detected = [];
+
+  for (const [emotion, patterns] of Object.entries(EMOTION_PATTERNS)) {
+    if (patterns.some((pattern) => pattern.test(input))) {
+      detected.push(emotion);
+    }
+  }
+
+  const hasCrisis = detected.includes('crisis');
+  const hasDistress = detected.some((emotion) => emotion !== 'crisis');
+  let emotionLevel = 'neutral';
+
+  if (hasCrisis) emotionLevel = 'crisis';
+  else if (hasDistress) emotionLevel = 'distress';
+
+  return {
+    hasCrisis,
+    hasDistress,
+    emotions: detected,
+    emotionLevel,
+    suggestResources: emotionLevel !== 'neutral',
+    inputHash: stableHash(input),
+  };
+}
+
+function isOfflineMode(context = {}) {
+  if (process.env.OFFLINE_MODE === 'true') return true;
+  if (process.env.MINDMEND_OFFLINE === 'true') return true;
+
+  const system = context.system || {};
+  if (system.offlineMode === true) return true;
+  if (system.offline === true) return true;
+  if (String(system.networkStatus || '').toLowerCase() === 'offline') return true;
+
+  return false;
+}
+
+function generateValidation() {
+  return 'Your feelings are valid. You deserve support, safety, and a real person you can trust when things feel heavy.';
+}
+
+function formatResourceSuggestions(level) {
+  if (level === 'crisis') {
+    return [
+      'Immediate Support:',
+      `- ${MICHIGAN_RESOURCES.suicide988.name}: ${MICHIGAN_RESOURCES.suicide988.contact}`,
+      `- ${MICHIGAN_RESOURCES.crisisTextLine.name}: ${MICHIGAN_RESOURCES.crisisTextLine.contact}`,
+    ].join('\n');
+  }
+
+  if (level === 'distress') {
+    return [
+      'Support Resources:',
+      `- ${MICHIGAN_RESOURCES.suicide988.name}: ${MICHIGAN_RESOURCES.suicide988.contact}`,
+      `- NAMI Michigan: ${MICHIGAN_RESOURCES.namiMichigan.website} / ${MICHIGAN_RESOURCES.namiMichigan.helpline}`,
+      `- Teen Line: ${MICHIGAN_RESOURCES.teenLine.contact}`,
+    ].join('\n');
+  }
+
+  return '';
+}
+
+async function run(context = {}, params = {}) {
+  const message = String(params.message ?? params.text ?? params.content ?? '').trim();
+  const offline = isOfflineMode(context);
+
+  if (!message) {
+    return {
+      success: true,
+      response: '',
+      empathyLevel: 'none',
+      hasResources: false,
+      offline,
+      metadata: {
+        triggeredOn: 'all-messages',
+        privacyMode: offline,
+        resourcesShared: false,
+        emotionLevel: 'none',
+      },
+    };
+  }
+
+  const anchor = new EmpathyAnchor({ offlineMode: offline });
+  const analysis = analyzeEmotionalContent(message);
+  const processed = anchor.process(message);
+  const resources = formatResourceSuggestions(analysis.emotionLevel);
+  const privacyPrefix = offline ? 'Privacy Mode: local/offline support path active.\n\n' : '';
+  const response = `${privacyPrefix}${processed.response}${resources ? `\n\n${resources}` : ''}`;
+
+  return {
+    success: true,
+    response,
+    empathyLevel: analysis.emotionLevel,
+    hasResources: Boolean(resources),
+    offline,
+    metadata: {
+      triggeredOn: 'all-messages',
+      privacyMode: offline,
+      resourcesShared: Boolean(resources),
+      emotionLevel: analysis.emotionLevel,
+      inputHash: analysis.inputHash,
+    },
+  };
+}
+
 class EmpathyAnchor {
   constructor(config = {}) {
     this.config = {
@@ -87,28 +221,17 @@ class EmpathyAnchor {
     };
   }
 
-  /**
-   * Identify broad emotional/safety signals in user text.
-   * This is rules-based support logic, not diagnosis.
-   */
   validateEmotions(text) {
     const input = String(text || '');
+    const analysis = analyzeEmotionalContent(input);
     const detected = {
-      emotions: [],
-      isCrisis: false,
+      emotions: analysis.emotions,
+      isCrisis: analysis.hasCrisis,
       intensity: 'low',
-      inputHash: stableHash(input),
+      inputHash: analysis.inputHash,
     };
 
-    for (const [emotion, patterns] of Object.entries(EMOTION_PATTERNS)) {
-      if (patterns.some((pattern) => pattern.test(input))) {
-        detected.emotions.push(emotion);
-      }
-    }
-
-    detected.isCrisis = detected.emotions.includes('crisis');
-
-    if (detected.isCrisis) {
+    if (analysis.hasCrisis) {
       detected.intensity = 'critical';
     } else if (detected.emotions.includes('bullying') || detected.emotions.length >= 3) {
       detected.intensity = 'high';
@@ -147,7 +270,7 @@ class EmpathyAnchor {
     return [];
   }
 
-  generateSupportiveResponse(emotionData, userInput = '') {
+  generateSupportiveResponse(emotionData) {
     if (emotionData.isCrisis) {
       return (
         'Your life has value, and this needs support from a real person right now. ' +
@@ -247,4 +370,10 @@ module.exports = EmpathyAnchor;
 module.exports.DEFAULT_RESOURCES = DEFAULT_RESOURCES;
 module.exports.EMOTION_PATTERNS = EMOTION_PATTERNS;
 module.exports.RESPONSE_FRAMES = RESPONSE_FRAMES;
+module.exports.MICHIGAN_RESOURCES = MICHIGAN_RESOURCES;
 module.exports.stableHash = stableHash;
+module.exports.analyzeEmotionalContent = analyzeEmotionalContent;
+module.exports.isOfflineMode = isOfflineMode;
+module.exports.generateValidation = generateValidation;
+module.exports.formatResourceSuggestions = formatResourceSuggestions;
+module.exports.run = run;
