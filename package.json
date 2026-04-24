@@ -1,24 +1,23 @@
 {
   "name": "openclaw-empathy-anchor-mindmend",
-  "version": "1.0.0",
-  "description": "Customized OpenClaw.ai with empathy anchor for ethical, offline AI supporting youth mental health and safety in Michigan. Privacy-first tools for families.",
+  "version": "1.1.0",
+  "description": "Privacy-first, offline-capable empathy and safety response layer for youth-support AI demos.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node test/empathy-anchor.test.js",
     "demo": "node demo.js",
-    "install-openclaw": "npm install -g openclaw@latest",
-    "setup": "openclaw onboard",
-    "dev": "openclaw dev"
+    "test": "node --test",
+    "test:anchor": "node --test test/empathy-anchor.test.js"
   },
   "keywords": [
-    "openclaw",
-    "ai",
-    "mental-health",
+    "ai-safety",
+    "responsible-ai",
+    "mental-wellness",
     "empathy",
     "youth-support",
     "privacy-first",
-    "offline-first"
+    "offline-first",
+    "local-ai"
   ],
   "author": "Lyle Perrien II, Michigan MindMend Inc.",
   "license": "MIT",
@@ -26,10 +25,7 @@
     "type": "git",
     "url": "https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-.git"
   },
-  "dependencies": {
-    "openclaw": "^2026.1.30"
-  },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=18.0.0"
   }
 }
