@@ -12,10 +12,11 @@ permissions:
 
 jobs:
   node-tests:
-    name: Node.js tests
+    name: Node.js tests (${{ matrix.node-version }})
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [18.x, 20.x]
 
@@ -27,13 +28,29 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+
+      - name: Show runtime versions
+        run: |
+          node --version
+          npm --version
+
+      - name: Validate package metadata
+        run: npm pkg get name version scripts
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --ignore-scripts
 
       - name: Run tests
         run: npm test
 
-      - name: Smoke test CLI import
-        run: node -e "const OpenClaw=require('./index'); const app=new OpenClaw(); const result=app.chat('I feel anxious today'); if (!result.response || !result.metadata) process.exit(1); console.log('Smoke test passed');"
+      - name: Smoke test module import
+        run: |
+          node - <<'NODE'
+          const OpenClaw = require('./index');
+          const app = new OpenClaw();
+          const result = app.chat('I feel anxious today');
+          if (!result || !result.response || !result.metadata) {
+            throw new Error('OpenClaw smoke test failed');
+          }
+          console.log('Smoke test passed');
+          NODE
