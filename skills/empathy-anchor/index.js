@@ -1,258 +1,250 @@
 /**
- * Empathy Anchor Skill for OpenClaw
- * Privacy-first, offline-capable AI skill for youth mental health support
- * 
- * This skill wraps all responses in compassionate language and provides
- * emotion validation and mental health resource suggestions.
+ * OpenClaw Empathy Anchor
+ *
+ * A small, privacy-first response layer for youth-support and wellness demos.
+ * This module is intentionally offline-capable, deterministic by default, and
+ * transparent about safety boundaries. It is not a therapist, medical device,
+ * emergency service, or crisis hotline.
  */
+
+const crypto = require('node:crypto');
+
+const DEFAULT_RESOURCES = Object.freeze({
+  crisis: {
+    name: '988 Suicide & Crisis Lifeline',
+    number: 'Call or text 988',
+    description: 'Free, confidential support 24/7 in the United States.',
+  },
+  text: {
+    name: 'Crisis Text Line',
+    number: 'Text HOME to 741741',
+    description: 'Free, 24/7 crisis support by text.',
+  },
+  general: {
+    name: 'SAMHSA National Helpline',
+    number: '1-800-662-4357',
+    description: 'Mental health and substance-use support referrals.',
+  },
+});
+
+const EMOTION_PATTERNS = Object.freeze({
+  anxiety: [/\b(anxious|worried|nervous|panic|stressed?|afraid)\b/i],
+  sadness: [/\b(sad|depressed|down|hopeless|lonely|empty)\b/i],
+  anger: [/\b(angry|mad|frustrated|furious|upset)\b/i],
+  fear: [/\b(terrified|frightened|scared|unsafe)\b/i],
+  overwhelm: [/\b(overwhelmed|too much|cannot handle|can't handle|drowning|stuck)\b/i],
+  bullying: [/\b(bullied|bullying|harassed|picked on|threatened)\b/i],
+  crisis: [
+    /\b(i\s+want\s+to\s+die|kill\s+myself|end\s+my\s+life|take\s+my\s+life)\b/i,
+    /\b(suicidal|self\s*harm|hurt\s+myself|cut\s+myself|better\s+off\s+dead)\b/i,
+  ],
+});
+
+const RESPONSE_FRAMES = Object.freeze({
+  opening: [
+    "I hear you, and what you're feeling matters.",
+    "Thank you for trusting me with that.",
+    "I'm here with you, and you do not have to carry this alone.",
+    "That sounds heavy. I'm glad you said something.",
+  ],
+  validation: [
+    "Your emotions are real, and they deserve care.",
+    "It makes sense to want support when things feel this hard.",
+    "You deserve patience, safety, and help from people you trust.",
+    "This moment matters, and so do you.",
+  ],
+  grounding: [
+    'Take one slow breath in and one slow breath out.',
+    'Name five things you can see around you.',
+    'Put both feet on the floor and notice the room you are in.',
+    'Try to move closer to a safe, trusted person if you can.',
+  ],
+});
+
+function stableHash(value) {
+  return crypto.createHash('sha256').update(String(value || '')).digest('hex');
+}
+
+function pickDeterministic(items, seed) {
+  const hash = stableHash(seed);
+  const index = Number.parseInt(hash.slice(0, 8), 16) % items.length;
+  return items[index];
+}
 
 class EmpathyAnchor {
   constructor(config = {}) {
     this.config = {
-      offlineMode: config.offlineMode !== false, // Default to offline for privacy
-      compassionLevel: config.compassionLevel || 'high',
-      crisisHotline: config.crisisHotline || '988', // 988 Suicide & Crisis Lifeline
-      ...config
+      offlineMode: config.offlineMode !== false,
+      crisisHotline: config.crisisHotline || '988',
+      storeRawText: config.storeRawText === true,
+      includeResources: config.includeResources !== false,
+      ...config,
     };
 
-    // Emotion validation patterns
-    this.emotionPatterns = {
-      anxiety: ['anxious', 'worried', 'nervous', 'scared', 'afraid', 'panic', 'stress'],
-      sadness: ['sad', 'depressed', 'down', 'unhappy', 'hopeless', 'lonely', 'empty'],
-      anger: ['angry', 'mad', 'frustrated', 'annoyed', 'upset', 'furious'],
-      fear: ['terrified', 'frightened', 'fearful', 'scared', 'afraid'],
-      overwhelm: ['overwhelmed', 'too much', 'cannot handle', 'drowning', 'stuck'],
-      crisis: ['suicide', 'suicidal', 'kill myself', 'end it all', 'want it all to end', 'want to die', 'better off dead', 'no point', "don't want to live", 'hurt myself', 'self-harm', 'cut myself', 'end my life', 'take my life']
-    };
-
-    // Compassionate response templates
-    this.compassionateFrames = {
-      opening: [
-        "I hear you, and what you're feeling is valid.",
-        "Thank you for sharing that with me. Your feelings matter.",
-        "I'm here to listen, and I want you to know you're not alone.",
-        "It takes courage to express how you're feeling. I'm here for you."
-      ],
-      validation: [
-        "It's completely okay to feel this way.",
-        "Your emotions are real and important.",
-        "Many people experience similar feelings, and they're all valid.",
-        "What you're going through is significant, and you deserve support."
-      ],
-      supportive: [
-        "You deserve compassion and understanding.",
-        "Taking care of your mental health is important and brave.",
-        "Remember, reaching out for help is a sign of strength.",
-        "You're worth the care and support you need."
-      ]
-    };
-
-    // Mental health resources
     this.resources = {
-      crisis: {
-        name: '988 Suicide & Crisis Lifeline',
-        number: '988',
-        description: 'Free, confidential support 24/7 for people in distress'
-      },
-      text: {
-        name: 'Crisis Text Line',
-        number: 'Text HOME to 741741',
-        description: 'Free, 24/7 crisis support via text'
-      },
-      trevor: {
-        name: 'The Trevor Project',
-        number: '1-866-488-7386',
-        description: 'LGBTQ+ youth crisis support'
-      },
-      general: {
-        name: 'SAMHSA National Helpline',
-        number: '1-800-662-4357',
-        description: 'Substance abuse and mental health services'
-      }
+      ...DEFAULT_RESOURCES,
+      ...(config.resources || {}),
     };
   }
 
   /**
-   * Validates and identifies emotions in user input
-   * @param {string} text - User's message
-   * @returns {object} Detected emotions and crisis indicators
+   * Identify broad emotional/safety signals in user text.
+   * This is rules-based support logic, not diagnosis.
    */
   validateEmotions(text) {
-    const lowerText = text.toLowerCase();
+    const input = String(text || '');
     const detected = {
       emotions: [],
       isCrisis: false,
-      intensity: 'moderate'
+      intensity: 'low',
+      inputHash: stableHash(input),
     };
 
-    // Check for each emotion pattern
-    for (const [emotion, patterns] of Object.entries(this.emotionPatterns)) {
-      for (const pattern of patterns) {
-        if (lowerText.includes(pattern)) {
-          detected.emotions.push(emotion);
-          
-          // Crisis detection
-          if (emotion === 'crisis') {
-            detected.isCrisis = true;
-            detected.intensity = 'critical';
-          }
-          break;
-        }
+    for (const [emotion, patterns] of Object.entries(EMOTION_PATTERNS)) {
+      if (patterns.some((pattern) => pattern.test(input))) {
+        detected.emotions.push(emotion);
       }
     }
 
-    // Remove duplicates
-    detected.emotions = [...new Set(detected.emotions)];
+    detected.isCrisis = detected.emotions.includes('crisis');
 
-    // Determine intensity based on multiple emotions
-    if (detected.emotions.length > 3 && !detected.isCrisis) {
+    if (detected.isCrisis) {
+      detected.intensity = 'critical';
+    } else if (detected.emotions.includes('bullying') || detected.emotions.length >= 3) {
       detected.intensity = 'high';
+    } else if (detected.emotions.length > 0) {
+      detected.intensity = 'moderate';
     }
 
     return detected;
   }
 
-  /**
-   * Suggests appropriate resources based on detected emotions
-   * @param {object} emotionData - Result from validateEmotions
-   * @returns {array} Relevant resources
-   */
   suggestResources(emotionData) {
-    const suggestions = [];
+    if (!this.config.includeResources) return [];
 
-    // Always suggest crisis resources if crisis detected
     if (emotionData.isCrisis) {
-      suggestions.push({
-        ...this.resources.crisis,
-        urgent: true,
-        message: 'If you\'re in crisis, please reach out immediately:'
-      });
-      suggestions.push(this.resources.text);
-      return suggestions;
+      return [
+        {
+          ...this.resources.crisis,
+          urgent: true,
+          message: "If you might hurt yourself or someone else, contact a real person immediately:",
+        },
+        this.resources.text,
+      ];
     }
 
-    // Suggest based on intensity
-    if (emotionData.intensity === 'high' || emotionData.emotions.length > 2) {
-      suggestions.push({
-        ...this.resources.crisis,
-        message: 'If you need immediate support, these resources are available 24/7:'
-      });
+    if (emotionData.intensity === 'high') {
+      return [
+        {
+          ...this.resources.crisis,
+          urgent: false,
+          message: 'If this becomes urgent or unsafe, support is available 24/7:',
+        },
+        this.resources.general,
+      ];
     }
 
-    // Always include general resource
-    suggestions.push({
-      ...this.resources.general,
-      message: 'For ongoing support and resources:'
-    });
-
-    return suggestions;
+    return [];
   }
 
-  /**
-   * Wraps a response with compassionate, empathetic language
-   * @param {string} originalResponse - The original AI response
-   * @param {string} userInput - The user's original message
-   * @returns {string} Compassionately wrapped response
-   */
-  wrapWithCompassion(originalResponse, userInput) {
-    // Validate emotions in user input
-    const emotionData = this.validateEmotions(userInput);
-
-    // Select random compassionate frames
-    const opening = this.compassionateFrames.opening[
-      Math.floor(Math.random() * this.compassionateFrames.opening.length)
-    ];
-    const validation = this.compassionateFrames.validation[
-      Math.floor(Math.random() * this.compassionateFrames.validation.length)
-    ];
-
-    // Build compassionate response
-    let compassionateResponse = `${opening}\n\n`;
-
-    // Add emotion validation if emotions detected
-    if (emotionData.emotions.length > 0) {
-      compassionateResponse += `${validation}\n\n`;
+  generateSupportiveResponse(emotionData, userInput = '') {
+    if (emotionData.isCrisis) {
+      return (
+        'Your life has value, and this needs support from a real person right now. ' +
+        'Please call/text 988, contact emergency services, or move near a trusted adult immediately.'
+      );
     }
 
-    // Add the original response
-    compassionateResponse += `${originalResponse}\n\n`;
+    if (emotionData.intensity === 'high') {
+      return (
+        'This sounds serious, and you should not have to handle it alone. ' +
+        'Please consider telling a trusted adult, counselor, caregiver, or local support person.'
+      );
+    }
 
-    // Add resources if appropriate
+    if (emotionData.emotions.length > 0) {
+      return (
+        `I noticed signals of ${emotionData.emotions.join(', ')}. ` +
+        'A small grounding step may help while you decide who you can talk to next.'
+      );
+    }
+
+    return "I'm here to listen. You can share more at your own pace.";
+  }
+
+  wrapWithCompassion(originalResponse, userInput) {
+    const emotionData = this.validateEmotions(userInput);
+    const seed = `${userInput}:${originalResponse}`;
+    const opening = pickDeterministic(RESPONSE_FRAMES.opening, `${seed}:opening`);
+    const validation = pickDeterministic(RESPONSE_FRAMES.validation, `${seed}:validation`);
+    const grounding = pickDeterministic(RESPONSE_FRAMES.grounding, `${seed}:grounding`);
+
+    const sections = [opening];
+
+    if (emotionData.emotions.length > 0) {
+      sections.push(validation);
+    }
+
+    sections.push(originalResponse);
+
+    if (!emotionData.isCrisis) {
+      sections.push(`Grounding step: ${grounding}`);
+    }
+
     const resources = this.suggestResources(emotionData);
     if (resources.length > 0) {
-      compassionateResponse += '\n**Resources for Support:**\n\n';
-      
-      resources.forEach(resource => {
-        if (resource.message) {
-          compassionateResponse += `${resource.message}\n`;
-        }
-        compassionateResponse += `- **${resource.name}**: ${resource.number}\n`;
-        compassionateResponse += `  ${resource.description}\n\n`;
-      });
+      const resourceText = resources
+        .map((resource) => {
+          const prefix = resource.message ? `${resource.message}\n` : '';
+          return `${prefix}- ${resource.name}: ${resource.number}\n  ${resource.description}`;
+        })
+        .join('\n\n');
+      sections.push(`Resources for support:\n\n${resourceText}`);
     }
 
-    // Add supportive closing
-    const supportive = this.compassionateFrames.supportive[
-      Math.floor(Math.random() * this.compassionateFrames.supportive.length)
-    ];
-    compassionateResponse += `${supportive}`;
+    sections.push('Reminder: this tool is supportive software, not a replacement for a trusted adult, clinician, crisis worker, or emergency services.');
 
-    return compassionateResponse;
+    return sections.join('\n\n');
   }
 
-  /**
-   * Process user input with empathy-anchor skill (offline-capable)
-   * @param {string} userInput - User's message
-   * @param {string} aiResponse - Optional AI response to wrap
-   * @returns {object} Processed response with empathy anchoring
-   */
   process(userInput, aiResponse = null) {
-    const emotionData = this.validateEmotions(userInput);
+    const input = String(userInput || '').trim();
 
-    // If no AI response provided, generate a supportive acknowledgment
-    const baseResponse = aiResponse || this.generateSupportiveResponse(emotionData);
+    if (!input) {
+      return {
+        response: "I'm here to listen. Please share what's on your mind when you're ready.",
+        metadata: {
+          error: 'empty_input',
+          offlineMode: this.config.offlineMode,
+          timestamp: new Date().toISOString(),
+        },
+      };
+    }
+
+    const emotionData = this.validateEmotions(input);
+    const baseResponse = aiResponse || this.generateSupportiveResponse(emotionData, input);
 
     return {
-      response: this.wrapWithCompassion(baseResponse, userInput),
+      response: this.wrapWithCompassion(baseResponse, input),
       metadata: {
         emotionsDetected: emotionData.emotions,
         isCrisis: emotionData.isCrisis,
         intensity: emotionData.intensity,
+        inputHash: emotionData.inputHash,
+        rawInput: this.config.storeRawText ? input : undefined,
         offlineMode: this.config.offlineMode,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 
-  /**
-   * Generate a supportive response when no AI response is available (offline mode)
-   * @param {object} emotionData - Detected emotion data
-   * @returns {string} Supportive response
-   */
-  generateSupportiveResponse(emotionData) {
-    if (emotionData.isCrisis) {
-      return `Your life has value, and you deserve support right now. Please don't face this alone.`;
-    }
-
-    if (emotionData.emotions.length === 0) {
-      return `I'm here to listen and support you. Would you like to share more about what's on your mind?`;
-    }
-
-    const emotionList = emotionData.emotions.join(', ');
-    return `I understand you're experiencing feelings of ${emotionList}. These emotions are valid, and it's important to acknowledge them. Would you like to talk more about what you're going through?`;
-  }
-
-  /**
-   * Check if input indicates a crisis situation
-   * @param {string} text - User's message
-   * @returns {boolean} True if crisis detected
-   */
   isCrisisDetected(text) {
     return this.validateEmotions(text).isCrisis;
   }
 }
 
-// Export for use in Node.js
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = EmpathyAnchor;
-}
+module.exports = EmpathyAnchor;
+module.exports.DEFAULT_RESOURCES = DEFAULT_RESOURCES;
+module.exports.EMOTION_PATTERNS = EMOTION_PATTERNS;
+module.exports.RESPONSE_FRAMES = RESPONSE_FRAMES;
+module.exports.stableHash = stableHash;
