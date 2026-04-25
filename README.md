@@ -4,7 +4,7 @@
 
 **Offline-first empathy and safety infrastructure for youth-support AI systems.**
 
-OpenClaw Empathy Anchor is now framed as a core module inside the wider **HumaniCare AI** architecture: open-source, privacy-first infrastructure for healthcare access, mental health support, family safety, and community resilience.
+OpenClaw Empathy Anchor is the core empathy and safety module inside **HumaniCare AI**: privacy-first, local-first AI infrastructure for healthcare access, mental health support, family safety, and community resilience.
 
 > Helpful AI should protect people without harvesting their data.
 
@@ -45,19 +45,32 @@ The goal is not to replace human care. The goal is to build a safer, more respec
 
 ---
 
-## HumaniCare architecture
+## HumaniCare AI Architecture
 
 ```mermaid
 flowchart TD
-    A[User / Family / Caregiver] --> B[Local Device]
-    B --> C[HumaniCare Safety Router]
+    A[User / Youth / Family / Caregiver] --> B[Local Device or Edge Server]
+
+    B --> C[HumaniCare AI Safety Router]
+
     C --> D[OpenClaw Empathy Anchor]
-    C --> E[Guardian Youth Safety]
+    C --> E[MindMend Guardian]
     C --> F[Journal Coach]
     C --> G[Link Sentinel]
     C --> H[Crisis Resource Layer]
-    C --> I[Local Audit Log]
-    I --> J[Human Review]
+    C --> I[Rural Edge Kit]
+
+    D --> D1[Supportive Response Framing]
+    E --> E1[Youth and Family Safety Workflows]
+    F --> F1[Private Reflection and Grounding]
+    G --> G1[Scam / Abuse / Harmful Link Detection]
+    H --> H1[Escalation-Safe Resource Routing]
+    I --> I1[Offline / Low-Bandwidth Deployment]
+
+    C --> J[Local Audit Log]
+    J --> K[Human Review / Caregiver / Clinician / Trusted Helper]
+
+    L[Optional Cloud Services] -. disabled by default / explicit use only .-> C
 ```
 
 OpenClaw is the empathy and response-framing layer. HumaniCare is the umbrella system that can connect it to Guardian, Journal Coach, Link Sentinel, crisis resource routing, and rural edge deployments.
