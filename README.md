@@ -1,16 +1,30 @@
 # OpenClaw Empathy Anchor
 
-**Offline-first empathy and safety infrastructure for youth-support AI systems**
+## A HumaniCare AI module by Michigan MindMend Inc.
 
-OpenClaw Empathy Anchor is a privacy-first support layer built by Michigan MindMend Inc. for sensitive AI use cases involving youth wellness, journaling, emotional check-ins, and safety-aware response generation.
+**Offline-first empathy and safety infrastructure for youth-support AI systems.**
+
+OpenClaw Empathy Anchor is now framed as a core module inside the wider **HumaniCare AI** architecture: open-source, privacy-first infrastructure for healthcare access, mental health support, family safety, and community resilience.
+
+> Helpful AI should protect people without harvesting their data.
+
+---
+
+## Positioning
+
+**Privacy-first. Local-first. Clinician-informed. Built for underserved communities.**
+
+This project is designed for sensitive AI use cases involving youth wellness, journaling, emotional check-ins, safety-aware response generation, and offline-capable support workflows.
 
 It combines:
 
 - compassionate response framing
 - crisis-aware safety logic
-- optional geofence and alert workflows
-- offline-capable deployment paths
 - youth-appropriate language handling
+- privacy-first local deployment patterns
+- optional geofence and alert workflows
+- rural and low-connectivity deployment direction
+- human-in-the-loop escalation boundaries
 
 ---
 
@@ -18,15 +32,37 @@ It combines:
 
 Most AI support tools for vulnerable users depend on cloud APIs, stored conversations, or third-party infrastructure.
 
-OpenClaw Empathy Anchor explores a different model:
+OpenClaw and HumaniCare explore a different model:
 
 - local-first
 - privacy-first
 - offline-capable
 - safety-aware
 - human-centered
+- transparent about clinical limits
 
 The goal is not to replace human care. The goal is to build a safer, more respectful support layer for sensitive environments.
+
+---
+
+## HumaniCare architecture
+
+```mermaid
+flowchart TD
+    A[User / Family / Caregiver] --> B[Local Device]
+    B --> C[HumaniCare Safety Router]
+    C --> D[OpenClaw Empathy Anchor]
+    C --> E[Guardian Youth Safety]
+    C --> F[Journal Coach]
+    C --> G[Link Sentinel]
+    C --> H[Crisis Resource Layer]
+    C --> I[Local Audit Log]
+    I --> J[Human Review]
+```
+
+OpenClaw is the empathy and response-framing layer. HumaniCare is the umbrella system that can connect it to Guardian, Journal Coach, Link Sentinel, crisis resource routing, and rural edge deployments.
+
+See [docs/humanicare-blueprint.md](docs/humanicare-blueprint.md).
 
 ---
 
@@ -38,6 +74,7 @@ This repository currently includes:
 - a Flask backend for safety scanning, geofence checks, night-mode support, and alert generation
 - a privacy-first architecture direction designed for sensitive use cases
 - localized Michigan crisis resources and youth-support pathways
+- HumaniCare umbrella documentation for safety, clinical boundaries, and rural deployment
 
 ---
 
@@ -51,6 +88,7 @@ OpenClaw Empathy Anchor is being developed as a foundation for:
 - clinician-adjacent internal prototypes
 - privacy-first family support systems
 - edge and mini-PC deployments
+- rural community resilience tools
 
 ---
 
@@ -58,13 +96,14 @@ OpenClaw Empathy Anchor is being developed as a foundation for:
 
 High-level flow:
 
-```
+```text
 User input
 → empathy anchor
 → safety scan
 → supportive response
 → optional resources
 → optional alert event
+→ optional human review
 ```
 
 Core components:
@@ -72,6 +111,7 @@ Core components:
 - **Empathy Anchor**: wraps responses in validating, supportive language
 - **Luna Safety Core**: evaluates crisis language, distress indicators, toxicity patterns, geofence events, and night-mode needs
 - **Backend API**: exposes endpoints for auth, chat, location, alerts, resources, and support workflows
+- **HumaniCare Layer**: product umbrella for privacy-first healthcare access, youth wellness, and rural support infrastructure
 
 For a fuller breakdown, see [docs/architecture.md](docs/architecture.md).
 
@@ -114,6 +154,9 @@ This project can be adapted for:
 - family device or mini-PC deployments
 - school or clinic internal demos
 - Raspberry Pi and edge-device experiments
+- rural/low-connectivity support environments
+
+See [docs/rural-edge-deployment.md](docs/rural-edge-deployment.md).
 
 ---
 
@@ -125,14 +168,15 @@ OpenClaw Empathy Anchor is designed around a privacy-first direction:
 - no forced cloud inference path
 - support for local-first operation
 - intended for sensitive, trust-dependent environments
+- no hidden telemetry by design direction
 
 Implementation details may evolve over time, but the design goal is consistent: reduce unnecessary data exposure.
 
 ---
 
-## Safety notice
+## Safety and clinical boundaries
 
-This project is a supportive software prototype, not a replacement for:
+This project is supportive software infrastructure, not a replacement for:
 
 - licensed clinicians
 - emergency services
@@ -141,7 +185,11 @@ This project is a supportive software prototype, not a replacement for:
 
 If someone may be in immediate danger, contact emergency services or call/text **988** right away.
 
-For more on design boundaries, see [docs/safety-model.md](docs/safety-model.md).
+Read more:
+
+- [Safety model](docs/safety-model.md)
+- [Clinical boundaries](docs/clinical-boundaries.md)
+- [HumaniCare blueprint](docs/humanicare-blueprint.md)
 
 ---
 
@@ -156,6 +204,8 @@ This repository demonstrates:
 - Node-based response-layer implementation
 - offline and local deployment direction
 - product framing for sensitive use cases
+- healthcare-adjacent boundary awareness
+- rural and underserved-community deployment thinking
 
 ---
 
@@ -170,6 +220,7 @@ Current focus:
 - clearer packaging and documentation
 - offline deployment improvements
 - sharper product positioning
+- HumaniCare umbrella integration
 
 ---
 
@@ -181,6 +232,8 @@ Current focus:
 - add Raspberry Pi and edge deployment notes
 - add local journaling storage examples
 - publish a clean versioned release
+- document validation and advisory-review path
+- connect Guardian / Journal Coach / Link Sentinel modules under HumaniCare
 
 See [docs/roadmap.md](docs/roadmap.md) for the product-facing roadmap.
 
@@ -188,7 +241,7 @@ See [docs/roadmap.md](docs/roadmap.md) for the product-facing roadmap.
 
 ## Repository structure
 
-```
+```text
 .
 ├── README.md
 ├── package.json
@@ -202,6 +255,10 @@ See [docs/roadmap.md](docs/roadmap.md) for the product-facing roadmap.
 ├── skills/
 │   └── empathy-anchor/
 ├── docs/
+│   ├── humanicare-blueprint.md
+│   ├── clinical-boundaries.md
+│   ├── rural-edge-deployment.md
+│   └── ...
 └── examples/
 ```
 
@@ -209,11 +266,11 @@ See [docs/roadmap.md](docs/roadmap.md) for the product-facing roadmap.
 
 ## Built by
 
-Lyle Perrien II
-Michigan MindMend Inc.
+**Lyle Perrien II**  
+**Michigan MindMend Inc.**
 
 Privacy-first AI for families, communities, and youth-support environments.
 
-## 📄 License
+## License
 
 MIT — Built for the people, not the platforms.
