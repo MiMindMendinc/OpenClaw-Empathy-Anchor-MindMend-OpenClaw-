@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MiMindMendinc/.github/main/profile/assets/humanicare-phase2-showcase.svg" alt="HumaniCare AI Phase 2 Demo Proof" width="100%" />
+</p>
+
 # OpenClaw Empathy Anchor
 
 ## A HumaniCare AI module by Michigan MindMend Inc.
