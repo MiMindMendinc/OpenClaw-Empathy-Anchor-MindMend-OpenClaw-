@@ -141,13 +141,18 @@ def login():
         'exp': expiration,
     }, app.config['SECRET_KEY'], algorithm='HS256')
 
-    return jsonify({
+    payload = {
         'token': token,
         'expires_at': expiration.isoformat(),
         'offline_mode': app.config['OFFLINE_MODE'],
-        'demo_auth': True,
-        'notice': 'Demo authentication — not for production use without proper auth.',
-    })
+        'demo_auth': DEMO_AUTH,
+    }
+    if DEMO_AUTH:
+        payload['notice'] = (
+            'Demo authentication — not for production use without proper auth.'
+        )
+
+    return jsonify(payload)
 
 
 @app.route('/chat', methods=['POST'])
@@ -392,7 +397,7 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8000))
     debug = os.environ.get('DEBUG', 'false').lower() == 'true'
 
     logger.info('Starting MindMend Super AI Backend on port %s', port)

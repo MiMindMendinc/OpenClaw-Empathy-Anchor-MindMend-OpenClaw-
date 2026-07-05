@@ -22,6 +22,8 @@ def client(tmp_path, monkeypatch):
     """Create test client with isolated alert database."""
     db_path = str(tmp_path / 'test_alerts.db')
     monkeypatch.setenv('ALERT_DB_PATH', db_path)
+    monkeypatch.setattr(app_module, 'DEMO_AUTH', True)
+    app.config['DEMO_AUTH'] = True
     app_module.alert_store = AlertStore(db_path)
     app.config['TESTING'] = True
 

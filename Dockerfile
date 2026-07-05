@@ -27,7 +27,7 @@ COPY --from=python-builder /python-deps /usr/local/lib/python3.11/site-packages
 COPY . .
 
 # Ensure models and data directories exist
-RUN mkdir -p models data/journals
+RUN mkdir -p models data/journals data
 
 # Change ownership to appuser
 RUN chown -R appuser:appuser /app
