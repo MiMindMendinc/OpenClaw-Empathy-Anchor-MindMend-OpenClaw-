@@ -198,3 +198,7 @@ env/
 # Firebase credentials
 serviceAccountKey.json
 *.json.key
+
+# Local alert database (privacy-first local storage)
+data/alerts.db
+data/alerts/

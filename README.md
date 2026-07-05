@@ -136,29 +136,126 @@ For a fuller breakdown, see [docs/architecture.md](docs/architecture.md).
 
 ## Quick start
 
-**Option A — Run the empathy layer**
+### Run the demo
+
+**1. Empathy layer (Node.js 20 LTS)**
 
 ```bash
 npm install
+npm test
 npm start
 ```
 
-**Option B — Run the backend**
+**2. Backend API (local Python)**
 
 ```bash
 cd backend
 pip install -r requirements.txt
+export PORT=8000
+export DEMO_AUTH=true
 python app.py
 ```
 
-**Docker**
+**3. Docker (recommended one-command demo)**
 
 ```bash
-docker build -t openclaw-empathy-anchor .
-docker run -p 8000:8000 openclaw-empathy-anchor
+docker compose up --build
 ```
 
-The current Docker path is designed around the Flask backend.
+Verify the stack is healthy:
+
+```bash
+curl http://localhost:8000/health
+```
+
+Expected response:
+
+```json
+{"status":"healthy","service":"MindMend Super AI","offline_mode":true,"demo_auth":true}
+```
+
+**4. Try the safety demo endpoint**
+
+```bash
+curl http://localhost:8000/demo | python -m json.tool
+```
+
+This returns deterministic scan results for neutral, distress, crisis, night-mode, and geofence scenarios — no auth required.
+
+**5. Demo authentication and chat**
+
+```bash
+# Get a demo JWT (any user_id works when DEMO_AUTH=true)
+TOKEN=$(curl -s -X POST http://localhost:8000/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"user_id":"demo_user"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+# Neutral message
+curl -s -X POST http://localhost:8000/chat \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"I had a good day at school"}' | python -m json.tool
+
+# Distress message (creates alert)
+curl -s -X POST http://localhost:8000/chat \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"I feel anxious and overwhelmed"}' | python -m json.tool
+
+# Crisis message (creates critical alert + resource routing)
+curl -s -X POST http://localhost:8000/chat \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"I want to kill myself"}' | python -m json.tool
+
+# View persisted alerts
+curl -s http://localhost:8000/alerts \
+  -H "Authorization: Bearer $TOKEN" | python -m json.tool
+```
+
+> **Note:** `/auth/login` is demo-only authentication. It issues a JWT for any `user_id` when `DEMO_AUTH=true`. In production, set a strong `JWT_SECRET_KEY`, disable demo auth, and implement real identity verification.
+
+---
+
+## Safety boundaries
+
+OpenClaw Empathy Anchor is a **supportive safety prototype** — not clinical software, not a medical device, and not an emergency service.
+
+| Claim | Reality in v0.1 |
+|-------|-----------------|
+| Crisis detection | Deterministic keyword/pattern scanner for demos |
+| Empathy responses | Supportive framing templates, not therapy |
+| Parent alerts | Local SQLite persistence on-device |
+| Geofence | Distance calculation demo with configurable safe zones |
+| Offline operation | Designed local-first; no required cloud APIs |
+| Human escalation | Required — trusted adults, clinicians, and 988/911 remain primary |
+
+**If someone may be in immediate danger, contact emergency services or call/text 988.**
+
+Crisis resources in this repo are **informational routing** — they help surface Michigan and national support lines, not replace professional assessment.
+
+Read more: [Safety model](docs/safety-model.md) · [Clinical boundaries](docs/clinical-boundaries.md)
+
+---
+
+## What is implemented vs roadmap
+
+| Feature | v0.1 Status |
+|---------|-------------|
+| Node empathy anchor (chat, crisis check, emotion validation) | Implemented |
+| Flask backend API | Implemented |
+| Deterministic safety scanner (Luna Safety Core) | Implemented |
+| SQLite alert persistence | Implemented |
+| Demo auth (`DEMO_AUTH`) | Implemented |
+| Docker + health check on port 8000 | Implemented |
+| `/demo` scenario endpoint | Implemented |
+| Michigan crisis resources | Implemented |
+| Geofence / night-mode endpoints | Implemented |
+| Push notifications (Firebase) | Roadmap |
+| spaCy NLP enrichment | Roadmap (optional) |
+| Guardian / Journal Coach / Link Sentinel modules | Roadmap |
+| Clinical validation study | Roadmap |
+| Raspberry Pi edge deployment guide | In progress |
 
 ---
 
@@ -228,16 +325,9 @@ This repository demonstrates:
 
 ## Current status
 
-Active prototype and portfolio project.
+**v0.1.0-local-safety-demo** — credible local-first demo release.
 
-Current focus:
-
-- repository cleanup and consolidation
-- stronger demo experience
-- clearer packaging and documentation
-- offline deployment improvements
-- sharper product positioning
-- HumaniCare umbrella integration
+Active prototype and portfolio project. Current focus: packaging, offline deployment, and HumaniCare umbrella integration.
 
 ---
 

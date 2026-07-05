@@ -1,6 +1,6 @@
 {
   "name": "openclaw-empathy-anchor-mindmend",
-  "version": "1.1.0",
+  "version": "0.1.0",
   "description": "Privacy-first, offline-capable empathy and safety response layer for youth-support AI demos.",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,6 @@
     "url": "https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-.git"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }
