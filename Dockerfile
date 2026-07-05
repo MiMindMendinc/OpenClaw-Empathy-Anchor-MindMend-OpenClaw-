@@ -7,13 +7,7 @@ WORKDIR /build
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --target=/python-deps -r requirements.txt
 
-# Node.js dependencies builder
-FROM node:20-slim AS node-builder
-WORKDIR /build
-COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
-
-# Runtime image
+# Runtime image (Flask backend only — Node empathy layer runs outside Docker)
 FROM python:3.11-slim AS runtime
 # Install curl for healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
@@ -28,9 +22,6 @@ WORKDIR /app
 
 # Copy Python dependencies
 COPY --from=python-builder /python-deps /usr/local/lib/python3.11/site-packages
-
-# Copy Node.js dependencies
-COPY --from=node-builder /build/node_modules ./node_modules
 
 # Copy application code
 COPY . .
