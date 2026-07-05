@@ -8,10 +8,11 @@ Run the backend server first: python backend/app.py
 
 import requests
 import json
+import os
 from datetime import datetime
 
 # Configuration
-BASE_URL = "http://localhost:5000"
+BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
 USER_ID = "demo_user"
 
 def print_section(title):

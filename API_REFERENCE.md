@@ -5,7 +5,7 @@ Complete API documentation for the MindMend Super AI backend.
 ## Base URL
 
 ```
-http://localhost:5000  (Development)
+http://localhost:8000  (Development / Docker)
 https://your-domain.com  (Production)
 ```
 
@@ -41,9 +41,11 @@ Check if the API is running.
 
 ---
 
-### 2. Login / Authentication
+### 2. Login / Authentication (Demo Mode)
 
 Get a JWT token for authenticated requests.
+
+> **Demo only:** When `DEMO_AUTH=true`, this endpoint issues a token for any `user_id` without credential verification. In production (`FLASK_ENV=production`), demo login is disabled unless `DEMO_AUTH=true` is explicitly set. Always configure a strong `JWT_SECRET_KEY` for production.
 
 **Endpoint:** `POST /auth/login`
 
@@ -67,7 +69,7 @@ Get a JWT token for authenticated requests.
 
 **Example:**
 ```bash
-curl -X POST http://localhost:5000/auth/login \
+curl -X POST http://localhost:8000/auth/login \
   -H "Content-Type: application/json" \
   -d '{"user_id": "test_user"}'
 ```
@@ -129,7 +131,7 @@ Send a message for empathetic response with safety scanning.
 
 **Example - Normal Message:**
 ```bash
-curl -X POST http://localhost:5000/chat \
+curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"message": "I feel anxious about tomorrow"}'
@@ -137,7 +139,7 @@ curl -X POST http://localhost:5000/chat \
 
 **Example - Crisis Message:**
 ```bash
-curl -X POST http://localhost:5000/chat \
+curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"message": "I want to hurt myself"}'
@@ -193,7 +195,7 @@ Check if a location is within safe geofence zones.
 
 **Example:**
 ```bash
-curl -X POST http://localhost:5000/location \
+curl -X POST http://localhost:8000/location \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -243,7 +245,7 @@ Get bedtime support and calming responses.
 
 **Example - Check Time:**
 ```bash
-curl -X POST http://localhost:5000/night_mode \
+curl -X POST http://localhost:8000/night_mode \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"action": "check_time"}'
@@ -251,7 +253,7 @@ curl -X POST http://localhost:5000/night_mode \
 
 **Example - Calming Response:**
 ```bash
-curl -X POST http://localhost:5000/night_mode \
+curl -X POST http://localhost:8000/night_mode \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -264,7 +266,7 @@ curl -X POST http://localhost:5000/night_mode \
 
 ### 6. Get Alerts
 
-Retrieve parent alerts (placeholder - DB not yet implemented).
+Retrieve persisted parent/caregiver alerts for the authenticated user (local SQLite storage).
 
 **Endpoint:** `GET /alerts`
 
@@ -273,21 +275,42 @@ Retrieve parent alerts (placeholder - DB not yet implemented).
 **Response:**
 ```json
 {
-  "alerts": [],
-  "count": 0,
-  "message": "Alert storage not yet implemented - alerts are created but not persisted in this demo"
+  "alerts": [
+    {
+      "id": "alert_abc123",
+      "user_id": "demo_user",
+      "alert_type": "safety_concern",
+      "severity": "critical",
+      "message": "Safety concern detected in chat: ...",
+      "metadata": {},
+      "created_at": "2026-07-05T23:28:01.293103"
+    }
+  ],
+  "count": 1
 }
 ```
 
 **Example:**
 ```bash
-curl -X GET http://localhost:5000/alerts \
+curl -X GET http://localhost:8000/alerts \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ---
 
-### 7. Get Resources
+### 7. Demo Scenarios
+
+Run deterministic safety scans for common demo scenarios (no auth required).
+
+**Endpoint:** `GET /demo`
+
+**Authentication:** Not required
+
+Returns scan results for neutral, distress, crisis, night-mode chat messages and a geofence violation example.
+
+---
+
+### 8. Get Resources
 
 Get crisis resources and donation links.
 
@@ -317,7 +340,7 @@ Get crisis resources and donation links.
 
 **Example:**
 ```bash
-curl http://localhost:5000/resources
+curl http://localhost:8000/resources
 ```
 
 ---
@@ -432,13 +455,13 @@ Currently not implemented. For production:
 import requests
 
 # Login
-response = requests.post('http://localhost:5000/auth/login',
+response = requests.post('http://localhost:8000/auth/login',
                         json={'user_id': 'test_user'})
 token = response.json()['token']
 
 # Chat
 headers = {'Authorization': f'Bearer {token}'}
-response = requests.post('http://localhost:5000/chat',
+response = requests.post('http://localhost:8000/chat',
                         json={'message': 'I feel anxious'},
                         headers=headers)
 print(response.json())
@@ -448,7 +471,7 @@ print(response.json())
 
 ```javascript
 // Login
-const loginRes = await fetch('http://localhost:5000/auth/login', {
+const loginRes = await fetch('http://localhost:8000/auth/login', {
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({user_id: 'test_user'})
@@ -456,7 +479,7 @@ const loginRes = await fetch('http://localhost:5000/auth/login', {
 const {token} = await loginRes.json();
 
 // Chat
-const chatRes = await fetch('http://localhost:5000/chat', {
+const chatRes = await fetch('http://localhost:8000/chat', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

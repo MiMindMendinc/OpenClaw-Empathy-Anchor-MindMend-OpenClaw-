@@ -6,9 +6,14 @@ services:
     volumes:
       - ./models:/app/models
       - ./data/journals:/app/data/journals
+      - ./data/alerts:/app/data
     environment:
+      - PORT=8000
       - OFFLINE_MODE=true
       - FLASK_ENV=production
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-demo-jwt-secret-change-for-real-deployments}
+      - DEMO_AUTH=true
+      - ALERT_DB_PATH=/app/data/alerts.db
     security_opt:
       - no-new-privileges
     deploy:

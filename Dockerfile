@@ -8,7 +8,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --target=/python-deps -r requirements.txt
 
 # Node.js dependencies builder
-FROM node:22-slim AS node-builder
+FROM node:20-slim AS node-builder
 WORKDIR /build
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
@@ -43,6 +43,14 @@ RUN chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
+
+# Flask listens on PORT (default 8000 in container)
+ENV PORT=8000
+ENV OFFLINE_MODE=true
+ENV DEMO_AUTH=true
+ENV ALERT_DB_PATH=/app/data/alerts.db
+# Override JWT_SECRET_KEY at runtime for real deployments (required when FLASK_ENV=production)
+ENV JWT_SECRET_KEY=demo-jwt-secret-change-for-real-deployments
 
 # Expose port
 EXPOSE 8000

@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout repository
@@ -35,7 +35,7 @@ jobs:
           npm --version
 
       - name: Validate package metadata
-        run: npm pkg get name version scripts
+        run: npm pkg get name version scripts engines
 
       - name: Install dependencies
         run: npm install --ignore-scripts
@@ -54,3 +54,54 @@ jobs:
           }
           console.log('Smoke test passed');
           NODE
+
+  python-tests:
+    name: Python backend tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run backend tests
+        run: pytest backend/tests/ -v
+
+  docker-smoke:
+    name: Docker build and health check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t empathy-anchor:test .
+
+      - name: Start container and verify health
+        run: |
+          docker run -d --name empathy-test \
+            -e JWT_SECRET_KEY=ci-docker-test-secret-key \
+            -e DEMO_AUTH=true \
+            -p 8000:8000 \
+            empathy-anchor:test
+
+          for i in $(seq 1 15); do
+            if curl -sf http://localhost:8000/health; then
+              echo "Health check passed"
+              docker stop empathy-test
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker logs empathy-test
+          docker stop empathy-test
+          exit 1
