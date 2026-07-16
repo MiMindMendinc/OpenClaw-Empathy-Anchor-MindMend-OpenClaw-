@@ -1,0 +1,302 @@
+{
+  "product": "MindMend Empathy Anchor",
+  "version": "0.2.0",
+  "scanner_version": "rules-v1.0.0",
+  "generated_at": "2026-07-16T21:38:49.682096+00:00",
+  "dataset": {
+    "name": "mindmend-safety-signals-synth-v1",
+    "origin": "Synthetic examples authored for MindMend Empathy Anchor evaluation. No private conversations.",
+    "license": "MIT (same as repository)",
+    "language": "en",
+    "notes": "Labels are for deterministic rule evaluation, not clinical ground truth."
+  },
+  "n_cases": 25,
+  "metrics": {
+    "crisis": {
+      "precision": 1.0,
+      "recall": 0.875,
+      "f1": 0.9333,
+      "confusion": {
+        "tp": 7,
+        "fp": 0,
+        "tn": 17,
+        "fn": 1
+      },
+      "support_positive": 8
+    },
+    "distress": {
+      "precision": 0.8333,
+      "recall": 1.0,
+      "f1": 0.9091,
+      "confusion": {
+        "tp": 5,
+        "fp": 1,
+        "tn": 19,
+        "fn": 0
+      },
+      "support_positive": 5
+    },
+    "toxicity": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "confusion": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 23,
+        "fn": 1
+      },
+      "support_positive": 2
+    },
+    "night_mode": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "confusion": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 24,
+        "fn": 0
+      },
+      "support_positive": 1
+    }
+  },
+  "disclaimer": "These metrics are from a small synthetic labeled set for a deterministic rule scanner. They are not clinical validation and must not be advertised as accuracy guarantees.",
+  "cases": [
+    {
+      "id": "c01",
+      "category": "crisis_direct",
+      "labels": [
+        "crisis"
+      ],
+      "predicted": [
+        "crisis"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "c02",
+      "category": "crisis_direct",
+      "labels": [
+        "crisis"
+      ],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "c03",
+      "category": "crisis_indirect",
+      "labels": [
+        "crisis"
+      ],
+      "predicted": [
+        "crisis"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "c04",
+      "category": "crisis_indirect",
+      "labels": [
+        "crisis"
+      ],
+      "predicted": [
+        "crisis"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "d01",
+      "category": "distress",
+      "labels": [
+        "distress"
+      ],
+      "predicted": [
+        "distress"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "d02",
+      "category": "distress",
+      "labels": [
+        "distress"
+      ],
+      "predicted": [
+        "distress"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "t01",
+      "category": "toxicity",
+      "labels": [
+        "toxicity"
+      ],
+      "predicted": [
+        "toxicity"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "t02",
+      "category": "toxicity",
+      "labels": [
+        "toxicity"
+      ],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "n01",
+      "category": "night_mode",
+      "labels": [
+        "night_mode"
+      ],
+      "predicted": [
+        "night_mode"
+      ],
+      "severity": "moderate"
+    },
+    {
+      "id": "b01",
+      "category": "benign",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "b02",
+      "category": "benign",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "b03",
+      "category": "benign",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "g01",
+      "category": "negation",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "g02",
+      "category": "negation",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "q01",
+      "category": "quoted",
+      "labels": [
+        "crisis"
+      ],
+      "predicted": [
+        "crisis"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "a01",
+      "category": "academic",
+      "labels": [
+        "crisis"
+      ],
+      "predicted": [
+        "crisis"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "s01",
+      "category": "sarcasm",
+      "labels": [],
+      "predicted": [
+        "distress"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "m01",
+      "category": "misspelling",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "o01",
+      "category": "obfuscation",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "x01",
+      "category": "multi",
+      "labels": [
+        "crisis",
+        "distress"
+      ],
+      "predicted": [
+        "crisis",
+        "distress"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "e01",
+      "category": "empty",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "e02",
+      "category": "whitespace",
+      "labels": [],
+      "predicted": [],
+      "severity": "low"
+    },
+    {
+      "id": "u01",
+      "category": "unicode",
+      "labels": [
+        "distress"
+      ],
+      "predicted": [
+        "distress"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "p01",
+      "category": "prompt_injection",
+      "labels": [
+        "crisis"
+      ],
+      "predicted": [
+        "crisis"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "l01",
+      "category": "long",
+      "labels": [
+        "distress"
+      ],
+      "predicted": [
+        "distress"
+      ],
+      "severity": "high"
+    }
+  ]
+}

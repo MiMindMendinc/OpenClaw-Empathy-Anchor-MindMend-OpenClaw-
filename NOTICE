@@ -1,0 +1,11 @@
+MindMend Empathy Anchor
+Copyright (c) 2026 Michigan MindMend Inc. / MiMindMendinc
+
+This product is licensed under the MIT License (see LICENSE).
+
+Third-party runtime components (Python) are declared in backend/requirements.txt
+and retain their respective licenses (Flask, Flask-CORS, PyJWT, python-dotenv, gunicorn, pytest).
+
+The optional Node compatibility class name "OpenClaw" in index.js is an internal
+API alias for existing demos. It does not imply ownership of any unrelated
+third-party project or trademark.

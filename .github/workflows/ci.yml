@@ -12,96 +12,76 @@ permissions:
 
 jobs:
   node-tests:
-    name: Node.js tests (${{ matrix.node-version }})
+    name: Node.js tests
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [20.x]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Show runtime versions
-        run: |
-          node --version
-          npm --version
-
-      - name: Validate package metadata
-        run: npm pkg get name version scripts engines
-
-      - name: Install dependencies
-        run: npm install --ignore-scripts
-
-      - name: Run tests
-        run: npm test
-
-      - name: Smoke test module import
+          node-version: '20.x'
+      - run: npm install --ignore-scripts
+      - run: npm audit --audit-level=high || true
+      - run: npm test
+      - name: Smoke import
         run: |
           node - <<'NODE'
           const OpenClaw = require('./index');
           const app = new OpenClaw();
           const result = app.chat('I feel anxious today');
-          if (!result || !result.response || !result.metadata) {
-            throw new Error('OpenClaw smoke test failed');
-          }
-          console.log('Smoke test passed');
+          if (!result || !result.response || !result.metadata) throw new Error('smoke failed');
+          console.log('ok');
           NODE
 
   python-tests:
     name: Python backend tests
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-
-      - name: Install backend dependencies
-        run: pip install -r backend/requirements.txt
-
-      - name: Run backend tests
-        run: pytest backend/tests/ -v
+      - run: pip install -r backend/requirements.txt pip-audit
+      - run: pip-audit -r backend/requirements.txt || true
+      - run: DEMO_AUTH=true pytest backend/tests/ -v
+      - name: Detector evaluation smoke
+        run: python backend/eval/run_eval.py
+      - name: Showcase markup checks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path('showcase/index.html').read_text()
+          css = Path('showcase/styles.css').read_text()
+          assert 'viewport' in html
+          assert 'MindMend Empathy Anchor' in html
+          assert 'fonts.googleapis.com' not in html
+          assert '@media (min-width: 768px)' in css
+          assert 'safe-area-inset' in css
+          print('showcase markup ok')
+          PY
 
   docker-smoke:
-    name: Docker build and health check
+    name: Docker build and readiness
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Build Docker image
-        run: docker build -t empathy-anchor:test .
-
-      - name: Start container and verify health
+      - uses: actions/checkout@v5
+      - run: docker build -t mindmend-empathy-anchor:test .
+      - name: Run container and verify /ready
         run: |
-          docker run -d --name empathy-test \
+          docker run -d --name mindmend-test \
             -e JWT_SECRET_KEY=ci-docker-test-secret-key \
             -e DEMO_AUTH=true \
+            -e ALLOW_LAN_BIND=true \
+            -e BIND_HOST=0.0.0.0 \
             -p 8000:8000 \
-            empathy-anchor:test
-
-          for i in $(seq 1 15); do
-            if curl -sf http://localhost:8000/health; then
-              echo "Health check passed"
-              docker stop empathy-test
+            mindmend-empathy-anchor:test
+          for i in $(seq 1 20); do
+            if curl -sf http://127.0.0.1:8000/ready; then
+              curl -sf http://127.0.0.1:8000/ | head -c 200 | grep -q MindMend
+              docker stop mindmend-test
               exit 0
             fi
             sleep 2
           done
-
-          docker logs empathy-test
-          docker stop empathy-test
+          docker logs mindmend-test
+          docker stop mindmend-test
           exit 1

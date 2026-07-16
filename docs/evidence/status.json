@@ -1,8 +1,10 @@
 {
-    "alert_db_path": "data/alerts.db",
+    "alert_retention_days": 30,
     "alert_store": "sqlite_local",
+    "api_version": "v1",
+    "bind_host_default": "127.0.0.1",
     "boundaries": [
-        "supportive prototype",
+        "supportive technical demonstration",
         "not clinical software",
         "not an emergency service",
         "human review required"
@@ -13,13 +15,23 @@
     ],
     "demo_auth_enabled": true,
     "offline_mode": true,
+    "organization": "Michigan MindMend Inc.",
+    "product": "MindMend Empathy Anchor",
     "production_mode": false,
-    "release": "v0.1.0-local-safety-demo",
+    "project_status": "Technical demonstration",
+    "release": "v0.2.0-prototype",
     "scanner": {
         "clinical_validation": false,
+        "language": "en",
+        "multi_message_context": false,
         "spacy": false,
-        "type": "deterministic_keyword_pattern"
+        "type": "deterministic_keyword_pattern",
+        "version": "rules-v1.0.0"
     },
-    "timestamp": "2026-07-16T20:49:35.870007+00:00",
-    "version": "0.1.0"
+    "status_statement": "MindMend Empathy Anchor is a local-first technical demonstration for detecting predefined safety signals and presenting supportive routing guidance. It is not clinical software, an emergency service, or a replacement for professional judgment.",
+    "store_raw_messages": false,
+    "subtitle": "Local-First Safety Signal Demonstrator",
+    "tagline": "Helpful AI should protect people without harvesting their data.",
+    "timestamp": "2026-07-16T21:40:16.510811+00:00",
+    "version": "0.2.0"
 }

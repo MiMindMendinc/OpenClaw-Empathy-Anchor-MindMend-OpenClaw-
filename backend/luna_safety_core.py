@@ -1,30 +1,32 @@
 """
-Luna Safety Core - MindMend Guardian Backend
-Privacy-first child safety, mental health support, and night mode monitoring
+Luna Safety Core — deterministic safety-signal scanner for MindMend Empathy Anchor.
 
-Features:
-- Keyword/toxicity scanning with spaCy NLP
-- Geofencing and location tracking
-- Crisis detection and parent alerts
-- Night mode with bedtime routines
-- OpenClaw empathy integration
-- Offline capability with local LLM fallback
-- JWT authentication
+This is keyword/pattern matching, not clinical AI, not a trained NLP model, and not
+an emergency service. Rules are versioned via SCANNER_VERSION.
 """
 
-import re
-import json
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 import logging
+import re
 
-# Configure logging
+from version import SCANNER_VERSION
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+NEGATION_WINDOW = re.compile(
+    r"\b(not|no|never|don't|dont|didn't|didnt|isn't|isnt|wasn't|wasnt|won't|wont|"
+    r"without|stop|stopped)\b[\w\s']{0,24}$",
+    re.IGNORECASE,
+)
+
 
 class LunaSafetyCore:
-    """Core safety monitoring and empathy support system"""
+    """Deterministic local safety-signal scanner."""
+
+    SCANNER_VERSION = SCANNER_VERSION
+    SCANNER_METHOD = 'deterministic_keyword_pattern'
     
     # Crisis keywords for immediate intervention
     CRISIS_KEYWORDS = [
@@ -97,31 +99,42 @@ class LunaSafetyCore:
             Dict with scan results including flags, severity, and recommended actions
         """
         if not message or not message.strip():
-            return {'error': 'Empty message', 'safe': True}
-        
+            return {
+                'error': 'Empty message',
+                'safe': True,
+                'severity': 'low',
+                'flags': {
+                    'crisis': False,
+                    'distress': False,
+                    'toxicity': False,
+                    'night_mode': False,
+                },
+                'matches': {
+                    'crisis': [],
+                    'distress': [],
+                    'toxicity': [],
+                    'night_mode': [],
+                },
+                'recommended_actions': [],
+                'scanner_version': self.SCANNER_VERSION,
+                'scanner_method': self.SCANNER_METHOD,
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'offline_mode': self.offline_mode,
+            }
+
         message_lower = message.lower()
-        
-        # Check for crisis indicators
+        quoted_context = bool(re.search(r'["“”\'].+["“”\']', message))
+
         crisis_detected, crisis_matches = self._check_keywords(message_lower, self.CRISIS_KEYWORDS)
-        
-        # Check for distress/mental health concerns
         distress_detected, distress_matches = self._check_keywords(message_lower, self.DISTRESS_KEYWORDS)
-        
-        # Check for toxicity/threats
         toxicity_detected, toxicity_matches = self._check_keywords(message_lower, self.TOXICITY_KEYWORDS)
-        
-        # Check for night mode concerns
         night_mode_detected, night_matches = self._check_keywords(message_lower, self.NIGHT_MODE_KEYWORDS)
-        
-        # Determine severity level
+
         severity = self._calculate_severity(
             crisis_detected, distress_detected, toxicity_detected, night_mode_detected
         )
-        
-        # Get sentiment analysis
         sentiment = self._analyze_sentiment(message)
-        
-        # Build response
+
         result = {
             'safe': not (crisis_detected or toxicity_detected),
             'severity': severity,
@@ -129,34 +142,46 @@ class LunaSafetyCore:
                 'crisis': crisis_detected,
                 'distress': distress_detected,
                 'toxicity': toxicity_detected,
-                'night_mode': night_mode_detected
+                'night_mode': night_mode_detected,
             },
             'matches': {
                 'crisis': crisis_matches,
                 'distress': distress_matches,
                 'toxicity': toxicity_matches,
-                'night_mode': night_matches
+                'night_mode': night_matches,
             },
             'sentiment': sentiment,
-            'timestamp': datetime.utcnow().isoformat(),
-            'offline_mode': self.offline_mode
+            'quoted_context_suspected': quoted_context,
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'offline_mode': self.offline_mode,
+            'scanner_version': self.SCANNER_VERSION,
+            'scanner_method': self.SCANNER_METHOD,
         }
-        
-        # Add recommended actions
-        result['actions'] = self._get_recommended_actions(result)
-        
-        # Add resources if needed
+
+        result['recommended_actions'] = self._get_recommended_actions(result)
+        # Compatibility alias for older clients/tests
+        result['actions'] = result['recommended_actions']
+
         if crisis_detected or distress_detected:
             result['resources'] = self.CRISIS_RESOURCES
-        
+
         return result
-    
+
     def _check_keywords(self, message: str, keywords: List[str]) -> Tuple[bool, List[str]]:
-        """Check if any keywords are present in message"""
+        """Match keywords unless clearly negated in a short preceding window."""
         matches = []
         for keyword in keywords:
-            if keyword in message:
+            start = 0
+            while True:
+                idx = message.find(keyword, start)
+                if idx < 0:
+                    break
+                prefix = message[max(0, idx - 32):idx]
+                if NEGATION_WINDOW.search(prefix):
+                    start = idx + len(keyword)
+                    continue
                 matches.append(keyword)
+                break
         return len(matches) > 0, matches
     
     def _calculate_severity(self, crisis: bool, distress: bool, 
@@ -200,39 +225,38 @@ class LunaSafetyCore:
         }
     
     def _get_recommended_actions(self, scan_result: Dict) -> List[str]:
-        """Get recommended actions based on scan results"""
+        """Return recommended local actions — not completed automated contacts."""
         actions = []
-        
+
         if scan_result['flags']['crisis']:
-            actions.append('IMMEDIATE_ALERT_PARENT')
-            actions.append('PROVIDE_CRISIS_RESOURCES')
-            actions.append('EMPATHY_RESPONSE_HIGH')
-        
+            actions.extend([
+                'RECOMMEND_ALERT_TRUSTED_ADULT',
+                'SHOW_CRISIS_RESOURCES',
+                'SUPPORTIVE_RESPONSE_HIGH',
+            ])
+
         if scan_result['flags']['toxicity']:
-            actions.append('ALERT_PARENT')
-            actions.append('LOG_INCIDENT')
-        
+            actions.extend([
+                'RECOMMEND_REVIEW_BY_CAREGIVER',
+                'LOG_LOCAL_INCIDENT',
+            ])
+
         if scan_result['flags']['distress']:
-            actions.append('EMPATHY_RESPONSE_MEDIUM')
-            actions.append('SUGGEST_RESOURCES')
-        
+            actions.extend([
+                'SUPPORTIVE_RESPONSE_MEDIUM',
+                'SUGGEST_SUPPORT_RESOURCES',
+            ])
+
         if scan_result['flags']['night_mode']:
-            actions.append('NIGHT_MODE_RESPONSE')
-            actions.append('CALMING_TECHNIQUES')
-        
+            actions.extend([
+                'NIGHT_MODE_SUPPORT',
+                'SUGGEST_CALMING_TECHNIQUES',
+            ])
+
         return actions
-    
+
     def generate_empathy_response(self, message: str, scan_result: Optional[Dict] = None) -> str:
-        """
-        Generate empathy-anchored response using OpenClaw principles
-        
-        Args:
-            message: Original user message
-            scan_result: Optional scan result to inform response
-        
-        Returns:
-            Empathetic response string
-        """
+        """Generate supportive response framing from scan results."""
         if scan_result is None:
             scan_result = self.scan_message(message)
         
@@ -351,7 +375,7 @@ class LunaSafetyCore:
             'nearest_zone': nearest_zone,
             'distance_to_nearest': min_distance,
             'current_location': {'lat': lat, 'lon': lon},
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'alert_parent': not in_safe_zone
         }
     
@@ -370,11 +394,11 @@ class LunaSafetyCore:
             Alert dict ready to send via Firebase or other notification system
         """
         alert = {
-            'id': f"alert_{datetime.utcnow().timestamp()}",
+            'id': f"alert_{datetime.now(timezone.utc).timestamp()}",
             'type': alert_type,
             'severity': severity,
             'message': message,
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'status': 'pending',
             'metadata': metadata or {}
         }

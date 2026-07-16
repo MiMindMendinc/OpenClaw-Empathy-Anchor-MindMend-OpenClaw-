@@ -1,0 +1,13 @@
+{
+    "demo_auth": true,
+    "offline_mode": true,
+    "scanner_version": "rules-v1.0.0",
+    "schema_version": 2,
+    "status": "ready",
+    "storage": {
+        "engine": "sqlite",
+        "ok": true,
+        "schema_version": 2
+    },
+    "timestamp": "2026-07-16T21:40:16.533639+00:00"
+}

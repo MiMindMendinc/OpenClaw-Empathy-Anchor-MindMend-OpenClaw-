@@ -2,173 +2,244 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OpenClaw Empathy Anchor — Local Safety Demo</title>
-  <meta name="description" content="Privacy-first, offline-first empathy and safety response layer for youth-support AI demos. Michigan MindMend Inc." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>MindMend Empathy Anchor — Local-First Safety Signal Demonstrator</title>
+  <meta name="description" content="MindMend Empathy Anchor is a local-first technical demonstration for detecting predefined safety signals and presenting supportive routing guidance. Not clinical software." />
+  <meta name="theme-color" content="#0f3d34" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f3d34'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-size='28' fill='%23f3efe4' font-family='Georgia,serif'%3EM%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/showcase/styles.css" />
 </head>
 <body>
-  <div class="atmosphere" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
-    <div class="brand-mark">Michigan MindMend Inc.</div>
-    <nav class="nav-links">
+    <div class="brand-block">
+      <span class="org">Michigan MindMend Inc.</span>
+      <strong class="product">MindMend Empathy Anchor</strong>
+    </div>
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="siteNav">
+      Menu
+    </button>
+    <nav class="site-nav" id="siteNav" aria-label="Primary">
+      <a href="#overview">Overview</a>
       <a href="#live">Live demo</a>
+      <a href="#how">How it works</a>
       <a href="#evidence">Evidence</a>
+      <a href="#privacy">Privacy</a>
       <a href="#boundaries">Boundaries</a>
+      <a href="#api">API</a>
+      <a href="#deploy">Deploy</a>
     </nav>
   </header>
 
-  <main>
-    <section class="hero" id="top">
-      <p class="eyebrow">HumaniCare AI module · v0.1.0 local safety demo</p>
-      <h1 class="brand-title">OpenClaw<br />Empathy Anchor</h1>
-      <p class="hero-lede">
-        Helpful AI should protect people without harvesting their data.
+  <main id="main">
+    <section class="hero" id="overview">
+      <p class="eyebrow">Technical demonstration · v0.2.0</p>
+      <h1>MindMend Empathy Anchor</h1>
+      <p class="subtitle">Local-First Safety Signal Demonstrator</p>
+      <p class="lede">Helpful AI should protect people without harvesting their data.</p>
+      <p class="status-statement">
+        A local-first technical demonstration for detecting predefined safety signals and presenting supportive routing guidance.
+        It is not clinical software, an emergency service, or a replacement for professional judgment.
       </p>
       <div class="cta-row">
-        <a class="btn primary" href="#live">Run the live demo</a>
-        <a class="btn ghost" href="/status" target="_blank" rel="noopener">View /status JSON</a>
+        <a class="btn primary" href="#live">Run live demo</a>
+        <a class="btn ghost" href="/api/v1/status">View status JSON</a>
       </div>
-      <p class="hero-meta">Offline-first · Deterministic safety scanner · SQLite alerts · No cloud required</p>
-    </section>
-
-    <section class="placard-strip" aria-label="Capability placards">
-      <article class="placard" data-reveal>
-        <span class="placard-kicker">Scanner</span>
-        <h2>Deterministic keyword patterns</h2>
-        <p>Explainable crisis, distress, toxicity, and night-mode flags. Offline-safe. Demo-grade, not clinical AI.</p>
-      </article>
-      <article class="placard" data-reveal>
-        <span class="placard-kicker">Empathy layer</span>
-        <h2>Supportive response framing</h2>
-        <p>Node empathy anchor wraps responses with validation, grounding steps, and resource routing when needed.</p>
-      </article>
-      <article class="placard" data-reveal>
-        <span class="placard-kicker">Alerts</span>
-        <h2>Local SQLite persistence</h2>
-        <p>Parent/caregiver alerts stay on-device. No Firebase, no telemetry, no external database in this release.</p>
-      </article>
-      <article class="placard" data-reveal>
-        <span class="placard-kicker">Privacy</span>
-        <h2>Local-first by default</h2>
-        <p>Docker one-command demo. Demo auth labeled. Production mode refuses default JWT secrets.</p>
-      </article>
-    </section>
-
-    <section class="live" id="live">
-      <div class="section-head">
-        <h2>Live safety demo</h2>
-        <p>These calls hit the real Flask API running on this host. No mocked responses.</p>
-      </div>
-
-      <div class="demo-grid">
-        <div class="demo-controls">
-          <label for="scenario">Scenario</label>
-          <select id="scenario">
-            <option value="neutral">Neutral — good day at school</option>
-            <option value="distress">Distress — anxious &amp; overwhelmed</option>
-            <option value="crisis" selected>Crisis — suicidal language</option>
-            <option value="night">Night mode — can't sleep</option>
-            <option value="geofence">Geofence — outside safe zone</option>
-          </select>
-
-          <label for="customMessage">Or type a message</label>
-          <textarea id="customMessage" rows="3" placeholder="Optional custom message for /chat"></textarea>
-
-          <button id="runDemo" class="btn primary full">Scan with live API</button>
-          <button id="runAll" class="btn ghost full">Run all /demo scenarios</button>
-
-          <div class="status-line" id="connStatus">Checking /health…</div>
-        </div>
-
-        <div class="demo-output" aria-live="polite">
-          <div class="flags" id="flags"></div>
-          <pre id="output"><code>Waiting for a scan…</code></pre>
-        </div>
-      </div>
-    </section>
-
-    <section class="evidence" id="evidence">
-      <div class="section-head">
-        <h2>Evidence, not vibes</h2>
-        <p>What is implemented and verified in this repository right now.</p>
-      </div>
-      <div class="evidence-board">
-        <div class="metric" data-reveal>
-          <strong id="nodeTests">38</strong>
-          <span>Node tests</span>
-        </div>
-        <div class="metric" data-reveal>
-          <strong id="pyTests">45</strong>
-          <span>Python tests</span>
-        </div>
-        <div class="metric" data-reveal>
-          <strong>3</strong>
-          <span>CI jobs green</span>
-        </div>
-        <div class="metric" data-reveal>
-          <strong>SQLite</strong>
-          <span>Alert store</span>
-        </div>
-      </div>
-      <ul class="evidence-list">
-        <li><a href="/demo">GET /demo</a> — five deterministic scenarios, no auth</li>
-        <li><a href="/health">GET /health</a> — live health JSON</li>
-        <li><a href="/status">GET /status</a> — runtime boundaries and config</li>
-        <li><a href="/docs/evidence.md">docs/evidence.md</a> — commands, outputs, honesty table</li>
+      <ul class="status-pills" aria-label="Runtime status">
+        <li id="pillApi">API: checking…</li>
+        <li id="pillStorage">Storage: checking…</li>
+        <li id="pillOffline">Offline mode: checking…</li>
       </ul>
     </section>
 
-    <section class="boundaries" id="boundaries">
+    <section class="section" id="live" aria-labelledby="live-title">
+      <div class="section-head">
+        <h2 id="live-title">Live demonstration</h2>
+        <p>These calls hit the real local Flask API. Sensitive examples are behind an explicit selector.</p>
+      </div>
+
+      <div class="notice" role="note">
+        <strong>Content notice:</strong> Some verification scenarios involve sensitive safety language.
+        They are for technical demonstration only and are not clinical assessment.
+      </div>
+
+      <div class="demo-layout">
+        <form class="demo-panel" id="demoForm">
+          <label for="scenario">Scenario</label>
+          <select id="scenario" name="scenario">
+            <option value="neutral" selected>Neutral — ordinary day</option>
+            <option value="distress">Distress — anxious / overwhelmed</option>
+            <option value="night">Night support — sleep difficulty</option>
+            <option value="crisis">Crisis language — sensitive verification</option>
+            <option value="geofence">Geofence — outside safe zone</option>
+            <option value="custom">Custom message</option>
+          </select>
+
+          <label for="customMessage">Custom message (optional)</label>
+          <textarea id="customMessage" name="customMessage" rows="3" maxlength="4000" placeholder="Enter a message only if using Custom"></textarea>
+
+          <div class="button-row">
+            <button type="submit" class="btn primary" id="runDemo">Scan with live API</button>
+            <button type="button" class="btn ghost" id="resetDemo">Reset demo</button>
+          </div>
+          <p class="status-line" id="connStatus" role="status" aria-live="polite">Checking API…</p>
+        </form>
+
+        <div class="results-panel" aria-live="polite">
+          <div id="emptyState" class="empty-state">Run a scenario to see the local decision flow.</div>
+          <div id="loadingState" class="loading-state hidden">Scanning…</div>
+          <div id="errorState" class="error-state hidden"></div>
+          <div id="resultState" class="result-state hidden">
+            <ol class="flow">
+              <li>Message received</li>
+              <li>Deterministic rules evaluated</li>
+              <li>Safety flags produced</li>
+              <li>Severity assigned</li>
+              <li>Recommended local actions produced</li>
+              <li id="flowPersist">Alert persistence checked</li>
+              <li id="flowResources">Crisis-resource guidance reviewed</li>
+            </ol>
+
+            <dl class="result-grid">
+              <div><dt>Severity</dt><dd id="rSeverity">—</dd></div>
+              <div><dt>Detected categories</dt><dd id="rCategories">—</dd></div>
+              <div><dt>Matched indicators</dt><dd id="rMatches">—</dd></div>
+              <div><dt>Recommended actions</dt><dd id="rActions">—</dd></div>
+              <div><dt>Alert persisted</dt><dd id="rPersisted">—</dd></div>
+              <div><dt>Alert ID</dt><dd id="rAlertId">—</dd></div>
+              <div><dt>Created</dt><dd id="rCreated">—</dd></div>
+              <div><dt>Storage mode</dt><dd id="rStorage">—</dd></div>
+              <div><dt>Scanner version</dt><dd id="rScanner">—</dd></div>
+            </dl>
+
+            <div class="supportive" id="supportiveBox"></div>
+
+            <details class="json-details">
+              <summary>Technical JSON</summary>
+              <div class="json-toolbar">
+                <button type="button" class="btn ghost small" id="copyJson">Copy JSON</button>
+              </div>
+              <pre id="output"><code></code></pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p>Deterministic keyword/pattern rules — explainable, offline, not “AI understanding.”</p>
+      </div>
+      <div class="placard-grid">
+        <article class="placard">
+          <h3>What it detects</h3>
+          <p>Crisis language, distress signals, toxicity/harassment cues, night-support cues, and optional geofence events.</p>
+        </article>
+        <article class="placard">
+          <h3>When a signal appears</h3>
+          <p>The UI shows severity, matched indicators, recommended local actions, and optional SQLite alert persistence.</p>
+        </article>
+        <article class="placard">
+          <h3>Cloud required?</h3>
+          <p>No. Default operation is offline-first on your machine. No analytics or telemetry by default.</p>
+        </article>
+        <article class="placard">
+          <h3>What is stored</h3>
+          <p>Alert summaries in local SQLite. Raw message text is not retained unless you explicitly enable it.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="evidence">
+      <div class="section-head">
+        <h2>Evidence</h2>
+        <p>Verified capabilities — not marketing claims.</p>
+      </div>
+      <ul class="evidence-list">
+        <li><a href="/docs/evidence.md">Evidence index</a></li>
+        <li><a href="/docs/EVALUATION.md">Detector evaluation method</a></li>
+        <li><a href="/api/v1/ready">GET /ready</a> — storage readiness</li>
+        <li><a href="/api/v1/status">GET /status</a> — runtime honesty JSON</li>
+      </ul>
+    </section>
+
+    <section class="section" id="privacy">
+      <div class="section-head">
+        <h2>Privacy</h2>
+        <p>Local-first defaults. See <a href="/docs/PRIVACY.md">PRIVACY.md</a>.</p>
+      </div>
+      <ul>
+        <li>No telemetry by default</li>
+        <li>No third-party fonts or trackers in this UI</li>
+        <li>Raw message retention off by default</li>
+        <li>Authenticated users can delete their alerts</li>
+        <li>Full reset: stop service and delete the local SQLite file</li>
+      </ul>
+    </section>
+
+    <section class="section" id="boundaries">
       <div class="section-head">
         <h2>Safety boundaries</h2>
         <p>Say what this is. Say what it is not.</p>
       </div>
       <div class="boundary-grid">
-        <div class="boundary yes" data-reveal>
+        <div class="boundary yes">
           <h3>This is</h3>
           <ul>
-            <li>A supportive safety prototype</li>
-            <li>A deterministic demo scanner</li>
-            <li>Informational crisis resource routing</li>
+            <li>A supportive technical demonstration</li>
+            <li>A deterministic safety-signal scanner</li>
+            <li>Informational crisis-resource routing</li>
             <li>Local-first infrastructure for sensitive demos</li>
           </ul>
         </div>
-        <div class="boundary no" data-reveal>
+        <div class="boundary no">
           <h3>This is not</h3>
           <ul>
-            <li>Clinical software or a medical device</li>
+            <li>Therapy or a clinician</li>
+            <li>A medical device or diagnostic tool</li>
             <li>An emergency service or hotline</li>
-            <li>Therapy or diagnostic care</li>
-            <li>A replacement for parents, clinicians, or 988/911</li>
+            <li>A replacement for parents, clinicians, 988, or 911</li>
           </ul>
         </div>
       </div>
-      <p class="crisis-line">If someone may be in immediate danger, call or text <strong>988</strong> or contact emergency services.</p>
+      <p class="crisis-line">If someone may be in immediate danger, call or text <strong>988</strong> (US) or contact emergency services.</p>
     </section>
 
-    <section class="runbook" id="run">
+    <section class="section" id="api">
       <div class="section-head">
-        <h2>One command</h2>
-        <p>Start the stack, then prove it.</p>
+        <h2>API</h2>
+        <p>Versioned under <code>/api/v1</code>. Compatibility routes remain for existing demos.</p>
       </div>
-      <pre class="runbook-code"><code>docker compose up --build
-curl http://localhost:8000/health
-curl http://localhost:8000/demo
-open http://localhost:8000/</code></pre>
+      <pre class="code-block"><code>GET  /api/v1/health
+GET  /api/v1/ready
+GET  /api/v1/status
+POST /api/v1/auth/login
+POST /api/v1/scan
+GET  /api/v1/alerts
+DELETE /api/v1/alerts/{id}</code></pre>
+      <p><a href="/docs/API_REFERENCE.md">API reference</a></p>
+    </section>
+
+    <section class="section" id="deploy">
+      <div class="section-head">
+        <h2>Deployment</h2>
+        <p>One command for a local demonstration.</p>
+      </div>
+      <pre class="code-block"><code>docker compose up --build
+curl http://127.0.0.1:8000/ready
+open http://127.0.0.1:8000/</code></pre>
+      <p>Local Python bind defaults to <code>127.0.0.1</code>. LAN exposure requires explicit configuration. See <a href="/docs/DEPLOYMENT.md">DEPLOYMENT.md</a>.</p>
     </section>
   </main>
 
   <footer class="site-footer">
     <div>
-      <strong>OpenClaw Empathy Anchor</strong>
-      <span>Built by Lyle Perrien II · Michigan MindMend Inc.</span>
+      <strong>MindMend Empathy Anchor</strong>
+      <span>Michigan MindMend Inc. · MIT License</span>
     </div>
-    <div class="footer-meta">MIT · Privacy-first · Offline-capable</div>
+    <p>Technical demonstration · Not clinical software</p>
   </footer>
 
   <script src="/showcase/app.js"></script>

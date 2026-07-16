@@ -34,7 +34,7 @@ class TestLunaSafetyCore:
         assert result['safe'] == False
         assert result['flags']['crisis'] == True
         assert result['severity'] == 'critical'
-        assert 'IMMEDIATE_ALERT_PARENT' in result['actions']
+        assert 'RECOMMEND_ALERT_TRUSTED_ADULT' in result['actions']
         assert 'resources' in result
     
     def test_distress_detection(self):
@@ -44,7 +44,7 @@ class TestLunaSafetyCore:
         
         assert result['flags']['distress'] == True
         assert result['severity'] == 'high'
-        assert 'EMPATHY_RESPONSE_MEDIUM' in result['actions']
+        assert 'SUPPORTIVE_RESPONSE_MEDIUM' in result['actions']
     
     def test_night_mode_detection(self):
         """Test night mode keyword detection"""
@@ -53,7 +53,7 @@ class TestLunaSafetyCore:
         
         assert result['flags']['night_mode'] == True
         assert result['severity'] == 'moderate'
-        assert 'NIGHT_MODE_RESPONSE' in result['actions']
+        assert 'NIGHT_MODE_SUPPORT' in result['actions']
     
     def test_toxicity_detection(self):
         """Test toxicity keyword detection"""

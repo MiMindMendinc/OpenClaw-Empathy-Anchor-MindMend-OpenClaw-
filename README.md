@@ -1,177 +1,129 @@
-<p align="center">
-  <img src="docs/assets/01-showcase-hero.png" alt="OpenClaw Empathy Anchor showcase hero" width="100%" />
-</p>
+# MindMend Empathy Anchor
 
-# OpenClaw Empathy Anchor
-
-**Michigan MindMend Inc. · HumaniCare AI module · v0.1.0 local safety demo**
+**Local-First Safety Signal Demonstrator** · Michigan MindMend Inc.
 
 Helpful AI should protect people without harvesting their data.
 
-Offline-first empathy and safety infrastructure for youth-support AI demos: compassionate response framing, deterministic crisis/distress scanning, local SQLite caregiver alerts, and Michigan crisis resource routing.
+![MindMend Empathy Anchor showcase](docs/assets/01-showcase-hero.png)
 
-> Supportive prototype. Not clinical software. Not an emergency service. Not a replacement for trusted adults.
+## Project status
 
----
+**Technical demonstration** (pre-production safety-support prototype).
 
-## Proof it works
+MindMend Empathy Anchor is a local-first technical demonstration for detecting predefined safety signals and presenting supportive routing guidance. It is not clinical software, an emergency service, or a replacement for professional judgment.
 
-| Evidence | Link |
-|----------|------|
-| Live showcase UI | `docker compose up --build` → [http://localhost:8000/](http://localhost:8000/) |
-| Deterministic scenarios | [GET /demo](http://localhost:8000/demo) |
-| Runtime honesty JSON | [GET /status](http://localhost:8000/status) |
-| Screenshots | [`docs/assets/`](docs/assets/) |
-| Test & CI evidence | [`docs/evidence.md`](docs/evidence.md) |
-| Safety boundaries | [`docs/clinical-boundaries.md`](docs/clinical-boundaries.md) |
+## Safety boundary
 
-<p align="center">
-  <img src="docs/assets/02-live-demo-crisis.png" alt="Live crisis scan against the real API" width="100%" />
-</p>
+Not therapy. Not a medical device. Not diagnostic software. Not 988/911. Not a replacement for parents, guardians, or clinicians.
 
----
+If someone may be in immediate danger, call or text **988** (US) or contact emergency services.
 
-## Run the demo (one command)
+## Verified capabilities
 
-```bash
-docker compose up --build
-```
-
-Then:
-
-```bash
-curl -s http://localhost:8000/health | python -m json.tool
-curl -s http://localhost:8000/demo | python -m json.tool
-open http://localhost:8000/   # interactive showcase
-```
-
-### Local without Docker
-
-```bash
-# Empathy layer
-npm install && npm test && npm start
-
-# Backend API
-cd backend
-pip install -r requirements.txt
-export PORT=8000 DEMO_AUTH=true
-python app.py
-```
-
-### Authenticated chat (demo auth)
-
-```bash
-TOKEN=$(curl -s -X POST http://localhost:8000/auth/login \
-  -H 'Content-Type: application/json' \
-  -d '{"user_id":"demo_user"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
-
-curl -s -X POST http://localhost:8000/chat \
-  -H "Authorization: Bearer $TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{"message":"I feel anxious and overwhelmed"}' | python -m json.tool
-
-curl -s http://localhost:8000/alerts \
-  -H "Authorization: Bearer $TOKEN" | python -m json.tool
-```
-
-`/auth/login` only works when `DEMO_AUTH=true`. It is labeled demo auth — not production identity verification.
-
----
-
-## What is real in v0.1
-
-| Capability | Status | Implementation |
-|------------|--------|----------------|
-| Node empathy anchor | Done | `skills/empathy-anchor/`, `index.js` |
-| Flask safety API | Done | `backend/app.py` |
-| Deterministic scanner | Done | `backend/luna_safety_core.py` (keyword/pattern) |
-| SQLite alert persistence | Done | `backend/alert_store.py` |
-| Interactive showcase | Done | `showcase/` served at `/` |
-| Demo auth gate | Done | `DEMO_AUTH` + production JWT requirements |
-| Docker + healthcheck | Done | port **8000** end-to-end |
-| Node + Python + Docker CI | Done | `.github/workflows/ci.yml` |
-| Michigan crisis resources | Done | informational routing only |
-| Push notifications / Firebase | Not in v0.1 | archived legacy notes only |
-| Clinical validation study | Not claimed | explicitly false in `/status` |
-
-<p align="center">
-  <img src="docs/assets/03-demo-all-scenarios.png" alt="All /demo scenarios from live API" width="100%" />
-</p>
-
-<p align="center">
-  <img src="docs/assets/05-boundaries-placards.png" alt="Safety boundaries placards" width="100%" />
-</p>
-
----
+| Capability | Evidence |
+|------------|----------|
+| Deterministic local scanner | `backend/luna_safety_core.py`, `/api/v1/scan` |
+| Supportive response framing | Node skill + Flask responses |
+| Local SQLite alerts | `backend/alert_store.py` (raw text off by default) |
+| Interactive showcase | `http://127.0.0.1:8000/` |
+| Health vs readiness | `/api/v1/health`, `/api/v1/ready` |
+| Detector evaluation harness | `python backend/eval/run_eval.py` |
+| Docker non-root image | `Dockerfile` |
 
 ## Architecture
 
 ```text
-User input
-  → Empathy Anchor (Node) or Flask /chat
-  → Luna Safety Core scan (deterministic)
-  → Supportive response + optional resources
-  → Optional SQLite alert
-  → Human review / caregiver / 988 when needed
+Message → deterministic rules → flags/severity → recommended actions
+       → optional local SQLite alert → informational resources → human review
 ```
 
-No required cloud APIs. No telemetry. Alerts stay local.
+No required cloud APIs. No telemetry by default.
 
----
+## Quick start
 
-## Safety boundaries
-
-| This is | This is not |
-|---------|-------------|
-| Supportive safety prototype | Clinical / diagnostic software |
-| Deterministic demo scanner | Validated crisis prediction model |
-| Informational resource routing | Emergency dispatch |
-| Local-first demo infrastructure | Therapy or clinician replacement |
-
-If someone may be in immediate danger, call or text **988** or contact emergency services.
-
----
-
-## Repository map
-
-```text
-.
-├── README.md
-├── showcase/              # Interactive demo UI (served at /)
-├── backend/
-│   ├── app.py             # Flask API
-│   ├── luna_safety_core.py
-│   ├── alert_store.py     # SQLite alerts
-│   └── tests/
-├── skills/empathy-anchor/ # Node response layer
-├── docs/
-│   ├── evidence.md
-│   ├── assets/            # Live screenshots
-│   └── clinical-boundaries.md
-├── archive/legacy/        # Stale docs kept out of the way
-├── Dockerfile
-└── docker-compose.yml
+```bash
+docker compose up --build
+curl -s http://127.0.0.1:8000/ready | python -m json.tool
+open http://127.0.0.1:8000/
 ```
 
----
+Without Docker:
 
-## For reviewers
+```bash
+npm test
+cd backend && pip install -r requirements.txt
+DEMO_AUTH=true BIND_HOST=127.0.0.1 python app.py
+```
 
-Open these first:
+## Demonstration
 
-1. This README
-2. [http://localhost:8000/](http://localhost:8000/) after `docker compose up --build`
-3. [`docs/evidence.md`](docs/evidence.md)
-4. [`backend/app.py`](backend/app.py) + [`backend/alert_store.py`](backend/alert_store.py)
-5. [`skills/empathy-anchor/index.js`](skills/empathy-anchor/index.js)
+1. Open the showcase
+2. Leave the default **Neutral** scenario, or choose another labeled scenario
+3. Click **Scan with live API**
+4. Read the plain-language results panel (JSON is optional under **Technical JSON**)
 
-Stale completion docs and the old root Luna module live in [`archive/legacy/`](archive/legacy/) so they cannot confuse the story.
+Walkthrough: [`docs/demo.md`](docs/demo.md)
 
----
+## API example
 
-## Built by
+```bash
+TOKEN=$(curl -s -X POST http://127.0.0.1:8000/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"user_id":"demo"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
-**Lyle Perrien II**  
-**Michigan MindMend Inc.**
+curl -s -X POST http://127.0.0.1:8000/api/v1/scan \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"I feel anxious and overwhelmed"}' | python -m json.tool
+```
 
-MIT — Built for the people, not the platforms.
+## Privacy behavior
+
+- Local SQLite only
+- Raw message retention **off** by default
+- No analytics
+- Authenticated alert deletion supported
+
+Details: [`docs/PRIVACY.md`](docs/PRIVACY.md)
+
+## Evaluation results
+
+Reproduce:
+
+```bash
+python backend/eval/run_eval.py
+```
+
+See [`docs/EVALUATION.md`](docs/EVALUATION.md) and `docs/evidence/evaluation.md`.  
+These metrics are **not** clinical validation.
+
+## Security model
+
+Demo auth is labeled and optional. Production mode rejects demo secrets. CORS is allow-listed. Default bind is localhost for Python startup.
+
+See [`SECURITY.md`](SECURITY.md) and [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).
+
+## Known limitations
+
+- English keyword lists only
+- Weak negation / no sarcasm model
+- Quoted/academic crisis words often false-positive
+- Misspellings/obfuscation often false-negative
+- No multi-turn context
+- Not production-hardening for internet exposure
+
+## Naming note
+
+Public product name is **MindMend Empathy Anchor**. Older “OpenClaw” references may remain as internal compatibility aliases in the Node module API (`OpenClaw` class) and archive docs. Michigan MindMend does not claim ownership of unrelated third-party projects.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).
+
+## Emergency-resource notice
+
+Resource routing is informational. Availability is not guaranteed. In an emergency, contact local emergency services or call/text 988 in the United States.
