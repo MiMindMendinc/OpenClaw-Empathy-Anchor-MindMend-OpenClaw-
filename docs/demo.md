@@ -1,30 +1,28 @@
-# Demo walkthrough
+# Demonstration walkthrough
 
-## 60-second show
+## 60 seconds
 
 ```bash
 docker compose up --build
+open http://127.0.0.1:8000/
 ```
 
-Open [http://localhost:8000/](http://localhost:8000/)
+1. Confirm status pills show API/storage ready
+2. Keep **Neutral** selected and scan
+3. Switch to **Distress** and scan — read severity, categories, recommended actions
+4. Expand **Technical JSON** only if needed
+5. Open **Boundaries** and state the honesty lines
 
-1. Click **Run the live demo**
-2. Leave scenario on **Crisis**
-3. Click **Scan with live API**
-4. Point at the JSON: `severity: critical`, `alert_created: true`, SQLite alert id present
-5. Click **Run all /demo scenarios**
-6. Open **Boundaries** — say the honesty lines out loud
+Crisis language examples stay behind an explicit selector with a content notice.
 
-## Curl proof
+## Verify persistence
 
 ```bash
-curl -s http://localhost:8000/health | python -m json.tool
-curl -s http://localhost:8000/status | python -m json.tool
-curl -s http://localhost:8000/demo | python -m json.tool
+TOKEN=$(curl -s -X POST http://127.0.0.1:8000/api/v1/auth/login \
+  -H 'Content-Type: application/json' -d '{"user_id":"demo"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
+curl -s -X POST http://127.0.0.1:8000/api/v1/scan \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"message":"I feel anxious and overwhelmed"}'
+# restart container/process, then:
+curl -s http://127.0.0.1:8000/api/v1/alerts -H "Authorization: Bearer $TOKEN"
 ```
-
-Expected: `"status": "healthy"`, `"clinical_validation": false`, five scenarios including geofence.
-
-## What to say when people ask “is this production?”
-
-> This is a production-grade **local demo** of privacy-first safety infrastructure: real code, real tests, real SQLite alerts, real Docker healthcheck. It is not clinical software and not an emergency service. The scanner is deterministic and explainable on purpose.

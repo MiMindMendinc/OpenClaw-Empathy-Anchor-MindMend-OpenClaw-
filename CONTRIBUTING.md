@@ -1,10 +1,10 @@
-# Contributing to OpenClaw Empathy Anchor
+# Contributing to MindMend Empathy Anchor
 
-Thank you for your interest in contributing to this mental health support project! This guide will help you get started.
+Thank you for your interest in contributing. This project is a **technical demonstration** of local-first safety-signal tooling by Michigan MindMend Inc.
 
 ## Mission
 
-Our mission is to provide privacy-first, compassionate AI support for youth mental health in Michigan and beyond. All contributions should align with this mission.
+Provide privacy-first, supportive safety-signal infrastructure for youth-support demos — without claiming clinical effectiveness or replacing trusted humans.
 
 ## How to Contribute
 

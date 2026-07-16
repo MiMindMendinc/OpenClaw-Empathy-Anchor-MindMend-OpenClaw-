@@ -1,18 +1,22 @@
 services:
   empathy-anchor:
     build: .
+    image: mindmend-empathy-anchor:0.2.0
     ports:
       - "8000:8000"
     volumes:
-      - ./models:/app/models
-      - ./data/journals:/app/data/journals
       - ./data/alerts:/app/data
       - ./showcase:/app/showcase:ro
+      - ./docs:/app/docs:ro
     environment:
       - PORT=8000
+      - BIND_HOST=0.0.0.0
+      - ALLOW_LAN_BIND=true
       - OFFLINE_MODE=true
       - FLASK_ENV=development
       - DEMO_AUTH=true
+      - STORE_RAW_MESSAGES=false
+      - ALERT_RETENTION_DAYS=30
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-local-demo-only-not-for-production}
       - ALERT_DB_PATH=/app/data/alerts.db
       - CORS_ORIGINS=http://localhost:8000,http://127.0.0.1:8000

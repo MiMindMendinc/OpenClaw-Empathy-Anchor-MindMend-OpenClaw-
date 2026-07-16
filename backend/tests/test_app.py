@@ -308,7 +308,8 @@ class TestAPIEndpoints:
         )
         assert response.status_code == 400
         data = json.loads(response.data)
-        assert 'allowed_actions' in data
+        allowed = data.get('allowed_actions') or data.get('error', {}).get('allowed_actions')
+        assert allowed
 
     def test_location_invalid_coords(self, client, auth_token):
         response = client.post(
@@ -329,8 +330,52 @@ class TestAPIEndpoints:
     def test_showcase_served(self, client):
         response = client.get('/')
         assert response.status_code == 200
-        assert b'OpenClaw' in response.data
-        assert b'Empathy Anchor' in response.data
+        assert b'MindMend Empathy Anchor' in response.data
+
+    def test_ready_endpoint(self, client):
+        response = client.get('/ready')
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['status'] == 'ready'
+
+    def test_chat_does_not_store_raw_by_default(self, client, auth_token):
+        response = client.post(
+            '/chat',
+            data=json.dumps({'message': 'I want to kill myself'}),
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        data = json.loads(response.data)
+        assert data['alert_created'] is True
+        assert 'original_message' not in (data['alert'].get('metadata') or {})
+
+    def test_oversized_message_rejected(self, client, auth_token):
+        response = client.post(
+            '/chat',
+            data=json.dumps({'message': 'x' * 5000}),
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        assert response.status_code == 400
+
+    def test_delete_alert(self, client, auth_token):
+        create = client.post(
+            '/chat',
+            data=json.dumps({'message': 'I feel hopeless and worthless'}),
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        alert_id = json.loads(create.data)['alert']['id']
+        deleted = client.delete(
+            f'/api/v1/alerts/{alert_id}',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        assert deleted.status_code == 200
+        missing = client.get(
+            f'/api/v1/alerts/{alert_id}',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        assert missing.status_code == 404
 
     def test_404_error(self, client):
         """Test 404 error handling."""

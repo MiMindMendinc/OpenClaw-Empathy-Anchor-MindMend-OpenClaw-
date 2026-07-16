@@ -1,201 +1,201 @@
 
-> openclaw-empathy-anchor-mindmend@0.1.0 test
+> mindmend-empathy-anchor@0.2.0 test
 > node --test
 
 TAP version 13
 # Subtest: EmpathyAnchor initializes in offline mode by default
 ok 1 - EmpathyAnchor initializes in offline mode by default
   ---
-  duration_ms: 0.624392
+  duration_ms: 0.602401
   ...
 # Subtest: validateEmotions detects anxiety signals
 ok 2 - validateEmotions detects anxiety signals
   ---
-  duration_ms: 1.143355
+  duration_ms: 1.067724
   ...
 # Subtest: validateEmotions detects crisis language
 ok 3 - validateEmotions detects crisis language
   ---
-  duration_ms: 0.406514
+  duration_ms: 0.397803
   ...
 # Subtest: suggestResources includes urgent resources for crisis language
 ok 4 - suggestResources includes urgent resources for crisis language
   ---
-  duration_ms: 0.220869
+  duration_ms: 0.253978
   ...
 # Subtest: process returns metadata without raw input by default
 ok 5 - process returns metadata without raw input by default
   ---
-  duration_ms: 0.515069
+  duration_ms: 0.485591
   ...
 # Subtest: process can store raw input only when explicitly configured
 ok 6 - process can store raw input only when explicitly configured
   ---
-  duration_ms: 0.237563
+  duration_ms: 0.197072
   ...
 # Subtest: wrapWithCompassion is deterministic for the same input
 ok 7 - wrapWithCompassion is deterministic for the same input
   ---
-  duration_ms: 0.201555
+  duration_ms: 0.156184
   ...
 # Subtest: OpenClaw chat processes messages
 ok 8 - OpenClaw chat processes messages
   ---
-  duration_ms: 0.181662
+  duration_ms: 0.153533
   ...
 # Subtest: OpenClaw handles empty input safely
 ok 9 - OpenClaw handles empty input safely
   ---
-  duration_ms: 0.216604
+  duration_ms: 0.205271
   ...
 # Subtest: OpenClaw crisis check returns true for crisis language
 ok 10 - OpenClaw crisis check returns true for crisis language
   ---
-  duration_ms: 0.288844
+  duration_ms: 0.2737
   ...
 # Subtest: Empathy Anchor Skill - Module Exports
 ok 11 - Empathy Anchor Skill - Module Exports
   ---
-  duration_ms: 0.558642
+  duration_ms: 0.575542
   ...
 # Subtest: Empathy Anchor Skill - Emotional Content Analysis
     # Subtest: should detect crisis keywords
     ok 1 - should detect crisis keywords
       ---
-      duration_ms: 0.985039
+      duration_ms: 0.961965
       ...
     # Subtest: should detect distress keywords
     ok 2 - should detect distress keywords
       ---
-      duration_ms: 0.519581
+      duration_ms: 0.522342
       ...
     # Subtest: should handle neutral messages
     ok 3 - should handle neutral messages
       ---
-      duration_ms: 0.218584
+      duration_ms: 0.212428
       ...
     # Subtest: should be case-insensitive
     ok 4 - should be case-insensitive
       ---
-      duration_ms: 0.102033
+      duration_ms: 0.1025
       ...
     # Subtest: should detect multiple distress keywords
     ok 5 - should detect multiple distress keywords
       ---
-      duration_ms: 0.082235
+      duration_ms: 0.081181
       ...
     1..5
 ok 12 - Empathy Anchor Skill - Emotional Content Analysis
   ---
-  duration_ms: 2.381421
+  duration_ms: 2.333455
   ...
 # Subtest: Empathy Anchor Skill - Offline Mode Detection
     # Subtest: should detect offline mode from context.system.offlineMode
     ok 1 - should detect offline mode from context.system.offlineMode
       ---
-      duration_ms: 0.175206
+      duration_ms: 0.175554
       ...
     # Subtest: should detect offline mode from context.system.offline
     ok 2 - should detect offline mode from context.system.offline
       ---
-      duration_ms: 0.154928
+      duration_ms: 0.157092
       ...
     # Subtest: should detect offline mode from context.system.networkStatus
     ok 3 - should detect offline mode from context.system.networkStatus
       ---
-      duration_ms: 0.13982
+      duration_ms: 0.146389
       ...
     # Subtest: should detect offline mode from environment variable
     ok 4 - should detect offline mode from environment variable
       ---
-      duration_ms: 0.093564
+      duration_ms: 0.076446
       ...
     # Subtest: should return false when not offline
     ok 5 - should return false when not offline
       ---
-      duration_ms: 0.068418
+      duration_ms: 0.062246
       ...
     1..5
 ok 13 - Empathy Anchor Skill - Offline Mode Detection
   ---
-  duration_ms: 1.072966
+  duration_ms: 1.068964
   ...
 # Subtest: Empathy Anchor Skill - Validation Generation
 ok 14 - Empathy Anchor Skill - Validation Generation
   ---
-  duration_ms: 0.120202
+  duration_ms: 0.058147
   ...
 # Subtest: Empathy Anchor Skill - Resource Formatting
     # Subtest: should format crisis resources
     ok 1 - should format crisis resources
       ---
-      duration_ms: 0.163905
+      duration_ms: 0.130822
       ...
     # Subtest: should format distress resources
     ok 2 - should format distress resources
       ---
-      duration_ms: 0.072563
+      duration_ms: 0.051741
       ...
     # Subtest: should return empty for neutral
     ok 3 - should return empty for neutral
       ---
-      duration_ms: 0.05411
+      duration_ms: 0.082891
       ...
     1..3
 ok 15 - Empathy Anchor Skill - Resource Formatting
   ---
-  duration_ms: 0.529345
+  duration_ms: 0.402479
   ...
 # Subtest: Empathy Anchor Skill - Main Run Function
     # Subtest: should handle crisis message
     ok 1 - should handle crisis message
       ---
-      duration_ms: 0.61186
+      duration_ms: 0.653527
       ...
     # Subtest: should handle distress message
     ok 2 - should handle distress message
       ---
-      duration_ms: 0.15039
+      duration_ms: 0.149743
       ...
     # Subtest: should handle neutral message
     ok 3 - should handle neutral message
       ---
-      duration_ms: 0.102035
+      duration_ms: 0.098399
       ...
     # Subtest: should handle offline mode
     ok 4 - should handle offline mode
       ---
-      duration_ms: 0.100247
+      duration_ms: 0.099593
       ...
     # Subtest: should handle empty message
     ok 5 - should handle empty message
       ---
-      duration_ms: 0.057556
+      duration_ms: 0.05447
       ...
     # Subtest: should handle message in different param names
     ok 6 - should handle message in different param names
       ---
-      duration_ms: 0.145471
+      duration_ms: 0.13974
       ...
     # Subtest: should include metadata in response
     ok 7 - should include metadata in response
       ---
-      duration_ms: 0.132957
+      duration_ms: 0.12387
       ...
     1..7
 ok 16 - Empathy Anchor Skill - Main Run Function
   ---
-  duration_ms: 1.61153
+  duration_ms: 2.480157
   ...
 # Subtest: Empathy Anchor Skill - Michigan Resources
 ok 17 - Empathy Anchor Skill - Michigan Resources
   ---
-  duration_ms: 0.058371
+  duration_ms: 0.055877
   ...
 # Subtest: Empathy Anchor Skill - Triggers on All Messages
 ok 18 - Empathy Anchor Skill - Triggers on All Messages
   ---
-  duration_ms: 0.285567
+  duration_ms: 0.284524
   ...
 1..18
 # tests 38
@@ -205,4 +205,4 @@ ok 18 - Empathy Anchor Skill - Triggers on All Messages
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 59.827011
+# duration_ms 59.164314

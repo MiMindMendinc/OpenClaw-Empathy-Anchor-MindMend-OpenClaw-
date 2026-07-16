@@ -1,12 +1,16 @@
 /**
- * OpenClaw Empathy Anchor - Main Entry Point
- * Privacy-first, offline-capable response layer for youth-support AI demos.
+ * MindMend Empathy Anchor — Node entry point
+ * Privacy-first, offline-capable response layer for youth-support demos.
+ *
+ * Compatibility: the exported class name `OpenClaw` is retained as an alias
+ * so existing require('./index') demos keep working. Public product name is
+ * MindMend Empathy Anchor.
  */
 
 const readline = require('node:readline');
 const EmpathyAnchor = require('./skills/empathy-anchor');
 
-class OpenClaw {
+class MindMendEmpathyAnchor {
   constructor(config = {}) {
     this.config = {
       offlineMode: config.offlineMode !== false,
@@ -33,18 +37,21 @@ class OpenClaw {
   }
 }
 
-function printBanner(openclaw) {
-  console.log('\nOpenClaw Empathy Anchor');
-  console.log('Privacy-first offline youth-support response layer');
-  console.log(`Offline mode: ${openclaw.config.offlineMode ? 'enabled' : 'disabled'}`);
+// Compatibility alias for existing demos/tests
+const OpenClaw = MindMendEmpathyAnchor;
+
+function printBanner(app) {
+  console.log('\nMindMend Empathy Anchor');
+  console.log('Local-first safety signal / supportive response layer');
+  console.log(`Offline mode: ${app.config.offlineMode ? 'enabled' : 'disabled'}`);
   console.log('Type "exit" to quit.\n');
 }
 
 function startCli() {
-  const openclaw = new OpenClaw({ offlineMode: true });
+  const app = new MindMendEmpathyAnchor({ offlineMode: true });
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-  printBanner(openclaw);
+  printBanner(app);
 
   const promptUser = () => {
     rl.question('You: ', (input) => {
@@ -54,8 +61,8 @@ function startCli() {
         return;
       }
 
-      const result = openclaw.chat(input);
-      console.log(`\nOpenClaw:\n${result.response}\n`);
+      const result = app.chat(input);
+      console.log(`\nMindMend:\n${result.response}\n`);
 
       if (result.metadata.isCrisis) {
         console.log('Safety note: crisis language detected. Please contact a real person or emergency resource now.\n');
@@ -69,6 +76,8 @@ function startCli() {
 }
 
 module.exports = OpenClaw;
+module.exports.MindMendEmpathyAnchor = MindMendEmpathyAnchor;
+module.exports.OpenClaw = OpenClaw;
 
 if (require.main === module) {
   startCli();

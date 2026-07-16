@@ -1,21 +1,21 @@
 # Known issues
 
-## Node version
+## Detector limits
 
-Standard: **Node.js 20 LTS** (`>=20.0.0`).
-
-CI and docs target Node 20. Newer Node (including 22) usually works for the built-in-module empathy layer.
+- Deterministic English keyword/pattern rules only
+- Quoted/academic mentions often false-positive
+- Misspellings/obfuscation often false-negative
+- Sarcasm and multi-turn context not modeled
+- Negation handling is shallow
 
 ## Demo authentication
 
-`/auth/login` issues a JWT for any `user_id` only when `DEMO_AUTH=true`.
+`/auth/login` requires `DEMO_AUTH=true` and is not identity verification.
 
-That is intentional for local demos. It is not identity verification.
+## Compatibility alias
 
-## Alert storage
+Node module still exports `OpenClaw` as an alias for `MindMendEmpathyAnchor`.
 
-Alerts persist in local SQLite (`data/alerts.db` by default). There is no cloud sync in v0.1.
+## Repository name
 
-## Scanner scope
-
-Luna Safety Core uses deterministic keyword/pattern matching. It is explainable and offline-friendly. It is not a trained clinical model.
+The GitHub repository URL may still contain historical “OpenClaw” naming; the public product name is MindMend Empathy Anchor.

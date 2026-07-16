@@ -1,13 +1,14 @@
 {
-  "name": "openclaw-empathy-anchor-mindmend",
-  "version": "0.1.0",
-  "description": "Privacy-first, offline-capable empathy and safety response layer for youth-support AI demos.",
+  "name": "mindmend-empathy-anchor",
+  "version": "0.2.0",
+  "description": "MindMend Empathy Anchor — local-first safety signal demonstrator by Michigan MindMend Inc.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "demo": "node demo.js",
     "test": "node --test",
-    "test:anchor": "node --test test/empathy-anchor.test.js"
+    "test:anchor": "node --test test/empathy-anchor.test.js",
+    "eval": "python3 backend/eval/run_eval.py"
   },
   "keywords": [
     "ai-safety",
@@ -17,7 +18,8 @@
     "youth-support",
     "privacy-first",
     "offline-first",
-    "local-ai"
+    "local-ai",
+    "mindmend"
   ],
   "author": "Lyle Perrien II, Michigan MindMend Inc.",
   "license": "MIT",
