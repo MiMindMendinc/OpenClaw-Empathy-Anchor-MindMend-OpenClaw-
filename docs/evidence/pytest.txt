@@ -1,0 +1,33 @@
+.............................................                            [100%]
+=============================== warnings summary ===============================
+backend/tests/test_app.py: 8 warnings
+backend/tests/test_luna_safety_core.py: 11 warnings
+  /workspace/backend/tests/../luna_safety_core.py:141: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'timestamp': datetime.utcnow().isoformat(),
+
+backend/tests/test_app.py::TestAPIEndpoints::test_chat_with_token
+backend/tests/test_app.py::TestAPIEndpoints::test_chat_crisis_creates_persisted_alert
+backend/tests/test_app.py::TestAPIEndpoints::test_chat_distress_creates_alert
+backend/tests/test_app.py::TestAPIEndpoints::test_location_geofence_outside_persists_alert
+backend/tests/test_luna_safety_core.py::TestLunaSafetyCore::test_create_alert
+  /workspace/backend/tests/../luna_safety_core.py:373: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'id': f"alert_{datetime.utcnow().timestamp()}",
+
+backend/tests/test_app.py::TestAPIEndpoints::test_chat_with_token
+backend/tests/test_app.py::TestAPIEndpoints::test_chat_crisis_creates_persisted_alert
+backend/tests/test_app.py::TestAPIEndpoints::test_chat_distress_creates_alert
+backend/tests/test_app.py::TestAPIEndpoints::test_location_geofence_outside_persists_alert
+backend/tests/test_luna_safety_core.py::TestLunaSafetyCore::test_create_alert
+  /workspace/backend/tests/../luna_safety_core.py:377: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'timestamp': datetime.utcnow().isoformat(),
+
+backend/tests/test_app.py::TestAPIEndpoints::test_location_geofence_inside
+backend/tests/test_app.py::TestAPIEndpoints::test_location_geofence_outside_persists_alert
+backend/tests/test_app.py::TestAPIEndpoints::test_demo_endpoint
+backend/tests/test_luna_safety_core.py::TestLunaSafetyCore::test_geofence_inside_safe_zone
+backend/tests/test_luna_safety_core.py::TestLunaSafetyCore::test_geofence_outside_safe_zone
+  /workspace/backend/tests/../luna_safety_core.py:354: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    'timestamp': datetime.utcnow().isoformat(),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+45 passed, 34 warnings in 0.55s

@@ -4,30 +4,42 @@ All notable changes to OpenClaw Empathy Anchor are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.0-showcase] - 2026-07-16
+
+### Added
+- Interactive showcase UI at `/` with capability placards and live API demo
+- `GET /status` runtime evidence endpoint
+- Local screenshots in `docs/assets/` captured from the live server
+- Live JSON evidence under `docs/evidence/`
+- `docs/evidence.md` honesty table for reviewers
+- `archive/legacy/` for stale docs that overclaimed completeness
+
+### Changed
+- Docker Compose uses `FLASK_ENV=development` for the local demo (no fake production mode)
+- CORS restricted to explicit `CORS_ORIGINS`
+- `/resources` returns crisis resources only (donation/demo links removed)
+- Demo login requires `DEMO_AUTH=true` in all modes
+- Sentiment labeled as `keyword_pattern` (no placeholder NLP claims)
+- README rewritten as evidence-first portfolio page
+- `SECURITY.md` rewritten to match what CI and the app actually enforce
+
+### Fixed
+- Invalid `/night_mode` actions return 400
+- Non-numeric `/location` coordinates return 400
+- Stale “NASA-grade / 100% complete / production-ready” docs removed from the active tree
+
 ## [0.1.0-local-safety-demo] - 2026-07-05
 
 ### Added
-- SQLite alert persistence (`backend/alert_store.py`) for local-first parent/caregiver alerts
-- `/demo` endpoint showing neutral, distress, crisis, night-mode, and geofence scan scenarios
-- Demo authentication guardrails (`DEMO_AUTH`, production `JWT_SECRET_KEY` requirement)
-- Python backend test suite expansion (auth, alerts, production config, demo route)
-- CI jobs for Python tests and Docker health-check smoke test
+- SQLite alert persistence (`backend/alert_store.py`)
+- `/demo` endpoint for neutral, distress, crisis, night-mode, and geofence scenarios
+- Demo authentication guardrails and production JWT requirements
+- Python/Node/Docker CI jobs
 - `CHANGELOG.md` and `RELEASE_CHECKLIST.md`
-- README "Run the demo" section with curl examples and safety boundaries table
 
 ### Changed
-- Docker now sets `PORT=8000` so Flask, healthcheck, and Compose agree
-- Node.js standard normalized to **20 LTS** across package.json, Dockerfile, CI, and docs
-- `/alerts` returns persisted alerts instead of a placeholder message
-- `/chat` and `/location` save alerts to local SQLite when triggered
-- Version bumped to `0.1.0`
+- Docker port unified on 8000
+- Node standard normalized to 20 LTS
 
-### Security
-- Production mode (`FLASK_ENV=production`) requires a non-default `JWT_SECRET_KEY`
-- Demo login blocked in production unless `DEMO_AUTH=true` is explicitly set
-
-### Documentation
-- Safety wording tightened: supportive prototype, not clinical software, deterministic demo scanner
-- Implemented vs roadmap table added to README
-
+[0.1.0-showcase]: https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-/releases/tag/v0.1.0-showcase
 [0.1.0-local-safety-demo]: https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-/releases/tag/v0.1.0-local-safety-demo

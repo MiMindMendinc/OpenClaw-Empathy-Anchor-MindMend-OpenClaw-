@@ -1,0 +1,55 @@
+{
+    "alerts": [
+        {
+            "alert_type": "safety_concern",
+            "created_at": "2026-07-16T20:49:35.933215",
+            "id": "alert_1784234975.933209",
+            "message": "Safety concern detected in chat: {'crisis': True, 'distress': False, 'toxicity': False, 'night_mode': False}",
+            "metadata": {
+                "original_message": "I want to kill myself",
+                "scan_result": {
+                    "actions": [
+                        "IMMEDIATE_ALERT_PARENT",
+                        "PROVIDE_CRISIS_RESOURCES",
+                        "EMPATHY_RESPONSE_HIGH"
+                    ],
+                    "flags": {
+                        "crisis": true,
+                        "distress": false,
+                        "night_mode": false,
+                        "toxicity": false
+                    },
+                    "matches": {
+                        "crisis": [
+                            "kill myself"
+                        ],
+                        "distress": [],
+                        "night_mode": [],
+                        "toxicity": []
+                    },
+                    "offline_mode": true,
+                    "resources": {
+                        "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
+                        "crisis_text": "Crisis Text Line - Text HELLO to 741741",
+                        "emergency": "911 - For immediate life-threatening emergencies",
+                        "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
+                        "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                    },
+                    "safe": false,
+                    "sentiment": {
+                        "method": "keyword_pattern",
+                        "negative_hits": 0,
+                        "polarity": 0.0,
+                        "positive_hits": 0
+                    },
+                    "severity": "critical",
+                    "timestamp": "2026-07-16T20:49:35.933193"
+                },
+                "user_id": "evidence"
+            },
+            "severity": "critical",
+            "user_id": "evidence"
+        }
+    ],
+    "count": 1
+}
