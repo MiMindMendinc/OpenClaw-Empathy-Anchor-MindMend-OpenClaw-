@@ -7,13 +7,15 @@ services:
       - ./models:/app/models
       - ./data/journals:/app/data/journals
       - ./data/alerts:/app/data
+      - ./showcase:/app/showcase:ro
     environment:
       - PORT=8000
       - OFFLINE_MODE=true
-      - FLASK_ENV=production
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-demo-jwt-secret-change-for-real-deployments}
+      - FLASK_ENV=development
       - DEMO_AUTH=true
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-local-demo-only-not-for-production}
       - ALERT_DB_PATH=/app/data/alerts.db
+      - CORS_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
     security_opt:
       - no-new-privileges
     deploy:
@@ -22,22 +24,3 @@ services:
           memory: 512m
           cpus: '0.5'
     restart: unless-stopped
-
-  # Optional Ollama service for local LLM inference
-  # Uncomment to enable local AI models
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   ports:
-  #     - "11434:11434"
-  #   volumes:
-  #     - ./models:/root/.ollama
-  #   environment:
-  #     - OLLAMA_HOST=0.0.0.0
-  #   security_opt:
-  #     - no-new-privileges
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 2g
-  #         cpus: '1.0'
-  #   restart: unless-stopped

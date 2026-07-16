@@ -259,7 +259,7 @@ class TestAPIEndpoints:
 
         assert response.status_code == 200
         data = json.loads(response.data)
-        assert 'Bedtime Reminder' in data['response']
+        assert 'Bedtime reminder' in data['response']
 
     def test_get_alerts_empty(self, client, auth_token):
         """Test get alerts endpoint returns empty list initially."""
@@ -295,8 +295,42 @@ class TestAPIEndpoints:
         assert response.status_code == 200
         data = json.loads(response.data)
         assert 'crisis_resources' in data
-        assert 'donation_links' in data
+        assert 'notice' in data
+        assert 'donation_links' not in data
         assert '988' in data['crisis_resources']
+
+    def test_night_mode_invalid_action(self, client, auth_token):
+        response = client.post(
+            '/night_mode',
+            data=json.dumps({'action': 'not_a_real_action'}),
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert 'allowed_actions' in data
+
+    def test_location_invalid_coords(self, client, auth_token):
+        response = client.post(
+            '/location',
+            data=json.dumps({'lat': 'west', 'lon': -84.2}),
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        assert response.status_code == 400
+
+    def test_status_endpoint(self, client):
+        response = client.get('/status')
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['scanner']['clinical_validation'] is False
+        assert data['alert_store'] == 'sqlite_local'
+
+    def test_showcase_served(self, client):
+        response = client.get('/')
+        assert response.status_code == 200
+        assert b'OpenClaw' in response.data
+        assert b'Empathy Anchor' in response.data
 
     def test_404_error(self, client):
         """Test 404 error handling."""
@@ -342,7 +376,7 @@ class TestProductionConfig:
         assert 'JWT_SECRET_KEY' in result.stderr
 
     def test_production_rejects_default_secret(self):
-        """Production mode must reject the default demo secret key."""
+        """Production mode must reject documented demo secret keys."""
         env = os.environ.copy()
         env['FLASK_ENV'] = 'production'
         env['JWT_SECRET_KEY'] = 'mindmend-secret-key-change-in-production'
@@ -360,7 +394,7 @@ class TestProductionConfig:
         )
 
         assert result.returncode != 0
-        assert 'default demo value' in result.stderr
+        assert 'demo value' in result.stderr.lower() or 'documented demo' in result.stderr
 
     def test_production_demo_auth_disabled(self):
         """Demo login is blocked in production when DEMO_AUTH is not set."""

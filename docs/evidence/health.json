@@ -1,0 +1,9 @@
+{
+    "demo_auth": true,
+    "offline_mode": true,
+    "scanner": "deterministic_keyword_pattern",
+    "service": "OpenClaw Empathy Anchor",
+    "status": "healthy",
+    "timestamp": "2026-07-16T20:49:35.845456+00:00",
+    "version": "0.1.0"
+}

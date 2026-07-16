@@ -5,8 +5,7 @@ Complete API documentation for the MindMend Super AI backend.
 ## Base URL
 
 ```
-http://localhost:8000  (Development / Docker)
-https://your-domain.com  (Production)
+http://localhost:8000  (local demo / Docker)
 ```
 
 ## Authentication
@@ -312,7 +311,7 @@ Returns scan results for neutral, distress, crisis, night-mode chat messages and
 
 ### 8. Get Resources
 
-Get crisis resources and donation links.
+Informational crisis resource routing only.
 
 **Endpoint:** `GET /resources`
 
@@ -328,15 +327,19 @@ Get crisis resources and donation links.
     "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
     "emergency": "911 - For immediate life-threatening emergencies"
   },
-  "donation_links": {
-    "gofundme": "https://gofund.me/42b8334bd",
-    "cashapp": "https://cash.app/$MichiganMindMendinc"
-  },
-  "demo": {
-    "eve_ai": "https://kid-helper-ai.replit.app"
-  }
+  "notice": "Informational routing only. If someone may be in immediate danger, call or text 988 or contact emergency services."
 }
 ```
+
+### 9. Status
+
+Runtime evidence for reviewers.
+
+**Endpoint:** `GET /status`
+
+**Authentication:** Not required
+
+Returns version, scanner type, demo-auth flag, alert store type, and explicit clinical-validation=false.
 
 **Example:**
 ```bash

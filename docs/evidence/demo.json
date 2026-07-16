@@ -1,0 +1,188 @@
+{
+    "chat_scenarios": [
+        {
+            "message": "I had a good day at school today.",
+            "response_preview": "Thank you for sharing with me. I'm here to listen and support you. How are you feeling today?\n\n\ud83d\udd12 Privacy Mode: Your conversation is staying private on this device.",
+            "scan_result": {
+                "actions": [],
+                "flags": {
+                    "crisis": false,
+                    "distress": false,
+                    "night_mode": false,
+                    "toxicity": false
+                },
+                "matches": {
+                    "crisis": [],
+                    "distress": [],
+                    "night_mode": [],
+                    "toxicity": []
+                },
+                "offline_mode": true,
+                "safe": true,
+                "sentiment": {
+                    "method": "keyword_pattern",
+                    "negative_hits": 0,
+                    "polarity": 0.5,
+                    "positive_hits": 1
+                },
+                "severity": "low",
+                "timestamp": "2026-07-16T20:49:35.894056"
+            },
+            "scenario": "neutral"
+        },
+        {
+            "message": "I feel anxious and overwhelmed about everything.",
+            "response_preview": "Thank you for sharing what you're feeling. It takes courage to talk about difficult emotions, and I want you to know that what you're experiencing is valid.\n\nMany young people go through similar feelings, and there are people who understand",
+            "scan_result": {
+                "actions": [
+                    "EMPATHY_RESPONSE_MEDIUM",
+                    "SUGGEST_RESOURCES"
+                ],
+                "flags": {
+                    "crisis": false,
+                    "distress": true,
+                    "night_mode": false,
+                    "toxicity": false
+                },
+                "matches": {
+                    "crisis": [],
+                    "distress": [
+                        "anxious",
+                        "overwhelmed"
+                    ],
+                    "night_mode": [],
+                    "toxicity": []
+                },
+                "offline_mode": true,
+                "resources": {
+                    "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
+                    "crisis_text": "Crisis Text Line - Text HELLO to 741741",
+                    "emergency": "911 - For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
+                    "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                },
+                "safe": true,
+                "sentiment": {
+                    "method": "keyword_pattern",
+                    "negative_hits": 0,
+                    "polarity": 0.0,
+                    "positive_hits": 0
+                },
+                "severity": "high",
+                "timestamp": "2026-07-16T20:49:35.894079"
+            },
+            "scenario": "distress"
+        },
+        {
+            "message": "I want to kill myself.",
+            "response_preview": "I hear that you're going through something really difficult right now, and I want you to know that your feelings are valid. However, I'm concerned about your safety and wellbeing.\n\n**Please reach out to someone who can help right away:**\n\n\u2022",
+            "scan_result": {
+                "actions": [
+                    "IMMEDIATE_ALERT_PARENT",
+                    "PROVIDE_CRISIS_RESOURCES",
+                    "EMPATHY_RESPONSE_HIGH"
+                ],
+                "flags": {
+                    "crisis": true,
+                    "distress": false,
+                    "night_mode": false,
+                    "toxicity": false
+                },
+                "matches": {
+                    "crisis": [
+                        "kill myself"
+                    ],
+                    "distress": [],
+                    "night_mode": [],
+                    "toxicity": []
+                },
+                "offline_mode": true,
+                "resources": {
+                    "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
+                    "crisis_text": "Crisis Text Line - Text HELLO to 741741",
+                    "emergency": "911 - For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
+                    "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                },
+                "safe": false,
+                "sentiment": {
+                    "method": "keyword_pattern",
+                    "negative_hits": 0,
+                    "polarity": 0.0,
+                    "positive_hits": 0
+                },
+                "severity": "critical",
+                "timestamp": "2026-07-16T20:49:35.894101"
+            },
+            "scenario": "crisis"
+        },
+        {
+            "message": "I can't sleep and I'm scared.",
+            "response_preview": "Thank you for sharing what you're feeling. It takes courage to talk about difficult emotions, and I want you to know that what you're experiencing is valid.\n\nMany young people go through similar feelings, and there are people who understand",
+            "scan_result": {
+                "actions": [
+                    "EMPATHY_RESPONSE_MEDIUM",
+                    "SUGGEST_RESOURCES",
+                    "NIGHT_MODE_RESPONSE",
+                    "CALMING_TECHNIQUES"
+                ],
+                "flags": {
+                    "crisis": false,
+                    "distress": true,
+                    "night_mode": true,
+                    "toxicity": false
+                },
+                "matches": {
+                    "crisis": [],
+                    "distress": [
+                        "scared"
+                    ],
+                    "night_mode": [
+                        "can't sleep"
+                    ],
+                    "toxicity": []
+                },
+                "offline_mode": true,
+                "resources": {
+                    "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
+                    "crisis_text": "Crisis Text Line - Text HELLO to 741741",
+                    "emergency": "911 - For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
+                    "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                },
+                "safe": true,
+                "sentiment": {
+                    "method": "keyword_pattern",
+                    "negative_hits": 0,
+                    "polarity": 0.0,
+                    "positive_hits": 0
+                },
+                "severity": "high",
+                "timestamp": "2026-07-16T20:49:35.894117"
+            },
+            "scenario": "night_mode"
+        }
+    ],
+    "disclaimer": "Supportive safety prototype \u2014 not clinical software, not an emergency service. Deterministic keyword/pattern scanner.",
+    "geofence_scenario": {
+        "description": "Location outside defined safe zone (Owosso, MI demo)",
+        "name": "geofence_violation",
+        "result": {
+            "alert_parent": true,
+            "current_location": {
+                "lat": 43.0,
+                "lon": -84.2
+            },
+            "distance_to_nearest": 1996.4308930873294,
+            "in_safe_zone": false,
+            "nearest_zone": {
+                "lat": 42.9956,
+                "lon": -84.1762,
+                "name": "Home (Owosso, MI)",
+                "radius": 100
+            },
+            "timestamp": "2026-07-16T20:49:35.894143"
+        }
+    },
+    "timestamp": "2026-07-16T20:49:35.894147+00:00"
+}

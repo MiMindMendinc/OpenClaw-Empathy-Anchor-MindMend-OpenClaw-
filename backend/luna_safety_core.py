@@ -172,37 +172,32 @@ class LunaSafetyCore:
             return 'low'
     
     def _analyze_sentiment(self, message: str) -> Dict:
-        """Analyze sentiment of message (basic pattern matching or spaCy)"""
-        if self.use_spacy and self.nlp:
-            # Use spaCy for more advanced sentiment analysis
-            doc = self.nlp(message)
-            # Simplified sentiment scoring
-            polarity = 0.0  # -1 (negative) to 1 (positive)
-            # This is a placeholder - real sentiment would use a trained model
-            return {
-                'polarity': polarity,
-                'method': 'spacy'
-            }
+        """
+        Lightweight polarity hint using keyword counts.
+
+        This is not a trained NLP model. It exists so demos can show an
+        explainable local signal alongside crisis/distress flags.
+        """
+        positive_words = ('happy', 'good', 'great', 'better', 'love', 'excited', 'joy')
+        negative_words = ('bad', 'sad', 'terrible', 'awful', 'hate', 'angry', 'upset')
+
+        message_lower = message.lower()
+        pos_count = sum(1 for word in positive_words if word in message_lower)
+        neg_count = sum(1 for word in negative_words if word in message_lower)
+
+        if pos_count > neg_count:
+            polarity = 0.5
+        elif neg_count > pos_count:
+            polarity = -0.5
         else:
-            # Simple pattern-based sentiment
-            positive_words = ['happy', 'good', 'great', 'better', 'love', 'excited', 'joy']
-            negative_words = ['bad', 'sad', 'terrible', 'awful', 'hate', 'angry', 'upset']
-            
-            message_lower = message.lower()
-            pos_count = sum(1 for word in positive_words if word in message_lower)
-            neg_count = sum(1 for word in negative_words if word in message_lower)
-            
-            if pos_count > neg_count:
-                polarity = 0.5
-            elif neg_count > pos_count:
-                polarity = -0.5
-            else:
-                polarity = 0.0
-            
-            return {
-                'polarity': polarity,
-                'method': 'pattern_matching'
-            }
+            polarity = 0.0
+
+        return {
+            'polarity': polarity,
+            'method': 'keyword_pattern',
+            'positive_hits': pos_count,
+            'negative_hits': neg_count,
+        }
     
     def _get_recommended_actions(self, scan_result: Dict) -> List[str]:
         """Get recommended actions based on scan results"""

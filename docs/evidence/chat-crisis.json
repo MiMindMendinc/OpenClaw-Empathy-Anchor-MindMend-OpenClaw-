@@ -1,0 +1,93 @@
+{
+    "alert": {
+        "alert_type": "safety_concern",
+        "created_at": "2026-07-16T20:49:35.933215",
+        "id": "alert_1784234975.933209",
+        "message": "Safety concern detected in chat: {'crisis': True, 'distress': False, 'toxicity': False, 'night_mode': False}",
+        "metadata": {
+            "original_message": "I want to kill myself",
+            "scan_result": {
+                "actions": [
+                    "IMMEDIATE_ALERT_PARENT",
+                    "PROVIDE_CRISIS_RESOURCES",
+                    "EMPATHY_RESPONSE_HIGH"
+                ],
+                "flags": {
+                    "crisis": true,
+                    "distress": false,
+                    "night_mode": false,
+                    "toxicity": false
+                },
+                "matches": {
+                    "crisis": [
+                        "kill myself"
+                    ],
+                    "distress": [],
+                    "night_mode": [],
+                    "toxicity": []
+                },
+                "offline_mode": true,
+                "resources": {
+                    "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
+                    "crisis_text": "Crisis Text Line - Text HELLO to 741741",
+                    "emergency": "911 - For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
+                    "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                },
+                "safe": false,
+                "sentiment": {
+                    "method": "keyword_pattern",
+                    "negative_hits": 0,
+                    "polarity": 0.0,
+                    "positive_hits": 0
+                },
+                "severity": "critical",
+                "timestamp": "2026-07-16T20:49:35.933193"
+            },
+            "user_id": "evidence"
+        },
+        "severity": "critical",
+        "user_id": "evidence"
+    },
+    "alert_created": true,
+    "response": "I hear that you're going through something really difficult right now, and I want you to know that your feelings are valid. However, I'm concerned about your safety and wellbeing.\n\n**Please reach out to someone who can help right away:**\n\n\u2022 Suicide & Crisis Lifeline - Call or text 988 (24/7)\n\u2022 NAMI Michigan - 1-800-950-NAMI (6264)\n\u2022 Crisis Text Line - Text HELLO to 741741\n\u2022 Michigan Crisis & Access Line - 1-844-464-3274\n\u2022 911 - For immediate life-threatening emergencies\n\nYou don't have to face this alone. These resources are available 24/7, and the people there truly care and want to help.\n\n\ud83d\udd12 Privacy Mode: Your conversation is staying private on this device.",
+    "scan_result": {
+        "actions": [
+            "IMMEDIATE_ALERT_PARENT",
+            "PROVIDE_CRISIS_RESOURCES",
+            "EMPATHY_RESPONSE_HIGH"
+        ],
+        "flags": {
+            "crisis": true,
+            "distress": false,
+            "night_mode": false,
+            "toxicity": false
+        },
+        "matches": {
+            "crisis": [
+                "kill myself"
+            ],
+            "distress": [],
+            "night_mode": [],
+            "toxicity": []
+        },
+        "offline_mode": true,
+        "resources": {
+            "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
+            "crisis_text": "Crisis Text Line - Text HELLO to 741741",
+            "emergency": "911 - For immediate life-threatening emergencies",
+            "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
+            "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+        },
+        "safe": false,
+        "sentiment": {
+            "method": "keyword_pattern",
+            "negative_hits": 0,
+            "polarity": 0.0,
+            "positive_hits": 0
+        },
+        "severity": "critical",
+        "timestamp": "2026-07-16T20:49:35.933193"
+    },
+    "timestamp": "2026-07-16T20:49:35.935326+00:00"
+}

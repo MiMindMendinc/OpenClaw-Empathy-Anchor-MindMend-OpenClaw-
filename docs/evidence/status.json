@@ -1,0 +1,25 @@
+{
+    "alert_db_path": "data/alerts.db",
+    "alert_store": "sqlite_local",
+    "boundaries": [
+        "supportive prototype",
+        "not clinical software",
+        "not an emergency service",
+        "human review required"
+    ],
+    "cors_origins": [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ],
+    "demo_auth_enabled": true,
+    "offline_mode": true,
+    "production_mode": false,
+    "release": "v0.1.0-local-safety-demo",
+    "scanner": {
+        "clinical_validation": false,
+        "spacy": false,
+        "type": "deterministic_keyword_pattern"
+    },
+    "timestamp": "2026-07-16T20:49:35.870007+00:00",
+    "version": "0.1.0"
+}

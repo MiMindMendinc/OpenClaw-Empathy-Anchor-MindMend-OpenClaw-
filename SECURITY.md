@@ -1,164 +1,33 @@
-# Security Updates - MindMend Super AI
+# Security
 
-## 🔒 Security Vulnerability Fixes
+OpenClaw Empathy Anchor is a **local-first demo**. Treat it as infrastructure for controlled demos, not a hardened multi-tenant SaaS.
 
-### Gunicorn HTTP Request/Response Smuggling (CVE)
+## What is enforced today
 
-**Date Fixed:** February 1, 2026  
-**Severity:** High  
-**Status:** ✅ PATCHED
+| Control | Behavior |
+|---------|----------|
+| Demo auth gate | `/auth/login` only issues tokens when `DEMO_AUTH=true` |
+| Production secrets | `FLASK_ENV=production` refuses missing or demo `JWT_SECRET_KEY` values |
+| Local alerts | SQLite on-device (`ALERT_DB_PATH`) — no cloud sync in v0.1 |
+| CORS | Explicit allow-list via `CORS_ORIGINS` (defaults to localhost:8000) |
+| Offline default | `OFFLINE_MODE=true` — no required cloud inference path |
+| Dependencies | `gunicorn>=22.0.0` in `backend/requirements.txt` (HTTP smuggling fixes) |
 
-#### Vulnerabilities Addressed
+## What is intentionally demo-scoped
 
-1. **HTTP Request/Response Smuggling vulnerability**
-   - **Affected versions:** gunicorn < 22.0.0
-   - **Patched version:** 22.0.0
-   - **Impact:** Could allow attackers to smuggle HTTP requests/responses
-   
-2. **Request smuggling leading to endpoint restriction bypass**
-   - **Affected versions:** gunicorn < 22.0.0
-   - **Patched version:** 22.0.0
-   - **Impact:** Could allow bypassing endpoint access restrictions
+- `/auth/login` is **not** identity verification. It mints a JWT for any `user_id` when demo auth is on.
+- Docker Compose uses `FLASK_ENV=development` and a local demo JWT secret.
+- Crisis detection is a **deterministic keyword/pattern scanner**, not a clinical model.
 
-#### Action Taken
+## Production checklist (if you deploy beyond local demo)
 
-✅ Updated `backend/requirements.txt`:
-```diff
-- gunicorn==21.2.0
-+ gunicorn==22.0.0  # Updated to fix CVE vulnerabilities (HTTP smuggling)
-```
+1. Set a strong `JWT_SECRET_KEY` (`python -c "import secrets; print(secrets.token_hex(32))"`)
+2. Set `DEMO_AUTH=false` and replace `/auth/login` with real identity verification
+3. Set `FLASK_ENV=production`
+4. Restrict `CORS_ORIGINS` to your real frontend origins
+5. Terminate TLS at a reverse proxy
+6. Keep alert DB on encrypted local storage if the host is shared
 
-#### Verification
+## Reporting
 
-- ✅ All tests still passing (36/36 backend tests)
-- ✅ No breaking changes introduced
-- ✅ Compatible with existing Flask application
-
-#### Deployment Instructions
-
-For existing deployments, update gunicorn:
-
-```bash
-cd backend
-pip install --upgrade gunicorn==22.0.0
-```
-
-Or reinstall all requirements:
-
-```bash
-cd backend
-pip install -r requirements.txt --upgrade
-```
-
----
-
-## Security Best Practices
-
-### Current Security Measures
-
-1. ✅ **JWT Authentication** - Secure token-based auth
-2. ✅ **Input Validation** - All endpoints validate input
-3. ✅ **Environment Variables** - Secrets stored in .env files
-4. ✅ **CORS Protection** - Configured for trusted domains only
-5. ✅ **Offline Mode** - Privacy-first local processing
-6. ✅ **Updated Dependencies** - All known vulnerabilities patched
-
-### Recommended Security Practices for Production
-
-1. **HTTPS/TLS**
-   - Always use HTTPS in production
-   - Use valid SSL certificates
-   - Configure proper TLS settings
-
-2. **Secret Management**
-   - Use strong, random JWT secret keys
-   - Rotate secrets regularly
-   - Never commit secrets to version control
-
-3. **Rate Limiting**
-   - Implement rate limiting on API endpoints
-   - Protect against DDoS attacks
-   - Use tools like Flask-Limiter
-
-4. **Firewall Configuration**
-   - Only expose necessary ports
-   - Use firewall rules to restrict access
-   - Consider using a reverse proxy (nginx)
-
-5. **Monitoring & Logging**
-   - Monitor for suspicious activity
-   - Log all authentication attempts
-   - Set up alerts for critical events
-
-6. **Regular Updates**
-   - Keep all dependencies up to date
-   - Subscribe to security advisories
-   - Run `pip audit` or similar tools regularly
-
-7. **Database Security** (when implemented)
-   - Use parameterized queries (prevent SQL injection)
-   - Encrypt sensitive data at rest
-   - Use secure connection strings
-
----
-
-## Dependency Monitoring
-
-### Automated Security Scanning
-
-The CI/CD pipeline includes:
-
-- ✅ **Trivy** - Container and filesystem vulnerability scanning
-- ✅ **GitHub Dependabot** - Automated dependency updates (recommended)
-- ✅ **npm audit** - Node.js dependency checking
-- ✅ **pip audit** - Python dependency checking (recommended to add)
-
-### Manual Security Checks
-
-Periodically run:
-
-```bash
-# Python dependencies
-cd backend
-pip install pip-audit
-pip-audit
-
-# Node.js dependencies
-npm audit
-```
-
----
-
-## Vulnerability Reporting
-
-If you discover a security vulnerability in MindMend Super AI:
-
-1. **DO NOT** open a public GitHub issue
-2. Contact the MindMend team privately
-3. Provide detailed information about the vulnerability
-4. Allow time for a patch to be developed
-
----
-
-## Security Update History
-
-| Date | Vulnerability | Severity | Status |
-|------|--------------|----------|--------|
-| 2026-02-01 | Gunicorn HTTP smuggling CVE | High | ✅ Patched (v22.0.0) |
-
----
-
-## References
-
-- [Gunicorn Security Advisories](https://docs.gunicorn.org/en/stable/news.html)
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Flask Security Best Practices](https://flask.palletsprojects.com/en/latest/security/)
-
----
-
-**Last Updated:** February 1, 2026  
-**Next Review:** Quarterly or as needed for critical vulnerabilities
-
----
-
-Built with 💙 and 🔒 by MiMindMendinc
+If you find a vulnerability, contact Michigan MindMend privately. Do not open a public issue with exploit details.
