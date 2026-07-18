@@ -271,7 +271,7 @@ Our GitHub Actions workflow automatically:
 
 ### Phase 3: Deployment (Planned)
 - [ ] Docker containerization
-- [ ] Owosso, Michigan pilot deployment (Dec 26, 2025)
+- [ ] Local pilot deployment (Dec 26, 2025)
 - [ ] Production environment setup
 - [ ] Parent dashboard web app
 

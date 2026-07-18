@@ -179,7 +179,7 @@ Project Root/
 
 **Lyle Perrien II**  
 Michigan MindMend Inc.  
-Owosso, Michigan
+Michigan
 
 ## License
 

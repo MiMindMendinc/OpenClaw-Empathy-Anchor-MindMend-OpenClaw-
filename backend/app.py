@@ -674,10 +674,10 @@ def demo():
         lat=43.0,
         lon=-84.2,
         safe_zones=[{
-            'lat': 42.9956,
-            'lon': -84.1762,
+            'lat': 42.0,
+            'lon': -84.0,
             'radius': 100,
-            'name': 'Home (Owosso, MI)',
+            'name': 'Home (demo)',
         }],
     )
 
@@ -690,7 +690,7 @@ def demo():
         'chat_scenarios': results,
         'geofence_scenario': {
             'name': 'geofence_violation',
-            'description': 'Location outside defined safe zone (Owosso, MI demo)',
+            'description': 'Location outside defined safe zone (demo)',
             'result': geofence_demo,
         },
         'scanner_version': SCANNER_VERSION,

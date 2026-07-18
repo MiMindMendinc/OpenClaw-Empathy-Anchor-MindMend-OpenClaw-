@@ -280,7 +280,7 @@ This project successfully delivers on MindMend's mission:
 
 ## 🎯 Deployment Targets
 
-### Owosso, Michigan Rollout (December 26, 2025)
+### Local Pilot Rollout (December 26, 2025)
 - ✅ Backend ready for deployment
 - ✅ Offline mode tested and working
 - ✅ Michigan resources integrated

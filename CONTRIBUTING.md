@@ -98,7 +98,7 @@ Before submitting:
 
 2. **Commit Messages**: Be clear and specific
    ```
-   Add Owosso community mental health resources
+   Add local community mental health resources
    
    - Added local crisis line
    - Updated youth center contact

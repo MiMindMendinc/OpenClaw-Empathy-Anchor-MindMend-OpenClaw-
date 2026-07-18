@@ -161,7 +161,7 @@ The skill maintains awareness of these resources to provide when needed:
 
 ### Michigan-Specific Resources
 - **Michigan Crisis & Access Line**: 1-844-464-3274
-- **Owosso Community Resources**: [Local mental health services]
+- **Community Resources**: [Local mental health services]
 
 ## Implementation
 
@@ -274,7 +274,7 @@ Before sending any response, the skill should:
 
 ## Development & Contribution
 
-This skill is designed for the Michigan MindMend Inc. mission of supporting youth mental health in Owosso and beyond.
+This skill is designed for the Michigan MindMend Inc. mission of supporting youth mental health.
 
 ### Testing
 When testing this skill:

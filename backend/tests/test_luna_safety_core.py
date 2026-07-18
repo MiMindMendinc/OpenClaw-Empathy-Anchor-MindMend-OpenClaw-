@@ -101,10 +101,10 @@ class TestLunaSafetyCore:
     def test_geofence_inside_safe_zone(self):
         """Test geofence when inside safe zone"""
         safe_zones = [
-            {'lat': 42.9956, 'lon': -84.1762, 'radius': 1000, 'name': 'Home'}  # Owosso, MI
+            {'lat': 42.0, 'lon': -84.0, 'radius': 1000, 'name': 'Home'}  # Synthetic demo location
         ]
         
-        result = self.core.check_geofence(42.9956, -84.1762, safe_zones)
+        result = self.core.check_geofence(42.0, -84.0, safe_zones)
         
         assert result['in_safe_zone'] == True
         assert result['alert_parent'] == False
@@ -112,7 +112,7 @@ class TestLunaSafetyCore:
     def test_geofence_outside_safe_zone(self):
         """Test geofence when outside safe zone"""
         safe_zones = [
-            {'lat': 42.9956, 'lon': -84.1762, 'radius': 100, 'name': 'Home'}
+            {'lat': 42.0, 'lon': -84.0, 'radius': 100, 'name': 'Home'}
         ]
         
         # Different location
