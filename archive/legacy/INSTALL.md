@@ -280,7 +280,7 @@ docker run -p 5000:5000 -e OFFLINE_MODE=true mindmend-super-ai
    - Set environment variables
    - Deploy automatically on push
 
-#### Option 4: Raspberry Pi (Offline Mode - Owosso Deployment)
+#### Option 4: Raspberry Pi (Offline Mode - Local Deployment)
 
 Perfect for privacy-first offline deployment:
 

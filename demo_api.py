@@ -97,16 +97,16 @@ def demo_geofence(token):
     """Demo: Geofence checking"""
     print_section("5. Geofence / Location Check")
     
-    # Owosso, Michigan coordinates
+    # Synthetic demo coordinates
     payload = {
-        "lat": 42.9956,
-        "lon": -84.1762,
+        "lat": 42.0,
+        "lon": -84.0,
         "safe_zones": [
             {
-                "lat": 42.9956,
-                "lon": -84.1762,
+                "lat": 42.0,
+                "lon": -84.0,
                 "radius": 1000,
-                "name": "Home (Owosso, MI)"
+                "name": "Home (demo)"
             }
         ]
     }

@@ -117,7 +117,7 @@
       body: JSON.stringify({
         lat: 43.0,
         lon: -84.2,
-        safe_zones: [{ lat: 42.9956, lon: -84.1762, radius: 100, name: 'Home (Owosso, MI)' }],
+        safe_zones: [{ lat: 42.0, lon: -84.0, radius: 100, name: 'Home (demo)' }],
       }),
     });
     const data = await res.json();

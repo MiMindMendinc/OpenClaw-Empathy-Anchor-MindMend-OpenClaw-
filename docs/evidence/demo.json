@@ -165,7 +165,7 @@
     ],
     "disclaimer": "Supportive safety prototype \u2014 not clinical software, not an emergency service. Deterministic keyword/pattern scanner.",
     "geofence_scenario": {
-        "description": "Location outside defined safe zone (Owosso, MI demo)",
+        "description": "Location outside defined safe zone (demo)",
         "name": "geofence_violation",
         "result": {
             "alert_parent": true,
@@ -176,9 +176,9 @@
             "distance_to_nearest": 1996.4308930873294,
             "in_safe_zone": false,
             "nearest_zone": {
-                "lat": 42.9956,
-                "lon": -84.1762,
-                "name": "Home (Owosso, MI)",
+                "lat": 42.0,
+                "lon": -84.0,
+                "name": "Home (demo)",
                 "radius": 100
             },
             "timestamp": "2026-07-16T20:49:35.894143"

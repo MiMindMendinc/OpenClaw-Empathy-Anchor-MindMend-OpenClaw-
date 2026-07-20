@@ -269,7 +269,7 @@ Authorization: Bearer <token>
 safe_zones = [
     {'lat': 42.3314, 'lon': -83.0458, 'radius_km': 5, 'name': 'School'},
     {'lat': 42.2808, 'lon': -83.7430, 'radius_km': 2, 'name': 'Home'},
-    {'lat': 42.9956, 'lon': -84.1762, 'radius_km': 3, 'name': 'Grandparents'}
+    {'lat': 42.0, 'lon': -84.0, 'radius_km': 3, 'name': 'Secondary location'}
 ]
 ```
 
@@ -425,4 +425,4 @@ For questions or issues:
 
 ---
 
-**Built with ❤️ by Michigan MindMend Inc. for youth safety in Owosso and beyond.**
+**Built by Michigan MindMend Inc. for youth safety.**

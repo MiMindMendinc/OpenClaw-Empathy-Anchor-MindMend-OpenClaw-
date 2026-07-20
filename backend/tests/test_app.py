@@ -157,10 +157,10 @@ class TestAPIEndpoints:
     def test_location_geofence_inside(self, client, auth_token):
         """Test location check inside safe zone."""
         payload = {
-            'lat': 42.9956,
-            'lon': -84.1762,
+            'lat': 42.0,
+            'lon': -84.0,
             'safe_zones': [
-                {'lat': 42.9956, 'lon': -84.1762, 'radius': 1000, 'name': 'Home'},
+                {'lat': 42.0, 'lon': -84.0, 'radius': 1000, 'name': 'Home'},
             ],
         }
 
@@ -182,7 +182,7 @@ class TestAPIEndpoints:
             'lat': 43.0,
             'lon': -84.2,
             'safe_zones': [
-                {'lat': 42.9956, 'lon': -84.1762, 'radius': 100, 'name': 'Home'},
+                {'lat': 42.0, 'lon': -84.0, 'radius': 100, 'name': 'Home'},
             ],
         }
 
