@@ -1,4 +1,4 @@
-.PHONY: help install test eval demo verify evidence
+.PHONY: help install test eval demo verify evidence screenshots
 
 PYTHON ?= python3
 PIP ?= $(PYTHON) -m pip
@@ -36,3 +36,6 @@ verify:
 evidence:
 	chmod +x scripts/verify.sh scripts/capture-evidence.sh docker-entrypoint.sh
 	./scripts/capture-evidence.sh
+
+screenshots:
+	node scripts/capture-screenshots.mjs
