@@ -18,6 +18,39 @@ Not therapy. Not a medical device. Not diagnostic software. Not 988/911. Not a r
 
 If someone may be in immediate danger, call or text **988** (US) or contact emergency services.
 
+## Quick start
+
+From the repository root:
+
+```bash
+python3 -m pip install -r backend/requirements.txt
+make demo
+```
+
+Open `http://127.0.0.1:8000/`. Confirm the status pills show API healthy, storage ready, and offline mode on. Click **Scan with live API**.
+
+Full check (tests + live `/ready` + `/scan`):
+
+```bash
+make verify
+```
+
+With Docker:
+
+```bash
+docker compose up --build
+curl -s http://127.0.0.1:8000/ready
+```
+
+## Demonstration
+
+1. Open the showcase
+2. Leave the default **Neutral** scenario, or choose another labeled scenario
+3. Click **Scan with live API**
+4. Read the plain-language results panel (JSON is optional under **Technical JSON**)
+
+Walkthrough: [`docs/demo.md`](docs/demo.md)
+
 ## Verified capabilities
 
 | Capability | Evidence |
@@ -26,6 +59,7 @@ If someone may be in immediate danger, call or text **988** (US) or contact emer
 | Supportive response framing | Node skill + Flask responses |
 | Local SQLite alerts | `backend/alert_store.py` (raw text off by default) |
 | Interactive showcase | `http://127.0.0.1:8000/` |
+| Readable docs | `http://127.0.0.1:8000/docs/` |
 | Health vs readiness | `/api/v1/health`, `/api/v1/ready` |
 | Detector evaluation harness | `python backend/eval/run_eval.py` |
 | Docker non-root image | `Dockerfile` |
@@ -39,42 +73,17 @@ Message → deterministic rules → flags/severity → recommended actions
 
 No required cloud APIs. No telemetry by default.
 
-## Quick start
-
-```bash
-docker compose up --build
-curl -s http://127.0.0.1:8000/ready | python -m json.tool
-open http://127.0.0.1:8000/
-```
-
-Without Docker:
-
-```bash
-npm test
-cd backend && pip install -r requirements.txt
-DEMO_AUTH=true BIND_HOST=127.0.0.1 python app.py
-```
-
-## Demonstration
-
-1. Open the showcase
-2. Leave the default **Neutral** scenario, or choose another labeled scenario
-3. Click **Scan with live API**
-4. Read the plain-language results panel (JSON is optional under **Technical JSON**)
-
-Walkthrough: [`docs/demo.md`](docs/demo.md)
-
 ## API example
 
 ```bash
 TOKEN=$(curl -s -X POST http://127.0.0.1:8000/api/v1/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"user_id":"demo"}' | python -c "import sys,json; print(json.load(sys.stdin)['token'])")
+  -d '{"user_id":"demo"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 curl -s -X POST http://127.0.0.1:8000/api/v1/scan \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
-  -d '{"message":"I feel anxious and overwhelmed"}' | python -m json.tool
+  -d '{"message":"I feel anxious and overwhelmed"}' | python3 -m json.tool
 ```
 
 ## Privacy behavior
@@ -86,12 +95,16 @@ curl -s -X POST http://127.0.0.1:8000/api/v1/scan \
 
 Details: [`docs/PRIVACY.md`](docs/PRIVACY.md)
 
+## Support resources
+
+Shipped contacts are checked against official public pages. They are informational routing, not a guarantee of availability. See [`docs/RESOURCES.md`](docs/RESOURCES.md).
+
 ## Evaluation results
 
 Reproduce:
 
 ```bash
-python backend/eval/run_eval.py
+python3 backend/eval/run_eval.py
 ```
 
 See [`docs/EVALUATION.md`](docs/EVALUATION.md) and `docs/evidence/evaluation.md`.  

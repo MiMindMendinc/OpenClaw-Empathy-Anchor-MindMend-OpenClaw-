@@ -200,4 +200,5 @@ serviceAccountKey.json
 
 # Local alert database (privacy-first local storage)
 data/alerts.db
+data/*.db
 data/alerts/

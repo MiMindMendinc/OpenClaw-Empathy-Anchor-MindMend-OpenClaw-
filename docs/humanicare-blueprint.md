@@ -2,7 +2,7 @@
 
 **Open-source AI infrastructure for healthcare access, mental health support, and community resilience.**
 
-HumaniCare AI is the umbrella architecture for Michigan MindMend Inc.'s privacy-first support tools. OpenClaw Empathy Anchor becomes one core module inside that wider system.
+HumaniCare AI is the umbrella architecture for Michigan MindMend Inc.'s privacy-first support tools. MindMend Empathy Anchor becomes one core module inside that wider system.
 
 ## Core idea
 
@@ -26,7 +26,7 @@ HumaniCare flips that model:
 flowchart TD
     A[User / Family / Caregiver] --> B[Local Device]
     B --> C[HumaniCare Safety Router]
-    C --> D[OpenClaw Empathy Anchor]
+    C --> D[MindMend Empathy Anchor]
     C --> E[Guardian Youth Safety]
     C --> F[Journal Coach]
     C --> G[Link Sentinel]
@@ -39,7 +39,7 @@ flowchart TD
 
 | Module | Purpose |
 |---|---|
-| OpenClaw Empathy Anchor | Supportive response framing, youth-aware language, emotional grounding |
+| MindMend Empathy Anchor | Supportive response framing, youth-aware language, emotional grounding |
 | Guardian | Family and youth safety assistant |
 | Journal Coach | Private reflection and grounding support |
 | Link Sentinel | Harmful-link, scam, coercion, and abuse-pattern detection |

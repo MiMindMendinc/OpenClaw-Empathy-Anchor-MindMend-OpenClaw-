@@ -1,10 +1,12 @@
 /**
- * OpenClaw Empathy Anchor
+ * MindMend Empathy Anchor
  *
  * A small, privacy-first response layer for youth-support and wellness demos.
  * This module is intentionally offline-capable, deterministic by default, and
  * transparent about safety boundaries. It is not a therapist, medical device,
  * emergency service, or crisis hotline.
+ *
+ * Resource hours/numbers were checked against official public pages on 2026-08-17.
  */
 
 const crypto = require('node:crypto');
@@ -12,27 +14,29 @@ const crypto = require('node:crypto');
 const MICHIGAN_RESOURCES = Object.freeze({
   suicide988: {
     name: '988 Suicide & Crisis Lifeline',
-    contact: 'Call or Text 988',
+    contact: 'Call or text 988',
     availability: '24/7',
+    website: 'https://988lifeline.org',
     description: 'Free, confidential crisis support in the United States.',
   },
   crisisTextLine: {
     name: 'Crisis Text Line',
     contact: 'Text HOME to 741741',
     availability: '24/7',
-    description: 'Free crisis support by text message.',
+    website: 'https://www.crisistextline.org',
+    description: 'Free crisis support by text message in the United States.',
   },
   namiMichigan: {
     name: 'NAMI Michigan',
-    helpline: '1-800-950-NAMI',
+    helpline: 'NAMI HelpLine 1-800-950-NAMI (6264), Mon–Fri 10 a.m.–10 p.m. ET',
     website: 'https://namimi.org',
     description: 'Michigan mental health education, advocacy, and support resources.',
   },
   teenLine: {
     name: 'Teen Line',
-    contact: 'Text TEEN to 839863',
+    contact: 'Call 800-852-8336 (6–10 p.m. PT) or text TEEN to 839863 (6–9 p.m. PT)',
     website: 'https://www.teenline.org',
-    description: 'Teen-to-teen support and youth mental health resources.',
+    description: 'Teen-to-teen support. Outside those hours, call or text 988.',
   },
 });
 

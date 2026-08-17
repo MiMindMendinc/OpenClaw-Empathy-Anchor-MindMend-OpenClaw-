@@ -34,7 +34,6 @@ Storage location defaults to `data/alerts.db` (configurable via `ALERT_DB_PATH`)
 
 - No outbound network requests are required for scanning or alerts.
 - The showcase UI uses **system fonts only** (no Google Fonts / trackers).
-- Optional external model API keys in `.env.example` are unused by the default offline path.
 
 ## Deletion API
 

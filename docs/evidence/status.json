@@ -19,7 +19,7 @@
     "product": "MindMend Empathy Anchor",
     "production_mode": false,
     "project_status": "Technical demonstration",
-    "release": "v0.2.0-prototype",
+    "release": "v0.2.1-prototype",
     "scanner": {
         "clinical_validation": false,
         "language": "en",
@@ -32,6 +32,6 @@
     "store_raw_messages": false,
     "subtitle": "Local-First Safety Signal Demonstrator",
     "tagline": "Helpful AI should protect people without harvesting their data.",
-    "timestamp": "2026-07-16T21:40:16.510811+00:00",
-    "version": "0.2.0"
+    "timestamp": "2026-08-17T07:40:41.196030+00:00",
+    "version": "0.2.1"
 }

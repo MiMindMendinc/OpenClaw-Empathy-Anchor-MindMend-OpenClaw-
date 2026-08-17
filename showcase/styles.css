@@ -378,6 +378,34 @@ textarea { resize: vertical; min-height: 96px; }
   .placard-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
+.docs-article {
+  max-width: 48rem;
+}
+.docs-article h1,
+.docs-article h2,
+.docs-article h3 {
+  font-family: var(--font-display);
+  color: var(--pine-deep);
+}
+.docs-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+.docs-article th,
+.docs-article td {
+  border: 1px solid var(--line);
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.docs-article th { background: rgba(15, 61, 52, 0.06); }
+.docs-article code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; animation: none !important; }

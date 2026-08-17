@@ -3,9 +3,12 @@
 ## 60 seconds
 
 ```bash
-docker compose up --build
+python3 -m pip install -r backend/requirements.txt
+make demo
 open http://127.0.0.1:8000/
 ```
+
+Docker alternative: `docker compose up --build`.
 
 1. Confirm status pills show API/storage ready
 2. Keep **Neutral** selected and scan

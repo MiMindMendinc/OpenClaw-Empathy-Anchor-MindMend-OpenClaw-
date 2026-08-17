@@ -10,6 +10,7 @@ from typing import Dict, List, Optional, Tuple
 import logging
 import re
 
+from support_resources import ADDITIONAL, CRISIS_RESOURCES
 from version import SCANNER_VERSION
 
 logging.basicConfig(level=logging.INFO)
@@ -54,14 +55,8 @@ class LunaSafetyCore:
         'bedtime', 'tired', 'exhausted', 'sleep problems', 'wide awake'
     ]
     
-    # Michigan crisis resources
-    CRISIS_RESOURCES = {
-        '988': 'Suicide & Crisis Lifeline - Call or text 988 (24/7)',
-        'nami_michigan': 'NAMI Michigan - 1-800-950-NAMI (6264)',
-        'crisis_text': 'Crisis Text Line - Text HELLO to 741741',
-        'michigan_crisis': 'Michigan Crisis & Access Line - 1-844-464-3274',
-        'emergency': '911 - For immediate life-threatening emergencies'
-    }
+    CRISIS_RESOURCES = CRISIS_RESOURCES
+    ADDITIONAL_RESOURCES = ADDITIONAL
     
     def __init__(self, offline_mode: bool = True, use_spacy: bool = False):
         """
@@ -282,10 +277,14 @@ class LunaSafetyCore:
         response += "However, I'm concerned about your safety and wellbeing.\n\n"
         response += "**Please reach out to someone who can help right away:**\n\n"
         
-        for key, resource in self.CRISIS_RESOURCES.items():
+        for resource in self.CRISIS_RESOURCES.values():
             response += f"• {resource}\n"
         
-        response += "\nYou don't have to face this alone. These resources are available 24/7, and the people there truly care and want to help."
+        response += (
+            "\nYou don't have to face this alone. 988, Crisis Text Line, and 911 "
+            "are 24/7 in the United States. A trusted adult, counselor, or local "
+            "emergency service can also help."
+        )
         
         return response
     
@@ -300,8 +299,9 @@ class LunaSafetyCore:
             response += "These feelings of sadness are real, and you deserve support.\n\n"
         
         response += "**Support resources:**\n"
-        response += f"• {self.CRISIS_RESOURCES['nami_michigan']}\n"
+        response += f"• {self.CRISIS_RESOURCES['988']}\n"
         response += f"• {self.CRISIS_RESOURCES['crisis_text']}\n"
+        response += f"• {self.ADDITIONAL_RESOURCES['nami_michigan']}\n"
         
         return response
     

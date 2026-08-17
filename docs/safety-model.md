@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document describes the intended safety posture of OpenClaw Empathy Anchor.
+This document describes the intended safety posture of MindMend Empathy Anchor.
 
 The project is designed as a supportive software layer for sensitive AI use cases. It is not intended to replace human care, crisis professionals, or clinical judgment.
 
@@ -10,7 +10,7 @@ The project is designed as a supportive software layer for sensitive AI use case
 
 ## What the system is designed to do
 
-OpenClaw Empathy Anchor is designed to help with:
+MindMend Empathy Anchor is designed to help with:
 
 - detecting crisis-related language
 - detecting distress indicators
@@ -119,6 +119,6 @@ Whenever there is serious concern:
 
 ## Summary
 
-OpenClaw Empathy Anchor is a safety-aware support layer, not a clinical authority.
+MindMend Empathy Anchor is a safety-aware support layer, not a clinical authority.
 
 Its role is to help supportive systems behave with more care, more privacy awareness, and better escalation boundaries.

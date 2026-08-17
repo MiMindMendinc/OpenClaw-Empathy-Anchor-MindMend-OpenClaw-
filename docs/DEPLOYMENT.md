@@ -1,6 +1,15 @@
 # Deployment
 
-## Local demo (recommended)
+## Local demo without Docker
+
+```bash
+python3 -m pip install -r backend/requirements.txt
+make demo
+```
+
+Open `http://127.0.0.1:8000/`. This is the path that does not depend on Docker.
+
+## Local demo with Docker
 
 ```bash
 docker compose up --build

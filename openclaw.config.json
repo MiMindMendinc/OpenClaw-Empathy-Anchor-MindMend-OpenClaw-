@@ -1,25 +1,5 @@
 {
-  "gateway": {
-    "enabled": true,
-    "port": 18790,
-    "bind": "loopback"
-  },
-  "skills": {
-    "load": {
-      "extraDirs": [
-        "./skills/empathy-anchor"
-      ],
-      "watch": true
-    }
-  },
-  "channels": {
-    "whatsapp": {
-      "enabled": false
-    },
-    "telegram": {
-      "enabled": false
-    }
-  },
+  "product": "MindMend Empathy Anchor",
   "privacy": {
     "mode": "strict",
     "dataRetention": "local",
@@ -30,14 +10,23 @@
     "mode": "youth_support",
     "crisisDetection": true,
     "resources": {
-      "national": {
-        "988": "Suicide & Crisis Lifeline",
-        "741741": "Crisis Text Line (text HOME)",
-        "trevorProject": "1-866-488-7386 (LGBTQ+ Youth)"
+      "immediate_24_7": {
+        "988": "Call or text 988",
+        "crisisTextLine": "Text HOME to 741741",
+        "michigan": "Call or text 988 (MiCAL is Michigan's statewide 988 call center)"
       },
-      "michigan": {
-        "crisisLine": "1-844-464-3274"
+      "additional": {
+        "namiHelpLine": "1-800-950-NAMI (6264), Monday-Friday 10 a.m.-10 p.m. ET",
+        "teenLine": "Call 800-852-8336 (6-10 p.m. PT) or text TEEN to 839863 (6-9 p.m. PT)"
       }
     }
-  }
+  },
+  "skills": {
+    "load": {
+      "extraDirs": [
+        "./skills/empathy-anchor"
+      ]
+    }
+  },
+  "note": "Historical filename kept so older clones still find this file. This is not an OpenClaw gateway config."
 }

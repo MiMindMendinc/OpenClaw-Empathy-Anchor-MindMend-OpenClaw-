@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer-core';
-import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { copyFileSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -21,68 +21,71 @@ async function save(page, name) {
   const dest = join(outDir, name);
   const artifact = join(artifactDir, name);
   await page.screenshot({ path: dest, fullPage: false });
-  copyFileSync(dest, artifact);
+  try {
+    copyFileSync(dest, artifact);
+  } catch {
+    // Artifact directory is optional outside the capture environment.
+  }
   console.log('Wrote', name);
 }
 
-const page = await browser.newPage();
+async function waitForConnected(page) {
+  await page.waitForFunction(
+    () => document.getElementById('connStatus')?.textContent?.includes('Connected'),
+    { timeout: 15000 },
+  );
+}
 
-// 1) Hero
+async function runScenario(page, value) {
+  await page.select('#scenario', value);
+  await page.click('#runDemo');
+  await page.waitForFunction(
+    () => {
+      const text = document.getElementById('connStatus')?.textContent || '';
+      return text.includes('Alert persisted') || text.includes('Scan complete') || text.includes('Geofence');
+    },
+    { timeout: 15000 },
+  );
+}
+
+const page = await browser.newPage();
 await page.goto('http://127.0.0.1:8000/', { waitUntil: 'networkidle0' });
-await page.waitForSelector('.brand-title');
-await new Promise((r) => setTimeout(r, 800));
+await page.waitForSelector('h1');
+await waitForConnected(page);
+await new Promise((r) => setTimeout(r, 400));
 await save(page, '01-showcase-hero.png');
 
-// 2) Live crisis demo
-await page.setViewport({ width: 1440, height: 1100, deviceScaleFactor: 1 });
 await page.evaluate(() => {
   document.getElementById('live').scrollIntoView({ behavior: 'instant', block: 'start' });
 });
-await page.select('#scenario', 'crisis');
-await page.click('#runDemo');
-await page.waitForFunction(
-  () => document.getElementById('connStatus')?.textContent?.includes('Alert persisted')
-    || document.getElementById('connStatus')?.textContent?.includes('Scan complete'),
-  { timeout: 10000 },
-);
-await new Promise((r) => setTimeout(r, 600));
-await save(page, '02-live-demo-crisis.png');
+await runScenario(page, 'distress');
+await new Promise((r) => setTimeout(r, 400));
+await save(page, '02-live-demo-distress.png');
 
-// 3) All /demo scenarios
-await page.click('#runAll');
-await page.waitForFunction(
-  () => document.getElementById('connStatus')?.textContent?.includes('/demo'),
-  { timeout: 10000 },
-);
-await new Promise((r) => setTimeout(r, 600));
-await save(page, '03-demo-all-scenarios.png');
+await runScenario(page, 'crisis');
+await new Promise((r) => setTimeout(r, 400));
+await save(page, '03-live-demo-crisis.png');
 
-// 4) Status JSON — render into a clean page for readability
-const status = await (await fetch('http://127.0.0.1:8000/status')).json();
-const statusHtml = `<!doctype html><html><head><meta charset="utf-8"><title>/status</title>
-<style>
-  body{margin:0;background:#07251f;color:#e7f2ec;font:16px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
-  header{padding:28px 36px 8px;font:700 28px/1.1 Fraunces,Georgia,serif;color:#f0b27a}
-  pre{padding:12px 36px 40px;white-space:pre-wrap}
-</style></head><body>
-<header>GET /status — runtime evidence</header>
-<pre>${JSON.stringify(status, null, 2)}</pre>
-</body></html>`;
-const statusPath = join(outDir, '_status-temp.html');
-writeFileSync(statusPath, statusHtml);
-await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 1 });
-await page.goto(`file://${statusPath}`, { waitUntil: 'networkidle0' });
-await save(page, '04-status-json.png');
-
-// 5) Boundaries placard section
-await page.setViewport({ width: 1440, height: 960, deviceScaleFactor: 1 });
 await page.goto('http://127.0.0.1:8000/#boundaries', { waitUntil: 'networkidle0' });
 await page.evaluate(() => {
   document.getElementById('boundaries').scrollIntoView({ behavior: 'instant', block: 'start' });
-  document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('visible'));
 });
-await new Promise((r) => setTimeout(r, 500));
+await new Promise((r) => setTimeout(r, 400));
 await save(page, '05-boundaries-placards.png');
+
+await page.setViewport({ width: 375, height: 812, deviceScaleFactor: 2 });
+await page.goto('http://127.0.0.1:8000/', { waitUntil: 'networkidle0' });
+await waitForConnected(page);
+await new Promise((r) => setTimeout(r, 300));
+await save(page, '06-mobile-375-hero.png');
+
+await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+await page.evaluate(() => {
+  document.getElementById('live').scrollIntoView({ behavior: 'instant', block: 'start' });
+});
+await runScenario(page, 'distress');
+await new Promise((r) => setTimeout(r, 400));
+await save(page, '07-mobile-390-results.png');
 
 await browser.close();
 console.log('All screenshots captured.');

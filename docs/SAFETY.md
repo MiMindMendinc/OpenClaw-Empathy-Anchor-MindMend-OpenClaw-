@@ -31,7 +31,7 @@ Recommended actions are **recommendations**, not completed contacts.
 
 ## Immediate danger
 
-If someone may be in immediate danger, contact emergency services or call/text **988** (US). Resource lists are informational and do not guarantee availability.
+If someone may be in immediate danger, contact emergency services or call/text **988** (US). Resource lists are informational and do not guarantee availability. Contacts shipped in this repo are listed in [`RESOURCES.md`](RESOURCES.md).
 
 ## Must never be used to decide automatically
 
