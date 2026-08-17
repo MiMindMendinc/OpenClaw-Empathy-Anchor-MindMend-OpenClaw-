@@ -298,6 +298,34 @@ class TestAPIEndpoints:
         assert 'notice' in data
         assert 'donation_links' not in data
         assert '988' in data['crisis_resources']
+        assert 'verified_on' in data
+        assert 'HOME to 741741' in data['crisis_resources']['crisis_text']
+        assert '1-844-464-3274' not in json.dumps(data)
+        assert '24/7' in data['immediate_24_7']['988']
+
+    def test_v1_scan_envelope(self, client, auth_token):
+        """Showcase live demo uses the versioned scan envelope."""
+        response = client.post(
+            '/api/v1/scan',
+            data=json.dumps({'message': 'I feel anxious and overwhelmed'}),
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {auth_token}'},
+        )
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['ok'] is True
+        assert data['data']['summary']['severity'] == 'high'
+        assert data['data']['summary']['alert_persisted'] is True
+        assert 'anxious' in data['data']['summary']['matched_indicators']['distress']
+
+    def test_docs_index_and_markdown(self, client):
+        index = client.get('/docs/')
+        assert index.status_code == 200
+        assert b'Documentation' in index.data or b'Evidence' in index.data
+        privacy = client.get('/docs/PRIVACY.md')
+        assert privacy.status_code == 200
+        assert b'text/html' in privacy.content_type.encode() or privacy.mimetype == 'text/html'
+        assert b'Local-first' in privacy.data or b'local-first' in privacy.data.lower()
 
     def test_night_mode_invalid_action(self, client, auth_token):
         response = client.post(

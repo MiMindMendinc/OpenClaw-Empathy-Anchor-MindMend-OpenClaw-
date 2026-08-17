@@ -1,0 +1,30 @@
+{
+    "additional": {
+        "nami_helpline": "NAMI HelpLine \u2014 1-800-950-NAMI (6264), Monday\u2013Friday 10 a.m.\u201310 p.m. ET. https://www.nami.org/support",
+        "nami_michigan": "NAMI Michigan \u2014 education, advocacy, and support groups. https://namimi.org",
+        "teen_line": "Teen Line \u2014 Call 800-852-8336 (6\u201310 p.m. PT) or text TEEN to 839863 (6\u20139 p.m. PT). Outside those hours, call or text 988. https://www.teenline.org"
+    },
+    "crisis_resources": {
+        "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+        "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+        "emergency": "911 \u2014 For immediate life-threatening emergencies",
+        "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
+    },
+    "immediate_24_7": {
+        "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+        "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+        "emergency": "911 \u2014 For immediate life-threatening emergencies",
+        "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
+    },
+    "notice": "Informational routing only. Hours and availability are not guaranteed. If someone may be in immediate danger, call or text 988 (US) or contact local emergency services.",
+    "region": "us-mi",
+    "sources": {
+        "988": "https://988lifeline.org",
+        "crisis_text_line": "https://www.crisistextline.org",
+        "michigan_988_mical": "https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line",
+        "nami_helpline": "https://www.nami.org/support",
+        "nami_michigan": "https://namimi.org",
+        "teen_line": "https://www.teenline.org"
+    },
+    "verified_on": "2026-08-17"
+}

@@ -18,8 +18,11 @@ COPY showcase ./showcase
 COPY docs ./docs
 COPY package.json LICENSE ./
 
-RUN mkdir -p models data/journals data \
-    && chown -R appuser:appuser /app
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+USER root
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && mkdir -p models data/journals data \
+    && chown -R appuser:appuser /app /usr/local/bin/docker-entrypoint.sh
 
 USER appuser
 
@@ -37,7 +40,7 @@ ENV PORT=8000 \
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=8s --retries=3 \
     CMD curl -f http://127.0.0.1:8000/ready || exit 1
 
-CMD ["python", "backend/app.py"]
+ENTRYPOINT ["docker-entrypoint.sh"]

@@ -2,7 +2,7 @@
 
 - Scanner: `rules-v1.0.0` (deterministic keyword/pattern)
 - Cases: **25** synthetic labeled examples
-- Generated: 2026-07-16T21:38:49.682096+00:00
+- Generated: 2026-08-17T07:41:11.622505+00:00
 
 These metrics are from a small synthetic labeled set for a deterministic rule scanner. They are not clinical validation and must not be advertised as accuracy guarantees.
 

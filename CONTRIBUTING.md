@@ -1,234 +1,41 @@
 # Contributing to MindMend Empathy Anchor
 
-Thank you for your interest in contributing. This project is a **technical demonstration** of local-first safety-signal tooling by Michigan MindMend Inc.
+Thank you for your interest. This project is a **technical demonstration** of local-first safety-signal tooling by Michigan MindMend Inc. It is not clinical software and must not be described as therapy, a medical device, or an emergency service.
 
-## Mission
+## How to contribute
 
-Provide privacy-first, supportive safety-signal infrastructure for youth-support demos — without claiming clinical effectiveness or replacing trusted humans.
+1. Check existing issues before opening a new one.
+2. For security issues, use GitHub’s private vulnerability reporting or contact maintainers privately. Do not file a public issue with exploit details.
+3. Prefer small, tested changes. Safety-copy and crisis-resource edits need extra care.
 
-## How to Contribute
+## Development setup
 
-### 1. Report Issues
-
-Found a bug or have a suggestion?
-- Check existing issues first
-- Create a new issue with a clear description
-- For security issues, email directly (don't create public issues)
-
-### 2. Improve Documentation
-
-Documentation is crucial for mental health tools:
-- Fix typos or unclear instructions
-- Add examples or use cases
-- Translate to other languages
-- Update crisis resources
-
-### 3. Enhance the Empathy Anchor Skill
-
-- Improve conversation templates
-- Add new response patterns
-- Expand crisis detection
-- Include more local resources
-
-### 4. Test and Provide Feedback
-
-- Test with different scenarios
-- Report edge cases
-- Share what works well
-- Suggest improvements
-
-## Code of Conduct
-
-This project deals with sensitive topics. We expect all contributors to:
-
-✅ Be respectful and professional
-✅ Prioritize user safety and privacy
-✅ Avoid judgment or stigma
-✅ Follow ethical AI practices
-✅ Maintain confidentiality
-
-❌ Never share user conversations
-❌ Don't minimize mental health concerns
-❌ Avoid making medical claims
-❌ Don't promote harmful content
-
-## Development Setup
-
-1. Fork the repository
-2. Clone your fork
-3. Follow the [SETUP.md](../SETUP.md) guide
-4. Create a feature branch
-5. Make your changes
-6. Test thoroughly
-7. Submit a pull request
-
-## Skill Development Guidelines
-
-When modifying the Empathy Anchor skill:
-
-### Required Testing
-- Test emotional support responses
-- Verify crisis detection
-- Check resource provision
-- Ensure age-appropriate language
-- Validate privacy measures
-
-### Response Quality
-Responses should:
-- Validate feelings first
-- Use clear, simple language
-- Avoid jargon or technical terms
-- Provide actionable support
-- Know when to escalate
-
-### Safety Checks
-Before submitting:
-- ✅ Crisis situations are handled appropriately
-- ✅ Resources are accurate and current
-- ✅ Privacy is maintained
-- ✅ No harmful advice
-- ✅ Professional help is encouraged when needed
-
-## Pull Request Process
-
-1. **Branch Naming**: Use descriptive names
-   - `feature/add-local-resources`
-   - `fix/crisis-detection`
-   - `docs/usage-examples`
-
-2. **Commit Messages**: Be clear and specific
-   ```
-   Add local community mental health resources
-   
-   - Added local crisis line
-   - Updated youth center contact
-   - Included school counselor info
-   ```
-
-3. **PR Description**: Include
-   - What changed and why
-   - How to test
-   - Any new dependencies
-   - Screenshots if relevant
-
-4. **Review Process**
-   - Maintainer will review
-   - May request changes
-   - Must pass safety review
-   - Needs approval before merge
-
-## Priority Contributions
-
-We especially welcome:
-
-### High Priority
-- 🔥 Accurate crisis resource updates
-- 🔥 Bug fixes affecting safety
-- 🔥 Privacy/security improvements
-
-### Medium Priority
-- 📚 Documentation improvements
-- 🌐 Localization/translation
-- 🎨 Example conversations
-- 🧪 Test cases
-
-### Low Priority
-- ✨ Feature enhancements
-- 🎯 Performance optimizations
-- 🔧 Code refactoring
-
-## Style Guidelines
-
-### Markdown Files
-- Use clear headers
-- Include examples
-- Keep paragraphs short
-- Use bullet points
-- Check spelling
-
-### Code
-- Follow OpenClaw conventions
-- Comment complex logic
-- Use meaningful variable names
-- Keep functions focused
-
-### Conversation Examples
-- Use realistic scenarios
-- Show both user and assistant
-- Demonstrate best practices
-- Include various situations
-
-## Resource Guidelines
-
-When adding or updating crisis resources:
-
-### Required Information
-- ✅ Organization name
-- ✅ Phone number (verified)
-- ✅ Hours of operation
-- ✅ Type of support provided
-- ✅ Geographic coverage
-- ✅ Language support
-
-### Verification
-- Call the number to verify it works
-- Check the website for accuracy
-- Note if 24/7 or limited hours
-- Confirm it's free/low-cost
-
-### Format
-```json
-{
-  "resource_name": {
-    "name": "988 Suicide & Crisis Lifeline",
-    "contact": "Call or text 988",
-    "hours": "24/7",
-    "type": "crisis",
-    "coverage": "national",
-    "verified": "2024-02-01"
-  }
-}
+```bash
+python3 -m pip install -r backend/requirements.txt
+npm test
+DEMO_AUTH=true python3 -m pytest backend/tests
+make demo
 ```
 
-## Testing Checklist
+Or: `docker compose up --build` then open `http://127.0.0.1:8000/`.
 
-Before submitting changes:
+Full check: `make verify`.
 
-- [ ] Tested basic conversations
-- [ ] Verified crisis detection
-- [ ] Checked resource accuracy
-- [ ] Reviewed for harmful content
-- [ ] Ensured privacy compliance
-- [ ] Validated with different scenarios
-- [ ] Checked spelling and grammar
-- [ ] Updated documentation if needed
+## Safety-copy rules
 
-## Questions?
+- Do not invent phone numbers, hours, or “24/7” claims.
+- Crisis contacts live in `backend/support_resources.py`. Update [`docs/RESOURCES.md`](docs/RESOURCES.md) with the public page you checked and the date.
+- Unit tests fail if the previously shipped transposed MiCAL number reappears.
+- Keep the product status label as a technical demonstration.
 
-- **General**: Create an issue
-- **Security**: Email maintainers
-- **OpenClaw**: Visit https://docs.openclaw.ai
-- **Community**: Join https://discord.gg/clawd
+## Pull requests
 
-## Recognition
+- Branch names should describe the change.
+- Include how you tested (`make test` / `make verify`).
+- Do not add analytics, telemetry, or third-party font/trackers to the showcase.
 
-Contributors will be recognized in:
-- README.md contributors section
-- Release notes
-- Project documentation
+## Code of conduct
 
-## License
+This repository discusses crisis language for verification. Be respectful, do not share real people’s private conversations, and do not make medical claims.
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
-
-## Support the Project
-
-- **Try Eve demo**: https://kid-helper-ai.replit.app
-- **Donate**: https://gofund.me/42b8334bd
-- **Cash App**: https://cash.app/$MichiganMindMendinc
-
----
-
-**Thank you for helping make mental health support more accessible and compassionate!**
-
-Developed by Lyle Perrien II, Michigan MindMend Inc.
+By contributing, you agree that your contributions are licensed under the MIT License.

@@ -1,7 +1,7 @@
 services:
   empathy-anchor:
     build: .
-    image: mindmend-empathy-anchor:0.2.0
+    image: mindmend-empathy-anchor:0.2.1
     ports:
       - "8000:8000"
     volumes:
@@ -27,4 +27,10 @@ services:
         limits:
           memory: 512m
           cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 8s
     restart: unless-stopped

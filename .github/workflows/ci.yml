@@ -58,6 +58,8 @@ jobs:
           assert 'safe-area-inset' in css
           print('showcase markup ok')
           PY
+      - name: Local process verify
+        run: chmod +x scripts/verify.sh docker-entrypoint.sh && SKIP_NODE=1 ./scripts/verify.sh
 
   docker-smoke:
     name: Docker build and readiness

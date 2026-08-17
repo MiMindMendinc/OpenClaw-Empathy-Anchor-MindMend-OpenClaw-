@@ -196,7 +196,7 @@ test('Empathy Anchor Skill - Michigan Resources', () => {
   assert.ok(empathyAnchor.MICHIGAN_RESOURCES.teenLine, 'should have Teen Line resource');
   
   // Verify 988 resource details
-  assert.strictEqual(empathyAnchor.MICHIGAN_RESOURCES.suicide988.contact, 'Call or Text 988');
+  assert.strictEqual(empathyAnchor.MICHIGAN_RESOURCES.suicide988.contact, 'Call or text 988');
   assert.strictEqual(empathyAnchor.MICHIGAN_RESOURCES.suicide988.availability, '24/7');
   
   // Verify NAMI Michigan resource details

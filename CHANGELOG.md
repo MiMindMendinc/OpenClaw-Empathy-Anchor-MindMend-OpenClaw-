@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.1-prototype] - 2026-08-17
+
+### Fixed
+- Replaced a transposed Michigan Crisis & Access Line number with MDHHS’s current public instruction: call or text **988** (MiCAL is Michigan’s statewide 988 call center).
+- Crisis Text Line copy now uses the organization’s public keyword: text **HOME** to 741741.
+- Stopped describing NAMI HelpLine and Teen Line as 24/7.
+- Stale evidence JSON that still said “OpenClaw Empathy Anchor” / v0.1.0 is regenerated from a live process.
+- Docker bind-mounts that are not writable no longer leave `/ready` at 503; the process falls back to `/tmp`.
+- Screenshot capture script now matches the current showcase (no missing `#runAll` / `.brand-title`).
+
+### Added
+- `make demo` / `make verify` one-command local paths that do not require Docker
+- HTML rendering for `/docs/` so demonstration links are readable
+- `docs/RESOURCES.md` with the public pages used to check contacts
+
 ## [0.2.0-prototype] - 2026-07-16
 
 ### Migration note — product rename

@@ -18,7 +18,7 @@ HumaniCare AI is designed for places where cloud-only tools are not enough.
 flowchart LR
     A[Mini-PC / Laptop / Raspberry Pi] --> B[Local API]
     B --> C[Safety Router]
-    B --> D[OpenClaw Empathy Anchor]
+    B --> D[MindMend Empathy Anchor]
     B --> E[Local Resource Directory]
     B --> F[Local Audit Log]
     F -. explicit export only .-> G[Trusted Human Review]

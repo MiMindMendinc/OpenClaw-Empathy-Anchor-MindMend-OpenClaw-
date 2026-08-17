@@ -1,6 +1,6 @@
 # Clinical Boundaries
 
-HumaniCare AI and OpenClaw Empathy Anchor must stay honest about what they are.
+HumaniCare AI and MindMend Empathy Anchor must stay honest about what they are.
 
 They are privacy-first support infrastructure. They are not medical devices, not clinicians, not diagnosis engines, and not emergency services.
 

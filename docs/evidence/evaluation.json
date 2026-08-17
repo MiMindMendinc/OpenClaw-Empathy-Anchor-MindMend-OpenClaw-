@@ -1,8 +1,8 @@
 {
   "product": "MindMend Empathy Anchor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "scanner_version": "rules-v1.0.0",
-  "generated_at": "2026-07-16T21:38:49.682096+00:00",
+  "generated_at": "2026-08-17T07:41:11.622505+00:00",
   "dataset": {
     "name": "mindmend-safety-signals-synth-v1",
     "origin": "Synthetic examples authored for MindMend Empathy Anchor evaluation. No private conversations.",

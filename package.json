@@ -1,14 +1,15 @@
 {
   "name": "mindmend-empathy-anchor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "MindMend Empathy Anchor — local-first safety signal demonstrator by Michigan MindMend Inc.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "demo": "node demo.js",
-    "test": "node --test",
+    "test": "node --test test/*.js tests/*.js",
     "test:anchor": "node --test test/empathy-anchor.test.js",
-    "eval": "python3 backend/eval/run_eval.py"
+    "eval": "python3 backend/eval/run_eval.py",
+    "verify": "bash scripts/verify.sh"
   },
   "keywords": [
     "ai-safety",

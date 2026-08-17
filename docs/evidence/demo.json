@@ -18,7 +18,11 @@
                     "toxicity": []
                 },
                 "offline_mode": true,
+                "quoted_context_suspected": false,
+                "recommended_actions": [],
                 "safe": true,
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
                 "sentiment": {
                     "method": "keyword_pattern",
                     "negative_hits": 0,
@@ -26,17 +30,32 @@
                     "positive_hits": 1
                 },
                 "severity": "low",
-                "timestamp": "2026-07-16T20:49:35.894056"
+                "timestamp": "2026-08-17T07:40:41.220327+00:00"
             },
-            "scenario": "neutral"
+            "scenario": "neutral",
+            "summary": {
+                "alert_id": null,
+                "alert_persisted": false,
+                "created_at": "2026-08-17T07:40:41.220327+00:00",
+                "detected_categories": [],
+                "matched_indicators": {},
+                "note": "Recommended actions are guidance only. No parent, clinician, or emergency service was contacted automatically.",
+                "quoted_context_suspected": false,
+                "recommended_actions": [],
+                "resources": null,
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
+                "severity": "low",
+                "storage_mode": "none"
+            }
         },
         {
             "message": "I feel anxious and overwhelmed about everything.",
             "response_preview": "Thank you for sharing what you're feeling. It takes courage to talk about difficult emotions, and I want you to know that what you're experiencing is valid.\n\nMany young people go through similar feelings, and there are people who understand",
             "scan_result": {
                 "actions": [
-                    "EMPATHY_RESPONSE_MEDIUM",
-                    "SUGGEST_RESOURCES"
+                    "SUPPORTIVE_RESPONSE_MEDIUM",
+                    "SUGGEST_SUPPORT_RESOURCES"
                 ],
                 "flags": {
                     "crisis": false,
@@ -54,14 +73,20 @@
                     "toxicity": []
                 },
                 "offline_mode": true,
+                "quoted_context_suspected": false,
+                "recommended_actions": [
+                    "SUPPORTIVE_RESPONSE_MEDIUM",
+                    "SUGGEST_SUPPORT_RESOURCES"
+                ],
                 "resources": {
-                    "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
-                    "crisis_text": "Crisis Text Line - Text HELLO to 741741",
-                    "emergency": "911 - For immediate life-threatening emergencies",
-                    "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
-                    "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                    "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+                    "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+                    "emergency": "911 \u2014 For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
                 },
                 "safe": true,
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
                 "sentiment": {
                     "method": "keyword_pattern",
                     "negative_hits": 0,
@@ -69,62 +94,49 @@
                     "positive_hits": 0
                 },
                 "severity": "high",
-                "timestamp": "2026-07-16T20:49:35.894079"
+                "timestamp": "2026-08-17T07:40:41.220362+00:00"
             },
-            "scenario": "distress"
-        },
-        {
-            "message": "I want to kill myself.",
-            "response_preview": "I hear that you're going through something really difficult right now, and I want you to know that your feelings are valid. However, I'm concerned about your safety and wellbeing.\n\n**Please reach out to someone who can help right away:**\n\n\u2022",
-            "scan_result": {
-                "actions": [
-                    "IMMEDIATE_ALERT_PARENT",
-                    "PROVIDE_CRISIS_RESOURCES",
-                    "EMPATHY_RESPONSE_HIGH"
+            "scenario": "distress",
+            "summary": {
+                "alert_id": null,
+                "alert_persisted": false,
+                "created_at": "2026-08-17T07:40:41.220362+00:00",
+                "detected_categories": [
+                    "distress"
                 ],
-                "flags": {
-                    "crisis": true,
-                    "distress": false,
-                    "night_mode": false,
-                    "toxicity": false
+                "matched_indicators": {
+                    "distress": [
+                        "anxious",
+                        "overwhelmed"
+                    ]
                 },
-                "matches": {
-                    "crisis": [
-                        "kill myself"
-                    ],
-                    "distress": [],
-                    "night_mode": [],
-                    "toxicity": []
-                },
-                "offline_mode": true,
+                "note": "Recommended actions are guidance only. No parent, clinician, or emergency service was contacted automatically.",
+                "quoted_context_suspected": false,
+                "recommended_actions": [
+                    "SUPPORTIVE_RESPONSE_MEDIUM",
+                    "SUGGEST_SUPPORT_RESOURCES"
+                ],
                 "resources": {
-                    "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
-                    "crisis_text": "Crisis Text Line - Text HELLO to 741741",
-                    "emergency": "911 - For immediate life-threatening emergencies",
-                    "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
-                    "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                    "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+                    "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+                    "emergency": "911 \u2014 For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
                 },
-                "safe": false,
-                "sentiment": {
-                    "method": "keyword_pattern",
-                    "negative_hits": 0,
-                    "polarity": 0.0,
-                    "positive_hits": 0
-                },
-                "severity": "critical",
-                "timestamp": "2026-07-16T20:49:35.894101"
-            },
-            "scenario": "crisis"
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
+                "severity": "high",
+                "storage_mode": "none"
+            }
         },
         {
             "message": "I can't sleep and I'm scared.",
             "response_preview": "Thank you for sharing what you're feeling. It takes courage to talk about difficult emotions, and I want you to know that what you're experiencing is valid.\n\nMany young people go through similar feelings, and there are people who understand",
             "scan_result": {
                 "actions": [
-                    "EMPATHY_RESPONSE_MEDIUM",
-                    "SUGGEST_RESOURCES",
-                    "NIGHT_MODE_RESPONSE",
-                    "CALMING_TECHNIQUES"
+                    "SUPPORTIVE_RESPONSE_MEDIUM",
+                    "SUGGEST_SUPPORT_RESOURCES",
+                    "NIGHT_MODE_SUPPORT",
+                    "SUGGEST_CALMING_TECHNIQUES"
                 ],
                 "flags": {
                     "crisis": false,
@@ -143,14 +155,22 @@
                     "toxicity": []
                 },
                 "offline_mode": true,
+                "quoted_context_suspected": true,
+                "recommended_actions": [
+                    "SUPPORTIVE_RESPONSE_MEDIUM",
+                    "SUGGEST_SUPPORT_RESOURCES",
+                    "NIGHT_MODE_SUPPORT",
+                    "SUGGEST_CALMING_TECHNIQUES"
+                ],
                 "resources": {
-                    "988": "Suicide & Crisis Lifeline - Call or text 988 (24/7)",
-                    "crisis_text": "Crisis Text Line - Text HELLO to 741741",
-                    "emergency": "911 - For immediate life-threatening emergencies",
-                    "michigan_crisis": "Michigan Crisis & Access Line - 1-844-464-3274",
-                    "nami_michigan": "NAMI Michigan - 1-800-950-NAMI (6264)"
+                    "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+                    "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+                    "emergency": "911 \u2014 For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
                 },
                 "safe": true,
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
                 "sentiment": {
                     "method": "keyword_pattern",
                     "negative_hits": 0,
@@ -158,12 +178,129 @@
                     "positive_hits": 0
                 },
                 "severity": "high",
-                "timestamp": "2026-07-16T20:49:35.894117"
+                "timestamp": "2026-08-17T07:40:41.220390+00:00"
             },
-            "scenario": "night_mode"
+            "scenario": "night_mode",
+            "summary": {
+                "alert_id": null,
+                "alert_persisted": false,
+                "created_at": "2026-08-17T07:40:41.220390+00:00",
+                "detected_categories": [
+                    "distress",
+                    "night_mode"
+                ],
+                "matched_indicators": {
+                    "distress": [
+                        "scared"
+                    ],
+                    "night_mode": [
+                        "can't sleep"
+                    ]
+                },
+                "note": "Recommended actions are guidance only. No parent, clinician, or emergency service was contacted automatically.",
+                "quoted_context_suspected": true,
+                "recommended_actions": [
+                    "SUPPORTIVE_RESPONSE_MEDIUM",
+                    "SUGGEST_SUPPORT_RESOURCES",
+                    "NIGHT_MODE_SUPPORT",
+                    "SUGGEST_CALMING_TECHNIQUES"
+                ],
+                "resources": {
+                    "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+                    "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+                    "emergency": "911 \u2014 For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
+                },
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
+                "severity": "high",
+                "storage_mode": "none"
+            }
+        },
+        {
+            "message": "[sensitive example withheld in listing \u2014 select crisis scenario in UI]",
+            "response_preview": "I hear that you're going through something really difficult right now, and I want you to know that your feelings are valid. However, I'm concerned about your safety and wellbeing.\n\n**Please reach out to someone who can help right away:**\n\n\u2022",
+            "scan_result": {
+                "actions": [
+                    "RECOMMEND_ALERT_TRUSTED_ADULT",
+                    "SHOW_CRISIS_RESOURCES",
+                    "SUPPORTIVE_RESPONSE_HIGH"
+                ],
+                "flags": {
+                    "crisis": true,
+                    "distress": false,
+                    "night_mode": false,
+                    "toxicity": false
+                },
+                "matches": {
+                    "crisis": [
+                        "kill myself"
+                    ],
+                    "distress": [],
+                    "night_mode": [],
+                    "toxicity": []
+                },
+                "offline_mode": true,
+                "quoted_context_suspected": false,
+                "recommended_actions": [
+                    "RECOMMEND_ALERT_TRUSTED_ADULT",
+                    "SHOW_CRISIS_RESOURCES",
+                    "SUPPORTIVE_RESPONSE_HIGH"
+                ],
+                "resources": {
+                    "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+                    "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+                    "emergency": "911 \u2014 For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
+                },
+                "safe": false,
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
+                "sentiment": {
+                    "method": "keyword_pattern",
+                    "negative_hits": 0,
+                    "polarity": 0.0,
+                    "positive_hits": 0
+                },
+                "severity": "critical",
+                "timestamp": "2026-08-17T07:40:41.220426+00:00"
+            },
+            "scenario": "crisis",
+            "sensitive_example": true,
+            "summary": {
+                "alert_id": null,
+                "alert_persisted": false,
+                "created_at": "2026-08-17T07:40:41.220426+00:00",
+                "detected_categories": [
+                    "crisis"
+                ],
+                "matched_indicators": {
+                    "crisis": [
+                        "kill myself"
+                    ]
+                },
+                "note": "Recommended actions are guidance only. No parent, clinician, or emergency service was contacted automatically.",
+                "quoted_context_suspected": false,
+                "recommended_actions": [
+                    "RECOMMEND_ALERT_TRUSTED_ADULT",
+                    "SHOW_CRISIS_RESOURCES",
+                    "SUPPORTIVE_RESPONSE_HIGH"
+                ],
+                "resources": {
+                    "988": "988 Suicide & Crisis Lifeline \u2014 Call or text 988 (24/7, United States). https://988lifeline.org",
+                    "crisis_text": "Crisis Text Line \u2014 Text HOME to 741741 (24/7, United States). https://www.crisistextline.org",
+                    "emergency": "911 \u2014 For immediate life-threatening emergencies",
+                    "michigan_crisis": "Michigan Crisis & Access Line (MiCAL) \u2014 Call or text 988. MiCAL is Michigan\u2019s statewide 988 call center. https://www.michigan.gov/mdhhs/keep-mi-healthy/mentalhealth/crisis-and-access-line"
+                },
+                "scanner_method": "deterministic_keyword_pattern",
+                "scanner_version": "rules-v1.0.0",
+                "severity": "critical",
+                "storage_mode": "none"
+            }
         }
     ],
-    "disclaimer": "Supportive safety prototype \u2014 not clinical software, not an emergency service. Deterministic keyword/pattern scanner.",
+    "content_notice": "Some scenarios involve sensitive safety language for verification only. This is not clinical assessment.",
+    "disclaimer": "MindMend Empathy Anchor is a local-first technical demonstration for detecting predefined safety signals and presenting supportive routing guidance. It is not clinical software, an emergency service, or a replacement for professional judgment.",
     "geofence_scenario": {
         "description": "Location outside defined safe zone (demo)",
         "name": "geofence_violation",
@@ -173,7 +310,7 @@
                 "lat": 43.0,
                 "lon": -84.2
             },
-            "distance_to_nearest": 1996.4308930873294,
+            "distance_to_nearest": 112397.18066324794,
             "in_safe_zone": false,
             "nearest_zone": {
                 "lat": 42.0,
@@ -181,8 +318,9 @@
                 "name": "Home (demo)",
                 "radius": 100
             },
-            "timestamp": "2026-07-16T20:49:35.894143"
+            "timestamp": "2026-08-17T07:40:41.220448+00:00"
         }
     },
-    "timestamp": "2026-07-16T20:49:35.894147+00:00"
+    "scanner_version": "rules-v1.0.0",
+    "timestamp": "2026-08-17T07:40:41.220452+00:00"
 }

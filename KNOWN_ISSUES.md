@@ -19,3 +19,5 @@ Node module still exports `OpenClaw` as an alias for `MindMendEmpathyAnchor`.
 ## Repository name
 
 The GitHub repository URL may still contain historical “OpenClaw” naming; the public product name is MindMend Empathy Anchor.
+
+`openclaw.config.json` is a leftover filename. It is not an OpenClaw gateway. Resource contacts in that file must match `docs/RESOURCES.md`.

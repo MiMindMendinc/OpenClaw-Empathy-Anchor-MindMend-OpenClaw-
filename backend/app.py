@@ -23,6 +23,8 @@ import jwt
 
 from alert_store import AlertStore
 from luna_safety_core import LunaSafetyCore
+from markdown_page import render_markdown_page
+from support_resources import public_payload
 from version import (
     API_VERSION,
     ORGANIZATION,
@@ -265,8 +267,26 @@ def showcase_assets(filename: str):
     return send_from_directory(SHOWCASE_DIR, filename)
 
 
+@app.route('/docs')
+@app.route('/docs/')
+def docs_index():
+    index = DOCS_DIR / 'index.md'
+    if index.exists():
+        return render_markdown_page(index, title='Documentation')
+    return api_error('not_found', 'Documentation index not found', 404)
+
+
 @app.route('/docs/<path:filename>')
 def docs_assets(filename: str):
+    if '..' in filename or filename.startswith('/'):
+        return api_error('not_found', 'Endpoint not found', 404)
+    target = (DOCS_DIR / filename).resolve()
+    if not str(target).startswith(str(DOCS_DIR.resolve())):
+        return api_error('not_found', 'Endpoint not found', 404)
+    if not target.exists() or not target.is_file():
+        return api_error('not_found', 'Endpoint not found', 404)
+    if target.suffix.lower() in {'.md', '.markdown'}:
+        return render_markdown_page(target)
     return send_from_directory(DOCS_DIR, filename)
 
 
@@ -702,15 +722,7 @@ def demo():
 @app.route('/api/v1/resources', methods=['GET'])
 def get_resources():
     region = (request.args.get('region') or 'us-mi').lower()
-    return jsonify({
-        'region': region,
-        'crisis_resources': luna_core.CRISIS_RESOURCES,
-        'notice': (
-            'Informational routing only. Availability is not guaranteed. '
-            'If someone may be in immediate danger, call or text 988 (US) '
-            'or contact local emergency services.'
-        ),
-    })
+    return jsonify(public_payload(region))
 
 
 @app.errorhandler(404)
