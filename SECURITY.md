@@ -2,7 +2,10 @@
 
 ## Reporting
 
-If you find a vulnerability, contact Michigan MindMend privately. Do not open a public issue with exploit details.
+If you find a vulnerability, please report it privately.
+
+- If private vulnerability reporting is turned on, use the repository's **Security** tab: https://github.com/MiMindMendinc/OpenClaw-Empathy-Anchor-MindMend-OpenClaw-/security/advisories/new
+- Otherwise, open a GitHub issue whose title starts with `[security]`. Describe the affected area and how serious it is, but **do not post exploit code or full reproduction steps in public.** A maintainer will follow up to get the details privately.
 
 ## Controls in this technical demonstration
 
